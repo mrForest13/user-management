@@ -1,10 +1,10 @@
-package com.mforest.example.service.model
+package com.mforest.example.service.user
 
 import cats.implicits._
 import com.mforest.example.core.error.Error.ValidationError
 import com.mforest.example.core.validation.Validator
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 
 final case class User(
     email: String,

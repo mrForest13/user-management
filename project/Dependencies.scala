@@ -15,6 +15,7 @@ object Dependencies {
     val webjars    = "3.22.0"
     val log4Cats   = "1.0.1"
     val pureConfig = "0.12.2"
+    val scalaTest  = "3.1.0"
   }
 
   private val config: Seq[ModuleID] = Seq(
@@ -73,13 +74,18 @@ object Dependencies {
     "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-http4s"  % Versions.tapir
   )
 
-  val application: Seq[ModuleID] = logging
-  val http: Seq[ModuleID]        = http4s ++ tapir ++ logging
-  val service: Seq[ModuleID]     = tsecV ++ logging
-  val db: Seq[ModuleID]          = doobie ++ logging
-  val core: Seq[ModuleID]        = config ++ fuuid ++ cats ++ circe ++ logging
+  private val test: Seq[ModuleID] = Seq(
+    "org.scalatest" %% "scalatest" % Versions.scalaTest % Test
+  )
+
+  val application: Seq[ModuleID] = test ++ logging
+  val http: Seq[ModuleID]        = http4s ++ tapir ++ test ++ logging
+  val service: Seq[ModuleID]     = tsecV ++ test ++ logging
+  val db: Seq[ModuleID]          = doobie ++ test ++ logging
+  val core: Seq[ModuleID]        = config ++ fuuid ++ cats ++ circe ++ test ++ logging
 
   implicit class ModuleSettings(modules: Seq[ModuleID]) {
     def asSettings: Seq[Def.Setting[_]] = Seq(libraryDependencies ++= modules)
   }
+
 }
