@@ -3,7 +3,7 @@ package com.mforest.example.http.doc
 import com.mforest.example.core.error.Error
 import com.mforest.example.http.Doc
 import com.mforest.example.http.response.StatusResponse
-import com.mforest.example.service.model.User
+import com.mforest.example.service.model.RegistrationForm
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
 
@@ -11,13 +11,13 @@ trait UserApiDoc extends Doc {
 
   def docs: Seq[Endpoint[_, _, _, _]] = Seq(addUserEndpoint)
 
-  val addUserEndpoint: Endpoint[User, StatusResponse.Fail[Error], StatusResponse.Ok[String], Nothing] = {
+  val addUserEndpoint: Endpoint[RegistrationForm, StatusResponse.Fail[Error], StatusResponse.Ok[String], Nothing] = {
     endpoint.post
       .tag("Users")
       .summary("Create user")
       .in("users")
       .in(
-        jsonBody[User]
+        jsonBody[RegistrationForm]
           .example(UserApiDoc.user)
       )
       .out(
@@ -68,7 +68,7 @@ trait UserApiDoc extends Doc {
 
 object UserApiDoc {
 
-  private val user = User(
+  private val user = RegistrationForm(
     email = "john.smith@gmail.com",
     password = "example",
     firstName = "john",

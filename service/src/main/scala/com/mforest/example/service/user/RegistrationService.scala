@@ -8,33 +8,34 @@ import com.mforest.example.core.error.Error.ConflictError
 import com.mforest.example.db.dao.UserDao
 import com.mforest.example.db.model.UserRow
 import com.mforest.example.service.Service
-import com.mforest.example.service.model.User
+import com.mforest.example.service.hash.HashEngine
+import com.mforest.example.service.model.RegistrationForm
 import doobie.implicits.AsyncConnectionIO
 import doobie.util.transactor.Transactor
 import io.chrisdavenport.fuuid.FUUID
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import tsec.passwordhashers.PasswordHash
-import tsec.passwordhashers.jca.SCrypt
 
-trait UserService[F[_]] extends Service {
+trait RegistrationService[F[_]] extends Service {
 
-  def createUser(user: User): EitherT[F, Error, String]
+  def createUser(form: RegistrationForm): EitherT[F, Error, String]
 }
 
-class UserServiceImpl[F[_]: Async](dao: UserDao, transactor: Transactor[F]) extends UserService[F] {
+class RegistrationServiceImpl[F[_]: Async, A](dao: UserDao, hashEngine: HashEngine[F, A], transactor: Transactor[F])
+    extends RegistrationService[F] {
 
   private val created  = (email: String) => s"The user with email $email has been created"
   private val conflict = (email: String) => s"User with email $email already exists!"
 
-  override def createUser(user: User): EitherT[F, Error, String] = {
+  override def createUser(form: RegistrationForm): EitherT[F, Error, String] = {
     for {
       logger <- right(Slf4jLogger.create[F])
       id     <- right(FUUID.randomFUUID[F])
       salt   <- right(FUUID.randomFUUID[F])
-      hash   <- right(hashPassword(user.password, salt))
-      row    = prepareRow(id, salt, hash, user)
+      hash   <- right(hashPassword(form.password, salt))
+      row    = prepareRow(id, salt, hash, form)
       _      <- insertUser(row)
-      info   = created(user.email)
+      info   = created(form.email)
       _      <- right(logger.info(info))
     } yield info
   }
@@ -49,29 +50,32 @@ class UserServiceImpl[F[_]: Async](dao: UserDao, transactor: Transactor[F]) exte
       .transact(transactor)
   }
 
-  private def hashPassword(password: String, salt: FUUID): F[PasswordHash[SCrypt]] = {
-    val withSalt = password.concat(salt.toString())
-    SCrypt.hashpw[F](withSalt.toCharArray)
+  private def hashPassword(password: String, salt: FUUID): F[PasswordHash[A]] = {
+    hashEngine.hashPassword(password, salt)
   }
 
-  private def prepareRow(id: FUUID, salt: FUUID, hash: String, user: User): UserRow = {
+  private def prepareRow(id: FUUID, salt: FUUID, hash: String, form: RegistrationForm): UserRow = {
     UserRow(
       id = id,
-      email = user.email,
+      email = form.email,
       hash = hash,
       salt = salt,
-      firstName = user.firstName,
-      lastName = user.lastName,
-      city = user.city,
-      country = user.country,
-      phone = user.phone
+      firstName = form.firstName,
+      lastName = form.lastName,
+      city = form.city,
+      country = form.country,
+      phone = form.phone
     )
   }
 }
 
-object UserService {
+object RegistrationService {
 
-  def apply[F[_]: Async](dao: UserDao, transactor: Transactor[F]): UserService[F] = {
-    new UserServiceImpl[F](dao, transactor)
+  def apply[F[_]: Async, A](
+      dao: UserDao,
+      hashEngine: HashEngine[F, A],
+      transactor: Transactor[F]
+  ): RegistrationService[F] = {
+    new RegistrationServiceImpl[F, A](dao, hashEngine, transactor)
   }
 }

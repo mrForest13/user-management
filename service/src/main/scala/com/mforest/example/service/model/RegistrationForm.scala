@@ -6,7 +6,7 @@ import com.mforest.example.core.validation.Validator
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
-final case class User(
+final case class RegistrationForm(
     email: String,
     password: String,
     firstName: String,
@@ -16,26 +16,26 @@ final case class User(
     phone: String
 )
 
-object User {
+object RegistrationForm {
 
-  implicit val validator: Validator[User] = {
-    case user: User if user.email.isEmpty =>
+  implicit val validator: Validator[RegistrationForm] = {
+    case form: RegistrationForm if form.email.isEmpty =>
       ValidationError(s"Email cannot be empty!").invalid
-    case user: User if user.password.isEmpty =>
+    case form: RegistrationForm if form.password.isEmpty =>
       ValidationError(s"Password cannot be empty!").invalid
-    case user: User if user.firstName.isEmpty =>
+    case form: RegistrationForm if form.firstName.isEmpty =>
       ValidationError(s"First name cannot be empty!").invalid
-    case user: User if user.lastName.isEmpty =>
+    case form: RegistrationForm if form.lastName.isEmpty =>
       ValidationError(s"Last name cannot be empty!").invalid
-    case user: User if user.city.isEmpty =>
+    case form: RegistrationForm if form.city.isEmpty =>
       ValidationError(s"City cannot be empty!").invalid
-    case user: User if user.country.isEmpty =>
+    case form: RegistrationForm if form.country.isEmpty =>
       ValidationError(s"Country cannot be empty!").invalid
-    case user: User if user.phone.isEmpty =>
+    case form: RegistrationForm if form.phone.isEmpty =>
       ValidationError(s"Phone cannot be empty!").invalid
-    case user @ (_: User) => user.valid
+    case form @ (_: RegistrationForm) => form.valid
   }
 
-  implicit val encoder: Encoder[User] = deriveEncoder
-  implicit val decoder: Decoder[User] = deriveDecoder
+  implicit val encoder: Encoder[RegistrationForm] = deriveEncoder
+  implicit val decoder: Decoder[RegistrationForm] = deriveDecoder
 }

@@ -5,23 +5,23 @@ import com.mforest.example.core.validation._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class UserSpec extends AnyWordSpec with Matchers {
+class RegistrationFormSpec extends AnyWordSpec with Matchers {
 
-  "User" when {
+  "RegistrationForm" when {
 
     "call validate" must {
 
       "respond with user for valid data" in {
 
-        validate(UserSpec.userMock) shouldBe UserSpec.userMock.valid
+        validate(RegistrationFormSpec.userMock) shouldBe RegistrationFormSpec.userMock.valid
       }
     }
   }
 }
 
-object UserSpec {
+object RegistrationFormSpec {
 
-  private val userMock = User(
+  private val userMock = RegistrationForm(
     email = "john.smith@gmail.com",
     password = "example",
     firstName = "john",

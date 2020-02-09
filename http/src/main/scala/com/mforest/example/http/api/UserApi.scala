@@ -3,10 +3,10 @@ package com.mforest.example.http.api
 import cats.effect.{ContextShift, Sync}
 import com.mforest.example.http.Api
 import com.mforest.example.http.doc.UserApiDoc
-import com.mforest.example.service.user.UserService
+import com.mforest.example.service.user.RegistrationService
 import org.http4s.HttpRoutes
 
-class UserApi[F[_]: Sync: ContextShift](userService: UserService[F]) extends Api[F] with UserApiDoc {
+class UserApi[F[_]: Sync: ContextShift](userService: RegistrationService[F]) extends Api[F] with UserApiDoc {
 
   def routes: HttpRoutes[F] = addUser
 
@@ -21,6 +21,6 @@ class UserApi[F[_]: Sync: ContextShift](userService: UserService[F]) extends Api
 
 object UserApi {
 
-  def apply[F[_]: Sync: ContextShift](userService: UserService[F]): UserApi[F] =
+  def apply[F[_]: Sync: ContextShift](userService: RegistrationService[F]): UserApi[F] =
     new UserApi(userService)
 }
