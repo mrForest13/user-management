@@ -1,4 +1,4 @@
-package com.mforest.example.service.model
+package com.mforest.example.service.form
 
 import cats.implicits._
 import com.mforest.example.core.validation._

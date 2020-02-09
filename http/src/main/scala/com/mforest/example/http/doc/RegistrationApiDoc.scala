@@ -3,22 +3,22 @@ package com.mforest.example.http.doc
 import com.mforest.example.core.error.Error
 import com.mforest.example.http.Doc
 import com.mforest.example.http.response.StatusResponse
-import com.mforest.example.service.model.RegistrationForm
+import com.mforest.example.service.form.RegistrationForm
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
 
-trait UserApiDoc extends Doc {
+trait RegistrationApiDoc extends Doc {
 
   def docs: Seq[Endpoint[_, _, _, _]] = Seq(addUserEndpoint)
 
   val addUserEndpoint: Endpoint[RegistrationForm, StatusResponse.Fail[Error], StatusResponse.Ok[String], Nothing] = {
     endpoint.post
-      .tag("Users")
+      .tag("Registration")
       .summary("Create user")
       .in("users")
       .in(
         jsonBody[RegistrationForm]
-          .example(UserApiDoc.user)
+          .example(RegistrationApiDoc.user)
       )
       .out(
         oneOf(
@@ -66,7 +66,7 @@ trait UserApiDoc extends Doc {
   }
 }
 
-object UserApiDoc {
+object RegistrationApiDoc {
 
   private val user = RegistrationForm(
     email = "john.smith@gmail.com",

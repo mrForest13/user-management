@@ -8,10 +8,10 @@ import com.mforest.example.core.ConfigLoader
 import com.mforest.example.db.Database
 import com.mforest.example.db.dao.UserDao
 import com.mforest.example.http.Server
-import com.mforest.example.http.api.UserApi
+import com.mforest.example.http.api.RegistrationApi
 import com.mforest.example.http.swagger.OpenApi
 import com.mforest.example.service.hash.SCryptEngine
-import com.mforest.example.service.user.RegistrationService
+import com.mforest.example.service.registration.RegistrationService
 import doobie.util.ExecutionContexts
 import org.http4s.server.{Server => BlazeServer}
 import sttp.tapir.swagger.http4s.SwaggerHttp4s
@@ -28,7 +28,7 @@ object Application extends IOApp {
       userDao    = UserDao()
       hashEngine = SCryptEngine[F]()
       regService = RegistrationService[F, SCrypt](userDao, hashEngine, transactor)
-      userApi    = UserApi[F](regService)
+      userApi    = RegistrationApi[F](regService)
       docs       = OpenApi(config.app, BuildInfo.version)
       swaggerApi = new SwaggerHttp4s(docs.yaml)
       server     <- Server[F](config, userApi.routes <+> swaggerApi.routes).resource
