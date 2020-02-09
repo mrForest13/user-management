@@ -4,7 +4,7 @@ import sbt.Keys._
 object Dependencies {
 
   private object Versions {
-    val cats       = "1.5.0"
+    val cats       = "2.0.0"
     val circe      = "0.12.2"
     val fuuid      = "0.2.0"
     val tapir      = "0.12.20"

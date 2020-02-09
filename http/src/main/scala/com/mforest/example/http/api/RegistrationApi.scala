@@ -10,9 +10,9 @@ class RegistrationApi[F[_]: Sync: ContextShift](registrationService: Registratio
     extends Api[F]
     with RegistrationApiDoc {
 
-  def routes: HttpRoutes[F] = addUser
+  def routes: HttpRoutes[F] = registerUser
 
-  private val addUser: HttpRoutes[F] = addUserEndpoint.toRoutes { req =>
+  private val registerUser: HttpRoutes[F] = registerUserEndpoint.toRoutes { req =>
     complete {
       validate(req).flatMap { user =>
         registrationService.register(user)
