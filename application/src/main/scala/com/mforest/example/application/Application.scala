@@ -1,20 +1,18 @@
 package com.mforest.example.application
 
 import cats.Functor.ops.toAllFunctorOps
-import cats.SemigroupK.nonInheritedOps._
 import cats.effect.{ConcurrentEffect, ContextShift, ExitCode, IO, IOApp, Resource, Timer}
 import com.mforest.example.application.info.BuildInfo
 import com.mforest.example.application.layer.DaoLayer
 import com.mforest.example.core.ConfigLoader
 import com.mforest.example.db.Database
 import com.mforest.example.http.Server
-import com.mforest.example.http.api.{LoginApi, RegistrationApi}
-import com.mforest.example.http.swagger.OpenApi
+import com.mforest.example.http.api.{LoginApi, RegistrationApi, SwaggerApi}
+import com.mforest.example.http.yaml.OpenApi
 import com.mforest.example.service.hash.SCryptEngine
 import com.mforest.example.service.registration.RegistrationService
 import doobie.util.ExecutionContexts
 import org.http4s.server.{Server => BlazeServer}
-import sttp.tapir.swagger.http4s.SwaggerHttp4s
 import tsec.passwordhashers.jca.SCrypt
 
 object Application extends IOApp with DaoLayer {
@@ -27,11 +25,11 @@ object Application extends IOApp with DaoLayer {
       transactor <- Database[F](config.database).transactor(connEc, txnEc)
       hashEngine = SCryptEngine[F]()
       regService = RegistrationService[F, SCrypt](userDao, hashEngine, transactor)
-      docs       = OpenApi(config.app, BuildInfo.version)
       loginApi   = LoginApi[F]()
       regApi     = RegistrationApi[F](regService)
-      swaggerApi = new SwaggerHttp4s(docs.yaml)
-      server     <- Server[F](config, regApi.routes <+> swaggerApi.routes <+> loginApi.routes).resource
+      docs       = OpenApi(config.app, BuildInfo.version)
+      swaggerApi = SwaggerApi(docs.yaml)
+      server     <- Server[F](config, regApi, loginApi, swaggerApi).resource
     } yield server
   }
 

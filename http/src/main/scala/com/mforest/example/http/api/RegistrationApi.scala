@@ -10,7 +10,7 @@ class RegistrationApi[F[_]: Sync: ContextShift](registrationService: Registratio
     extends Api[F]
     with RegistrationApiDoc {
 
-  def routes: HttpRoutes[F] = registerUser
+  override def routes: HttpRoutes[F] = registerUser
 
   private val registerUser: HttpRoutes[F] = registerUserEndpoint.toRoutes { req =>
     complete {

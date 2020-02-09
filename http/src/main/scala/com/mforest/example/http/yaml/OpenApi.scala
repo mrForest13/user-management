@@ -1,4 +1,4 @@
-package com.mforest.example.http.swagger
+package com.mforest.example.http.yaml
 
 import cats.syntax.option._
 import com.mforest.example.core.config.app.AppConfig

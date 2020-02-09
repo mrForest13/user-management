@@ -9,7 +9,7 @@ import org.http4s.HttpRoutes
 
 class LoginApi[F[_]: Sync: ContextShift] extends Api[F] with LoginApiDoc {
 
-  def routes: HttpRoutes[F] = registerUser
+  override def routes: HttpRoutes[F] = registerUser
 
   private val registerUser: HttpRoutes[F] = loginUserEndpoint.toRoutes { credentials =>
     complete {
