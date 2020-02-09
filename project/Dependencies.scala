@@ -14,8 +14,9 @@ object Dependencies {
     val doobie     = "0.7.1"
     val webjars    = "3.22.0"
     val log4Cats   = "1.0.1"
-    val pureConfig = "0.12.2"
     val scalaTest  = "3.1.0"
+    val quicklens  = "1.4.12"
+    val pureConfig = "0.12.2"
   }
 
   private val config: Seq[ModuleID] = Seq(
@@ -75,7 +76,8 @@ object Dependencies {
   )
 
   private val test: Seq[ModuleID] = Seq(
-    "org.scalatest" %% "scalatest" % Versions.scalaTest % Test
+    "com.softwaremill.quicklens" %% "quicklens" % Versions.quicklens % Test,
+    "org.scalatest"              %% "scalatest" % Versions.scalaTest % Test
   )
 
   val application: Seq[ModuleID] = test ++ logging

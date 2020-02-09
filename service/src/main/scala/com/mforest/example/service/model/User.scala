@@ -1,4 +1,4 @@
-package com.mforest.example.service.user
+package com.mforest.example.service.model
 
 import cats.implicits._
 import com.mforest.example.core.error.Error.ValidationError

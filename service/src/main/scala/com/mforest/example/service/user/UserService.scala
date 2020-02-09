@@ -8,6 +8,7 @@ import com.mforest.example.core.error.Error.ConflictError
 import com.mforest.example.db.dao.UserDao
 import com.mforest.example.db.model.UserRow
 import com.mforest.example.service.Service
+import com.mforest.example.service.model.User
 import doobie.implicits.AsyncConnectionIO
 import doobie.util.transactor.Transactor
 import io.chrisdavenport.fuuid.FUUID

@@ -3,7 +3,7 @@ package com.mforest.example.http.doc
 import com.mforest.example.core.error.Error
 import com.mforest.example.http.Doc
 import com.mforest.example.http.response.StatusResponse
-import com.mforest.example.service.user.User
+import com.mforest.example.service.model.User
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
 
