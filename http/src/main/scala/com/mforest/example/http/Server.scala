@@ -4,8 +4,8 @@ import cats.SemigroupK.nonInheritedOps._
 import cats.effect.{ConcurrentEffect, ContextShift, Resource, Timer}
 import com.mforest.example.core.config.Config
 import org.http4s.HttpRoutes
-import org.http4s.server.{Server => BlazeServer}
 import org.http4s.server.blaze.BlazeServerBuilder
+import org.http4s.server.{Server => BlazeServer}
 import org.http4s.syntax.KleisliSyntax
 
 class Server[F[_]: ContextShift: ConcurrentEffect: Timer](config: Config, apis: Seq[Api[F]]) extends KleisliSyntax {

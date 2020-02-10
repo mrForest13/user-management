@@ -1,7 +1,7 @@
-package com.mforest.example.service.form
+package com.mforest.example.http.form
 
 import cats.implicits._
-import com.mforest.example.core.validation._
+import com.mforest.example.core.validation.validate
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -12,8 +12,9 @@ class RegistrationFormSpec extends AnyWordSpec with Matchers {
     "call validate" must {
 
       "respond with user for valid data" in {
+        val formMock = RegistrationFormSpec.formMock
 
-        validate(RegistrationFormSpec.userMock) shouldBe RegistrationFormSpec.userMock.valid
+        validate(formMock) shouldBe formMock.valid
       }
     }
   }
@@ -21,7 +22,7 @@ class RegistrationFormSpec extends AnyWordSpec with Matchers {
 
 object RegistrationFormSpec {
 
-  private val userMock = RegistrationForm(
+  private val formMock = RegistrationForm(
     email = "john.smith@gmail.com",
     password = "example",
     firstName = "john",

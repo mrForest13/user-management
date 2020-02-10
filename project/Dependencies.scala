@@ -63,7 +63,8 @@ object Dependencies {
 
   private val tsecV: Seq[ModuleID] = Seq(
     "io.github.jmcardon" %% "tsec-common"   % Versions.tsecV,
-    "io.github.jmcardon" %% "tsec-password" % Versions.tsecV
+    "io.github.jmcardon" %% "tsec-password" % Versions.tsecV,
+    "io.github.jmcardon" %% "tsec-http4s"   % Versions.tsecV
   )
 
   private val tapir: Seq[ModuleID] = Seq(

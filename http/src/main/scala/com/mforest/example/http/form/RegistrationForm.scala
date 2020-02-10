@@ -1,8 +1,9 @@
-package com.mforest.example.service.form
+package com.mforest.example.http.form
 
 import cats.implicits._
 import com.mforest.example.core.error.Error.ValidationError
 import com.mforest.example.core.validation.Validator
+import com.mforest.example.service.model.User
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
@@ -14,7 +15,20 @@ final case class RegistrationForm(
     city: String,
     country: String,
     phone: String
-)
+) {
+
+  def toDto: User = {
+    User(
+      email = email,
+      password = password,
+      firstName = firstName,
+      lastName = lastName,
+      city = city,
+      country = country,
+      phone = phone
+    )
+  }
+}
 
 object RegistrationForm {
 

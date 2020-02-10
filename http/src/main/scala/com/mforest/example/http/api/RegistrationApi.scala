@@ -3,6 +3,7 @@ package com.mforest.example.http.api
 import cats.effect.{ContextShift, Sync}
 import com.mforest.example.http.Api
 import com.mforest.example.http.doc.RegistrationApiDoc
+import com.mforest.example.http.response.StatusResponse
 import com.mforest.example.service.registration.RegistrationService
 import org.http4s.HttpRoutes
 
@@ -12,12 +13,11 @@ class RegistrationApi[F[_]: Sync: ContextShift](registrationService: Registratio
 
   override def routes: HttpRoutes[F] = registerUser
 
-  private val registerUser: HttpRoutes[F] = registerUserEndpoint.toRoutes { req =>
-    complete {
-      validate(req).flatMap { user =>
-        registrationService.register(user)
-      }
-    }
+  private val registerUser: HttpRoutes[F] = registerUserEndpoint.toRoutes { request =>
+    validate(request)
+      .map(_.toDto)
+      .flatMap(registrationService.register)
+      .bimap(StatusResponse.fail, StatusResponse.ok)
   }
 }
 

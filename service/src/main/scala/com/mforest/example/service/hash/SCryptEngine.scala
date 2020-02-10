@@ -1,7 +1,7 @@
 package com.mforest.example.service.hash
 
-import cats.implicits._
 import cats.effect.Sync
+import cats.implicits._
 import io.chrisdavenport.fuuid.FUUID
 import tsec.common.VerificationStatus
 import tsec.passwordhashers.PasswordHash

@@ -2,8 +2,8 @@ package com.mforest.example.http.doc
 
 import com.mforest.example.core.error.Error
 import com.mforest.example.http.Doc
+import com.mforest.example.http.form.RegistrationForm
 import com.mforest.example.http.response.StatusResponse
-import com.mforest.example.service.form.RegistrationForm
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
 
@@ -18,7 +18,7 @@ trait RegistrationApiDoc extends Doc {
       .in("users")
       .in(
         jsonBody[RegistrationForm]
-          .example(RegistrationApiDoc.user)
+          .example(RegistrationApiDoc.form)
       )
       .out(
         oneOf(
@@ -26,7 +26,7 @@ trait RegistrationApiDoc extends Doc {
             StatusCode.Created,
             jsonBody[StatusResponse.Ok[String]]
               .example(
-                StatusResponse.ok(s"The user with email john.smith@gmail.com has been created")
+                StatusResponse.Ok(s"The user with email john.smith@gmail.com has been created")
               )
           )
         )
@@ -37,28 +37,28 @@ trait RegistrationApiDoc extends Doc {
             StatusCode.Conflict,
             jsonBody[StatusResponse.Fail[Error.ConflictError]]
               .example(
-                StatusResponse.fail(Error.ConflictError("User with email example@gmail.com already exists!"))
+                StatusResponse.Fail(Error.ConflictError("User with email example@gmail.com already exists!"))
               )
           ),
           statusMappingFromMatchType(
             StatusCode.ServiceUnavailable,
             jsonBody[StatusResponse.Fail[Error.UnavailableError]]
               .example(
-                StatusResponse.fail(Error.UnavailableError("The server is currently unavailable!"))
+                StatusResponse.Fail(Error.UnavailableError("The server is currently unavailable!"))
               )
           ),
           statusMappingFromMatchType(
             StatusCode.BadRequest,
             jsonBody[StatusResponse.Fail[Error.ValidationError]]
               .example(
-                StatusResponse.fail(Error.ValidationError("Email cannot be empty!"))
+                StatusResponse.Fail(Error.ValidationError("Email cannot be empty!"))
               )
           ),
           statusMappingFromMatchType(
             StatusCode.InternalServerError,
             jsonBody[StatusResponse.Fail[Error.InternalError]]
               .example(
-                StatusResponse.fail(Error.InternalError("There was an internal server error!"))
+                StatusResponse.Fail(Error.InternalError("There was an internal server error!"))
               )
           )
         )
@@ -68,7 +68,7 @@ trait RegistrationApiDoc extends Doc {
 
 object RegistrationApiDoc {
 
-  private val user = RegistrationForm(
+  private val form = RegistrationForm(
     email = "john.smith@gmail.com",
     password = "example",
     firstName = "john",

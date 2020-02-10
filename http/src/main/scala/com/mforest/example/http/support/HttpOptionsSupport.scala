@@ -1,4 +1,4 @@
-package com.mforest.example.http.validation
+package com.mforest.example.http.support
 
 import cats.effect.{ContextShift, Sync}
 import com.mforest.example.http.response.StatusResponse
@@ -8,7 +8,7 @@ import sttp.tapir.server.http4s.{Http4sServerOptions, TapirHttp4sServer}
 import sttp.tapir.server.{DecodeFailureHandling, DefaultDecodeFailureHandler, ServerDefaults}
 import sttp.tapir.{EndpointOutput, Tapir}
 
-trait HttpServerOptions extends Tapir with TapirJsonCirce {
+trait HttpOptionsSupport extends Tapir with TapirJsonCirce {
   this: TapirHttp4sServer =>
 
   private val failureOutput: EndpointOutput[(StatusCode, StatusResponse.Fail[String])] = {
