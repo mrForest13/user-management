@@ -37,7 +37,7 @@ trait RegistrationApiDoc extends Doc {
             StatusCode.Conflict,
             jsonBody[StatusResponse.Fail[Error.ConflictError]]
               .example(
-                StatusResponse.Fail(Error.ConflictError("User with email example@gmail.com already exists!"))
+                StatusResponse.Fail(Error.ConflictError("The user with email example@gmail.com already exists!"))
               )
           ),
           statusMappingFromMatchType(

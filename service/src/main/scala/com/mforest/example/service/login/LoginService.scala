@@ -7,7 +7,7 @@ import cats.effect.Async
 import com.mforest.example.core.error.Error
 import com.mforest.example.core.error.Error.UnauthorizedError
 import com.mforest.example.db.dao.UserDao
-import com.mforest.example.db.model.UserRow
+import com.mforest.example.db.row.UserRow
 import com.mforest.example.service.Service
 import com.mforest.example.service.hash.HashEngine
 import com.mforest.example.service.model.Credentials

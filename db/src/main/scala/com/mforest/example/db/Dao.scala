@@ -4,5 +4,5 @@ import doobie.ConnectionIO
 
 trait Dao[Row] {
 
-  def insert(user: Row): ConnectionIO[Int]
+  def insert(row: Row): ConnectionIO[Int]
 }

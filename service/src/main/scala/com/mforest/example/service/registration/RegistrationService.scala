@@ -6,7 +6,7 @@ import cats.effect.Async
 import com.mforest.example.core.error.Error
 import com.mforest.example.core.error.Error.ConflictError
 import com.mforest.example.db.dao.UserDao
-import com.mforest.example.db.model.UserRow
+import com.mforest.example.db.row.UserRow
 import com.mforest.example.service.Service
 import com.mforest.example.service.hash.HashEngine
 import com.mforest.example.service.model.User
@@ -25,7 +25,7 @@ class RegistrationServiceImpl[F[_]: Async, A](dao: UserDao, hashEngine: HashEngi
     extends RegistrationService[F] {
 
   private val created  = (email: String) => s"The user with email $email has been created"
-  private val conflict = (email: String) => s"User with email $email already exists!"
+  private val conflict = (email: String) => s"The user with email $email already exists!"
 
   override def register(user: User): EitherT[F, Error, String] = {
     for {

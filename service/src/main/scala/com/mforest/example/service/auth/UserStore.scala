@@ -3,7 +3,7 @@ package com.mforest.example.service.auth
 import cats.data.OptionT
 import cats.effect.{Async, Sync}
 import com.mforest.example.db.dao.UserDao
-import com.mforest.example.db.model.UserRow
+import com.mforest.example.db.row.UserRow
 import doobie.syntax.ToConnectionIOOps
 import doobie.util.transactor.Transactor
 import io.chrisdavenport.fuuid.FUUID

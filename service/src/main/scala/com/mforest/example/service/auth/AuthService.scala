@@ -2,7 +2,7 @@ package com.mforest.example.service.auth
 
 import cats.effect.Async
 import com.mforest.example.db.dao.UserDao
-import com.mforest.example.db.model.UserRow
+import com.mforest.example.db.row.UserRow
 import com.mforest.example.service.Service
 import doobie.util.transactor.Transactor
 import io.chrisdavenport.fuuid.FUUID

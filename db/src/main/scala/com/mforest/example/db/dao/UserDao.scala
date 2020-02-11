@@ -4,7 +4,7 @@ import cats.Id
 import cats.data.OptionT
 import com.mforest.example.db.Dao
 import com.mforest.example.db.instances.CustomInstances
-import com.mforest.example.db.model.UserRow
+import com.mforest.example.db.row.UserRow
 import doobie.free.connection.ConnectionIO
 import doobie.syntax.AllSyntax
 import doobie.util.query.Query0
@@ -19,8 +19,8 @@ trait UserDao extends Dao[UserRow] {
 
 class UserDaoImpl extends UserDao with CustomInstances with AllSyntax {
 
-  def insert(user: UserRow): ConnectionIO[Int] = {
-    Query.insert(user).run
+  def insert(row: UserRow): ConnectionIO[Int] = {
+    Query.insert(row).run
   }
 
   def find(id: Id[FUUID]): OptionT[ConnectionIO, UserRow] = OptionT {
