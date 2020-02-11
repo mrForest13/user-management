@@ -1,5 +1,6 @@
 package com.mforest.example.db.dao
 
+import cats.Id
 import cats.data.OptionT
 import com.mforest.example.db.Dao
 import com.mforest.example.db.instances.CustomInstances
@@ -8,9 +9,11 @@ import doobie.free.connection.ConnectionIO
 import doobie.syntax.AllSyntax
 import doobie.util.query.Query0
 import doobie.util.update.Update0
+import io.chrisdavenport.fuuid.FUUID
 
 trait UserDao extends Dao[UserRow] {
 
+  def find(id: Id[FUUID]): OptionT[ConnectionIO, UserRow]
   def find(email: String): OptionT[ConnectionIO, UserRow]
 }
 
@@ -18,6 +21,10 @@ class UserDaoImpl extends UserDao with CustomInstances with AllSyntax {
 
   def insert(user: UserRow): ConnectionIO[Int] = {
     Query.insert(user).run
+  }
+
+  def find(id: Id[FUUID]): OptionT[ConnectionIO, UserRow] = OptionT {
+    Query.select(id).option
   }
 
   def find(email: String): OptionT[ConnectionIO, UserRow] = OptionT {
@@ -36,6 +43,12 @@ class UserDaoImpl extends UserDao with CustomInstances with AllSyntax {
       SELECT ID, EMAIL, HASH, SALT, FIRST_NAME, LAST_NAME, CITY, COUNTRY, PHONE
       FROM USERS
       WHERE EMAIL = $email
+    """.query
+
+    def select(id: Id[FUUID]): Query0[UserRow] = sql"""
+      SELECT ID, EMAIL, HASH, SALT, FIRST_NAME, LAST_NAME, CITY, COUNTRY, PHONE
+      FROM USERS
+      WHERE ID = $id
     """.query
   }
 }

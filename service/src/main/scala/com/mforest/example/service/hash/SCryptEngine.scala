@@ -1,7 +1,6 @@
 package com.mforest.example.service.hash
 
 import cats.effect.Sync
-import cats.implicits._
 import io.chrisdavenport.fuuid.FUUID
 import tsec.common.VerificationStatus
 import tsec.passwordhashers.PasswordHash
@@ -13,11 +12,8 @@ class SCryptEngine[F[_]: Sync] extends HashEngine[F, SCrypt] {
     hashpw[F](concat(password, salt))
   }
 
-  override def checkPassword(password: String, hash: String, salt: FUUID): F[VerificationStatus] = {
-    for {
-      hash  <- hashPassword(password, salt)
-      check <- checkpw[F](concat(password, salt), hash)
-    } yield check
+  override def checkPassword(password: String, salt: FUUID, hash: String): F[VerificationStatus] = {
+    checkpw[F](concat(password, salt), PasswordHash[SCrypt](hash))
   }
 }
 

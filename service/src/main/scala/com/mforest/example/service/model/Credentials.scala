@@ -1,3 +1,3 @@
 package com.mforest.example.service.model
 
-final case class Credentials(username: String, password: Option[String])
+final case class Credentials(email: String, password: String)
