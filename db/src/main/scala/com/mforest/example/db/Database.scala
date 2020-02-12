@@ -11,7 +11,7 @@ class Database[F[_]: Async: ContextShift](config: DatabaseConfig) {
   def transactor(connEc: ExecutionContext, txnEc: ExecutionContext): Resource[F, HikariTransactor[F]] =
     HikariTransactor.newHikariTransactor[F](
       driverClassName = config.driver,
-      url = config.url,
+      url = config.postgresUrl,
       user = config.user,
       pass = config.password,
       connectEC = connEc,

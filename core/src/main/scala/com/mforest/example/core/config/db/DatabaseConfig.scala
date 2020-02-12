@@ -10,5 +10,5 @@ final case class DatabaseConfig(
     poolSize: Int
 ) {
 
-  val url: String = s"jdbc:postgresql://$host:$port/$schema"
+  val postgresUrl: String = s"jdbc:postgresql://$host:$port/$schema"
 }

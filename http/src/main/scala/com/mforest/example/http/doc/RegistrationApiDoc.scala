@@ -24,39 +24,39 @@ trait RegistrationApiDoc extends Doc {
         oneOf(
           statusMappingFromMatchType(
             StatusCode.Created,
-            jsonBody[StatusResponse.Ok[String]]
+            jsonBody[Ok[String]]
               .example(
-                StatusResponse.Ok(s"The user with email john.smith@gmail.com has been created")
+                StatusResponse.Ok("The user with email john.smith@gmail.com has been created")
               )
           )
         )
       )
       .errorOut(
-        oneOf[StatusResponse.Fail[Error]](
+        oneOf[Fail[Error]](
           statusMappingFromMatchType(
             StatusCode.Conflict,
-            jsonBody[StatusResponse.Fail[Error.ConflictError]]
+            jsonBody[Fail[Error.ConflictError]]
               .example(
                 StatusResponse.Fail(Error.ConflictError("The user with email example@gmail.com already exists!"))
               )
           ),
           statusMappingFromMatchType(
             StatusCode.ServiceUnavailable,
-            jsonBody[StatusResponse.Fail[Error.UnavailableError]]
+            jsonBody[Fail[Error.UnavailableError]]
               .example(
                 StatusResponse.Fail(Error.UnavailableError("The server is currently unavailable!"))
               )
           ),
           statusMappingFromMatchType(
             StatusCode.BadRequest,
-            jsonBody[StatusResponse.Fail[Error.ValidationError]]
+            jsonBody[Fail[Error.ValidationError]]
               .example(
                 StatusResponse.Fail(Error.ValidationError("Email cannot be empty!"))
               )
           ),
           statusMappingFromMatchType(
             StatusCode.InternalServerError,
-            jsonBody[StatusResponse.Fail[Error.InternalError]]
+            jsonBody[Fail[Error.InternalError]]
               .example(
                 StatusResponse.Fail(Error.InternalError("There was an internal server error!"))
               )

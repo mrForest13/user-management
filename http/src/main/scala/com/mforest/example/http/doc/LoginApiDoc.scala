@@ -10,8 +10,7 @@ import sttp.tapir.model.UsernamePassword
 
 trait LoginApiDoc extends Doc {
 
-  type LoginResult =
-    Endpoint[UsernamePassword, StatusResponse.Fail[Error], (BarerToken, StatusResponse.Ok[String]), Nothing]
+  type LoginResult = Endpoint[UsernamePassword, Fail[Error], (BarerToken, Ok[String]), Nothing]
 
   val loginUserEndpoint: LoginResult = {
     endpoint.get
@@ -24,7 +23,7 @@ trait LoginApiDoc extends Doc {
         oneOf(
           statusMappingFromMatchType(
             StatusCode.Ok,
-            jsonBody[StatusResponse.Ok[String]]
+            jsonBody[Ok[String]]
               .example(
                 StatusResponse.Ok(s"Login succeeded")
               )
@@ -32,24 +31,24 @@ trait LoginApiDoc extends Doc {
         )
       )
       .errorOut(
-        oneOf[StatusResponse.Fail[Error]](
+        oneOf[Fail[Error]](
           statusMappingFromMatchType(
             StatusCode.Unauthorized,
-            jsonBody[StatusResponse.Fail[Error.UnauthorizedError]]
+            jsonBody[Fail[Error.UnauthorizedError]]
               .example(
                 StatusResponse.Fail(Error.UnauthorizedError("Wrong email or password!"))
               )
           ),
           statusMappingFromMatchType(
             StatusCode.ServiceUnavailable,
-            jsonBody[StatusResponse.Fail[Error.UnavailableError]]
+            jsonBody[Fail[Error.UnavailableError]]
               .example(
                 StatusResponse.Fail(Error.UnavailableError("The server is currently unavailable!"))
               )
           ),
           statusMappingFromMatchType(
             StatusCode.InternalServerError,
-            jsonBody[StatusResponse.Fail[Error.InternalError]]
+            jsonBody[Fail[Error.InternalError]]
               .example(
                 StatusResponse.Fail(Error.InternalError("There was an internal server error!"))
               )

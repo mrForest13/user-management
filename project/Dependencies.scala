@@ -90,5 +90,4 @@ object Dependencies {
   implicit class ModuleSettings(modules: Seq[ModuleID]) {
     def asSettings: Seq[Def.Setting[_]] = Seq(libraryDependencies ++= modules)
   }
-
 }
