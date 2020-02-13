@@ -13,7 +13,6 @@ import com.mforest.example.service.model.User
 import doobie.implicits.AsyncConnectionIO
 import doobie.util.transactor.Transactor
 import io.chrisdavenport.fuuid.FUUID
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import tsec.passwordhashers.PasswordHash
 
 trait RegistrationService[F[_]] extends Service {
@@ -29,15 +28,12 @@ class RegistrationServiceImpl[F[_]: Async, A](dao: UserDao, hashEngine: HashEngi
 
   override def register(user: User): EitherT[F, Error, String] = {
     for {
-      logger <- right(Slf4jLogger.create[F])
-      id     <- right(FUUID.randomFUUID[F])
-      salt   <- right(FUUID.randomFUUID[F])
-      hash   <- right(hashPassword(user.password, salt))
-      row    = prepareRow(id, salt, hash, user)
-      _      <- insertUser(row)
-      info   = created(user.email)
-      _      <- right(logger.info(info))
-    } yield info
+      id   <- right(FUUID.randomFUUID[F])
+      salt <- right(FUUID.randomFUUID[F])
+      hash <- right(hashPassword(user.password, salt))
+      row  = prepareRow(id, salt, hash, user)
+      _    <- insertUser(row)
+    } yield created(user.email)
   }
 
   private def insertUser(row: UserRow): EitherT[F, Error, Int] = {

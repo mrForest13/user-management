@@ -7,10 +7,11 @@ import com.mforest.example.http.token.BarerToken
 import io.chrisdavenport.fuuid.FUUID
 import sttp.tapir.Codec.PlainCodec
 import sttp.tapir.SchemaType.SString
+import sttp.tapir.codec.cats.TapirCodecCats
 import sttp.tapir.json.circe.TapirJsonCirce
 import sttp.tapir.{Codec, Schema, Tapir}
 
-trait Doc extends Tapir with TapirJsonCirce {
+trait Doc extends Tapir with TapirJsonCirce with TapirCodecCats {
 
   type Ok[T]   = StatusResponse.Ok[T]
   type Fail[T] = StatusResponse.Fail[T]

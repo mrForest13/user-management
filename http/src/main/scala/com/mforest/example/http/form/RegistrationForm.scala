@@ -1,6 +1,6 @@
 package com.mforest.example.http.form
 
-import cats.implicits._
+import cats.implicits.catsSyntaxValidatedId
 import com.mforest.example.core.error.Error.ValidationError
 import com.mforest.example.core.validation.Validator
 import com.mforest.example.service.model.User

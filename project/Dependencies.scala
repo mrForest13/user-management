@@ -69,6 +69,7 @@ object Dependencies {
 
   private val tapir: Seq[ModuleID] = Seq(
     "com.softwaremill.sttp.tapir" %% "tapir-core"               % Versions.tapir,
+    "com.softwaremill.sttp.tapir" %% "tapir-cats"               % Versions.tapir,
     "com.softwaremill.sttp.tapir" %% "tapir-json-circe"         % Versions.tapir,
     "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs"       % Versions.tapir,
     "com.softwaremill.sttp.tapir" %% "tapir-http4s-server"      % Versions.tapir,

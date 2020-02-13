@@ -1,4 +1,4 @@
-package com.mforest.example.db.instances
+package com.mforest.example.db.custom
 
 import doobie.postgres.Instances
 import doobie.util.Meta

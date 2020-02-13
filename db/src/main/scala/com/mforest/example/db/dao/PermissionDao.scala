@@ -1,40 +1,71 @@
 package com.mforest.example.db.dao
 
-import cats.data.OptionT
+import cats.Id
+import cats.data.{Chain, OptionT}
+import com.mforest.example.core.model.Pagination
 import com.mforest.example.db.Dao
-import com.mforest.example.db.instances.CustomInstances
 import com.mforest.example.db.row.PermissionRow
 import doobie.free.connection.ConnectionIO
-import doobie.syntax.AllSyntax
 import doobie.util.query.Query0
 import doobie.util.update.Update0
+import io.chrisdavenport.fuuid.FUUID
 
-trait PermissionDao extends Dao[PermissionRow] {
+trait PermissionDao extends Dao[Id[FUUID], PermissionRow] {
 
   def find(name: String): OptionT[ConnectionIO, PermissionRow]
+  def find(pagination: Pagination): ConnectionIO[Chain[PermissionRow]]
+  def delete(id: Id[FUUID]): ConnectionIO[Int]
 }
 
-class PermissionDaoImpl extends PermissionDao with CustomInstances with AllSyntax {
+class PermissionDaoImpl extends PermissionDao {
 
   override def insert(row: PermissionRow): ConnectionIO[Int] = {
     Query.insert(row).run
   }
 
-  def find(name: String): OptionT[ConnectionIO, PermissionRow] = OptionT {
+  override def find(id: Id[FUUID]): OptionT[ConnectionIO, PermissionRow] = OptionT {
+    Query.select(id).option
+  }
+
+  override def find(name: String): OptionT[ConnectionIO, PermissionRow] = OptionT {
     Query.select(name).option
   }
 
-  private object Query {
+  override def find(pagination: Pagination): ConnectionIO[Chain[PermissionRow]] = {
+    Query.select(pagination).to[Chain]
+  }
+
+  override def delete(id: Id[FUUID]): ConnectionIO[Int] = {
+    Query.delete(id).run
+  }
+
+  private object Query extends Query {
 
     def insert(permission: PermissionRow): Update0 = sql"""
-      INSERT INTO PERMISSIONS (ID, NAME)
-      VALUES (${permission.id}, ${permission.name})
+      INSERT INTO PERMISSIONS (ID, NAME) VALUES (${permission.id}, ${permission.name})
+    """.update
+
+    def select(id: Id[FUUID]): Query0[PermissionRow] = sql"""
+      SELECT ID, NAME FROM PERMISSIONS WHERE ID = $id
+    """.query
+
+    def delete(id: Id[FUUID]): Update0 = sql"""
+      DELETE FROM PERMISSIONS WHERE ID = $id
     """.update
 
     def select(name: String): Query0[PermissionRow] = sql"""
-      SELECT ID, NAME
-      FROM PERMISSIONS
-      WHERE NAME = $name
+      SELECT ID, NAME FROM PERMISSIONS WHERE NAME = $name
+    """.query
+
+    def select(pagination: Pagination): Query0[PermissionRow] = sql"""
+      SELECT ID, NAME FROM PERMISSIONS
+      ORDER BY CREATED_AT ASC
+      LIMIT ${pagination.size} OFFSET ${pagination.offset}
     """.query
   }
+}
+
+object PermissionDao {
+
+  def apply(): PermissionDao = new PermissionDaoImpl()
 }

@@ -2,6 +2,7 @@ package com.mforest.example.http.doc
 
 import java.util.UUID
 
+import cats.data.Chain
 import cats.syntax.option._
 import com.mforest.example.core.error.Error
 import com.mforest.example.http.Doc
@@ -122,8 +123,7 @@ trait PermissionApiDoc extends Doc {
       )
   }
 
-  type FindParams     = (Option[Int], Option[Int], Option[String])
-  type FindPermission = Endpoint[FindParams, Fail[Error], Ok[List[PermissionDto]], Nothing]
+  type FindPermission = Endpoint[(Option[Int], Option[Int]), Fail[Error], Ok[Chain[PermissionDto]], Nothing]
 
   val findPermissionEndpoint: FindPermission = {
     endpoint.get
@@ -132,18 +132,17 @@ trait PermissionApiDoc extends Doc {
       .in("permissions")
       .in(query[Option[Int]]("size").example(10.some))
       .in(query[Option[Int]]("page").example(0.some))
-      .in(query[Option[String]]("name"))
       .out(
         oneOf(
           statusMappingClassMatcher(
             StatusCode.Ok,
-            jsonBody[Ok[List[PermissionDto]]]
+            jsonBody[Ok[Chain[PermissionDto]]]
               .example(
                 StatusResponse.Ok(
-                  List(PermissionApiDoc.dto, PermissionApiDoc.dto)
+                  Chain(PermissionApiDoc.dto, PermissionApiDoc.dto, PermissionApiDoc.dto)
                 )
               ),
-            classOf[Ok[List[PermissionDto]]]
+            classOf[Ok[Chain[PermissionDto]]]
           )
         )
       )
