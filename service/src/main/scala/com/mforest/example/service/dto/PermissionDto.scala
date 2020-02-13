@@ -8,7 +8,7 @@ import io.chrisdavenport.fuuid.FUUID
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
-case class PermissionDto(id: Id[FUUID], name: String)
+final case class PermissionDto(id: Id[FUUID], name: String)
 
 object PermissionDto extends FuuidFormatter {
 

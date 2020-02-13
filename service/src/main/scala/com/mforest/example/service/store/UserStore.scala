@@ -1,7 +1,7 @@
-package com.mforest.example.service.auth
+package com.mforest.example.service.store
 
 import cats.data.OptionT
-import cats.effect.{Async, Sync}
+import cats.effect.Sync
 import com.mforest.example.db.dao.UserDao
 import com.mforest.example.db.row.UserRow
 import doobie.syntax.ToConnectionIOOps
@@ -20,7 +20,7 @@ class UserStore[F[_]: Sync](userDao: UserDao, transactor: Transactor[F])
 
 object UserStore {
 
-  def apply[F[_]: Async](userDao: UserDao, transactor: Transactor[F]): UserStore[F] = {
+  def apply[F[_]: Sync](userDao: UserDao, transactor: Transactor[F]): UserStore[F] = {
     new UserStore(userDao, transactor)
   }
 }

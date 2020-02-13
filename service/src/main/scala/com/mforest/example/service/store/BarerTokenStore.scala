@@ -1,4 +1,4 @@
-package com.mforest.example.service.auth
+package com.mforest.example.service.store
 
 import cats.data.OptionT
 import cats.effect.Sync
@@ -9,7 +9,7 @@ import tsec.common.SecureRandomId
 import scala.collection.mutable
 
 //FIXME move to redis or postgres
-class TokenStore[F[_]](implicit F: Sync[F]) extends BackingStore[F, SecureRandomId, TSecBearerToken[FUUID]] {
+class BarerTokenStore[F[_]](implicit F: Sync[F]) extends BackingStore[F, SecureRandomId, TSecBearerToken[FUUID]] {
 
   private val storageMap = mutable.HashMap.empty[SecureRandomId, TSecBearerToken[FUUID]]
 
@@ -38,7 +38,7 @@ class TokenStore[F[_]](implicit F: Sync[F]) extends BackingStore[F, SecureRandom
   }
 }
 
-object TokenStore {
+object BarerTokenStore {
 
-  def apply[F[_]: Sync]: TokenStore[F] = new TokenStore
+  def apply[F[_]: Sync]: BackingStore[F, SecureRandomId, TSecBearerToken[FUUID]] = new BarerTokenStore
 }

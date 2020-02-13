@@ -11,7 +11,7 @@ import com.mforest.example.core.model.Pagination
 import com.mforest.example.db.dao.PermissionDao
 import com.mforest.example.db.row.PermissionRow
 import com.mforest.example.service.Service
-import com.mforest.example.service.converter.DtoConverter.DtoChainConverterHelper
+import com.mforest.example.service.converter.DtoConverter.DtoChainConverter
 import com.mforest.example.service.dto.PermissionDto
 import com.mforest.example.service.model.Permission
 import doobie.implicits.AsyncConnectionIO

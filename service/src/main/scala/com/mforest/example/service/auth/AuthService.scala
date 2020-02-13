@@ -1,32 +1,38 @@
 package com.mforest.example.service.auth
 
-import cats.effect.Async
+import cats.effect.Sync
+import com.mforest.example.core.config.auth.TokenConfig
 import com.mforest.example.db.dao.UserDao
-import com.mforest.example.db.row.UserRow
 import com.mforest.example.service.Service
+import com.mforest.example.service.store.{BarerTokenStore, UserStore}
 import doobie.util.transactor.Transactor
-import io.chrisdavenport.fuuid.FUUID
-import tsec.authentication.{BackingStore, BearerTokenAuthenticator, IdentityStore, TSecBearerToken, TSecTokenSettings}
-import tsec.common.SecureRandomId
+import tsec.authentication.{Authenticator, BearerTokenAuthenticator, TSecBearerToken, TSecTokenSettings}
 
-import scala.concurrent.duration._
+trait AuthService[F[_], I, V, A] extends Service {
 
-trait AuthService extends Service
+  def create(identity: I): F[A]
+}
 
-class AuthServiceImpl[F[_]: Async](userDao: UserDao, transactor: Transactor[F]) extends AuthService {
+class AuthServiceImpl[F[_]: Sync, I, V, A](val authenticator: Authenticator[F, I, V, A])
+    extends AuthService[F, I, V, A] {
 
-  val settings: TSecTokenSettings = TSecTokenSettings(
-    expiryDuration = 10.minutes,
-    maxIdle = None
-  )
+  override def create(identity: I): F[A] = {
+    authenticator.create(identity)
+  }
+}
 
-  val tokenStore: BackingStore[F, SecureRandomId, TSecBearerToken[FUUID]] = TokenStore[F]
-  val userStore: IdentityStore[F, FUUID, UserRow]                         = UserStore[F](userDao, transactor)
+object AuthService {
 
-  val bearerTokenAuth: BearerTokenAuthenticator[F, FUUID, UserRow] =
-    BearerTokenAuthenticator(tokenStore, userStore, settings)
+  def apply[F[_]: Sync, I, V](
+      userDao: UserDao,
+      transactor: Transactor[F],
+      config: TokenConfig
+  ): AuthService[F, I, V, TSecBearerToken[I]] = {
 
-  def createToken(id: FUUID): F[TSecBearerToken[FUUID]] = {
-    bearerTokenAuth.create(id)
+    val tokenStore    = BarerTokenStore[F]
+    val identityStore = UserStore[F](userDao, transactor)
+    val settings      = TSecTokenSettings(config.expiryDuration, config.maxIdle)
+
+    new AuthServiceImpl(BearerTokenAuthenticator.apply(tokenStore, identityStore, settings))
   }
 }
