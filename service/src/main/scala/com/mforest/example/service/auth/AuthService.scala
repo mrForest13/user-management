@@ -1,36 +1,63 @@
 package com.mforest.example.service.auth
 
+import cats.Id
+import cats.data.{EitherT, NonEmptyChain}
 import cats.effect.Sync
 import com.mforest.example.core.config.auth.TokenConfig
-import com.mforest.example.db.dao.UserDao
+import com.mforest.example.core.error.Error
+import com.mforest.example.core.error.Error.ForbiddenError
+import com.mforest.example.db.dao.PermissionDao
 import com.mforest.example.service.Service
-import com.mforest.example.service.store.{BarerTokenStore, UserStore}
+import com.mforest.example.service.dto.PermissionDto
+import com.mforest.example.service.store.{BarerTokenStore, PermissionsStore}
 import doobie.util.transactor.Transactor
-import tsec.authentication.{Authenticator, BearerTokenAuthenticator, TSecBearerToken, TSecTokenSettings}
+import io.chrisdavenport.fuuid.FUUID
+import org.http4s.Request
+import tsec.authentication.{Authenticator, BearerTokenAuthenticator, SecuredRequest, TSecBearerToken, TSecTokenSettings}
 
 trait AuthService[F[_], I, V, A] extends Service {
 
+  def validate(raw: String): EitherT[F, Error, AuthInfo]
   def create(identity: I): F[A]
+  def discard(token: A): F[A]
+
+  case class AuthInfo(identity: V, authenticator: A)
 }
 
-class AuthServiceImpl[F[_]: Sync, I, V, A](val authenticator: Authenticator[F, I, V, A])
-    extends AuthService[F, I, V, A] {
+class AuthServiceImpl[F[_]: Sync, I, V, A](val auth: Authenticator[F, I, V, A]) extends AuthService[F, I, V, A] {
+
+  private val forbidden: String = "The server is refusing to respond to it! You don't have permission!"
+
+  override def validate(raw: String): EitherT[F, Error, AuthInfo] = {
+    auth
+      .parseRaw(raw, Request())
+      .map(info)
+      .toRight(ForbiddenError(forbidden))
+  }
 
   override def create(identity: I): F[A] = {
-    authenticator.create(identity)
+    auth.create(identity)
+  }
+
+  override def discard(token: A): F[A] = {
+    auth.discard(token)
+  }
+
+  private def info(request: SecuredRequest[F, V, A]): AuthInfo = {
+    AuthInfo(request.identity, request.authenticator)
   }
 }
 
 object AuthService {
 
   def apply[F[_]: Sync, I, V](
-      userDao: UserDao,
+      permissionDao: PermissionDao,
       transactor: Transactor[F],
       config: TokenConfig
-  ): AuthService[F, I, V, TSecBearerToken[I]] = {
+  ): AuthService[F, Id[FUUID], NonEmptyChain[PermissionDto], TSecBearerToken[Id[FUUID]]] = {
 
     val tokenStore    = BarerTokenStore[F]
-    val identityStore = UserStore[F](userDao, transactor)
+    val identityStore = PermissionsStore[F](permissionDao, transactor)
     val settings      = TSecTokenSettings(config.expiryDuration, config.maxIdle)
 
     new AuthServiceImpl(BearerTokenAuthenticator.apply(tokenStore, identityStore, settings))

@@ -1,4 +1,4 @@
-package com.mforest.example.http.handle
+package com.mforest.example.http.support
 
 import java.sql.SQLException
 
@@ -8,15 +8,16 @@ import cats.effect.Sync
 import cats.implicits._
 import com.mforest.example.core.error.Error
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import com.mforest.example.http.response.StatusResponse.Fail
 
-trait ErrorHandler {
+trait ErrorHandlerSupport {
 
-  def handleError[F[_]: Sync, R](either: EitherT[F, Error, R]): EitherT[F, Error, R] = {
+  def handleError[F[_]: Sync, R](either: EitherT[F, Fail[Error], R]): EitherT[F, Fail[Error], R] = {
     right(Slf4jLogger.create[F]).flatMapF { logger =>
       either.value.handleErrorWith { th =>
         logger
           .error(th)(th.getMessage)
-          .map(_ => handle(th).asLeft)
+          .map(_ => Fail(handle(th)).asLeft[R])
       }
     }
   }

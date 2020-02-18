@@ -14,6 +14,7 @@ trait PermissionDao extends Dao[Id[FUUID], PermissionRow] {
 
   def find(name: String): OptionT[ConnectionIO, PermissionRow]
   def find(pagination: Pagination): ConnectionIO[Chain[PermissionRow]]
+  def findByUser(id: Id[FUUID]): ConnectionIO[Chain[PermissionRow]]
   def delete(id: Id[FUUID]): ConnectionIO[Int]
 }
 
@@ -39,6 +40,10 @@ class PermissionDaoImpl extends PermissionDao {
     Query.delete(id).run
   }
 
+  override def findByUser(id: Id[FUUID]): ConnectionIO[Chain[PermissionRow]] = {
+    Query.selectByUser(id).to[Chain]
+  }
+
   private object Query extends Query {
 
     def insert(permission: PermissionRow): Update0 = sql"""
@@ -47,6 +52,14 @@ class PermissionDaoImpl extends PermissionDao {
 
     def select(id: Id[FUUID]): Query0[PermissionRow] = sql"""
       SELECT ID, NAME FROM PERMISSIONS WHERE ID = $id
+    """.query
+
+    def selectByUser(id: Id[FUUID])(implicit d: DummyImplicit): Query0[PermissionRow] = sql"""
+      SELECT ID, NAME
+      FROM PERMISSIONS
+      JOIN USERS_PERMISSIONS
+      ON PERMISSIONS.ID = USERS_PERMISSIONS.PERMISSION_ID
+      WHERE USERS_PERMISSIONS.USER_ID = $id
     """.query
 
     def delete(id: Id[FUUID]): Update0 = sql"""
