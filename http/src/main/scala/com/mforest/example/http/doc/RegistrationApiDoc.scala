@@ -9,9 +9,9 @@ import sttp.tapir.Endpoint
 
 trait RegistrationApiDoc extends Doc {
 
-  type RegisterUser = Endpoint[RegistrationForm, StatusResponse.Fail[Error], StatusResponse.Ok[String], Nothing]
+  override def endpoints: Seq[Endpoint[_, _, _, _]] = Seq(registerUserEndpoint)
 
-  val registerUserEndpoint: RegisterUser = {
+  val registerUserEndpoint: Endpoint[RegistrationForm, Fail[Error], Ok[String], Nothing] = {
     endpoint.post
       .tag("Registration")
       .summary("Create user")

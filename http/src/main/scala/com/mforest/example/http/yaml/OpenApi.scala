@@ -3,27 +3,17 @@ package com.mforest.example.http.yaml
 import cats.syntax.option._
 import com.mforest.example.core.config.app.AppConfig
 import com.mforest.example.http.Doc
-import com.mforest.example.http.doc.{LoginApiDoc, PermissionApiDoc, RegistrationApiDoc}
-import sttp.tapir.Endpoint
+import com.mforest.example.http.doc.{AuthenticationApiDoc, PermissionApiDoc, RegistrationApiDoc}
 import sttp.tapir.docs.openapi.TapirOpenAPIDocs
 import sttp.tapir.openapi.circe.yaml.TapirOpenAPICirceYaml
 import sttp.tapir.openapi.{Contact, Info, License, OpenAPI}
 
-class OpenApi(config: AppConfig, version: String)
-    extends Doc
-    with LoginApiDoc
+class OpenApi(config: AppConfig, version: String, docs: Seq[Doc])
+    extends AuthenticationApiDoc
     with PermissionApiDoc
     with RegistrationApiDoc
     with TapirOpenAPIDocs
     with TapirOpenAPICirceYaml {
-
-  val docs: Seq[Endpoint[_, _, _, _]] = Seq(
-    loginUserEndpoint,
-    registerUserEndpoint,
-    addPermissionEndpoint,
-    findPermissionEndpoint,
-    deletePermissionEndpoint
-  )
 
   private val contact = Contact(
     name = "Mateusz Ligęza".some,
@@ -44,12 +34,12 @@ class OpenApi(config: AppConfig, version: String)
     license = license.some
   )
 
-  private val openApi: OpenAPI = docs.toOpenAPI(info)
+  private val openApi: OpenAPI = docs.flatMap(_.endpoints).toOpenAPI(info)
 
   val yaml: String = openApi.toYaml
 }
 
 object OpenApi {
 
-  def apply(config: AppConfig, version: String): OpenApi = new OpenApi(config, version)
+  def apply(config: AppConfig, version: String, docs: Doc*): OpenApi = new OpenApi(config, version, docs)
 }

@@ -33,5 +33,5 @@ class SCryptEngine[F[_]: Sync] extends HashEngine[F, SCrypt] {
 
 object SCryptEngine {
 
-  def apply[F[_]: Sync](): SCryptEngine[F] = new SCryptEngine()
+  def apply[F[_]: Sync](): HashEngine[F, SCrypt] = new SCryptEngine()
 }

@@ -4,15 +4,14 @@ import sbt.Keys._
 object Dependencies {
 
   private object Versions {
-    val cats       = "2.0.0"
-    val circe      = "0.12.2"
+    val cats       = "2.1.0"
+    val circe      = "0.13.0"
     val fuuid      = "0.2.0"
     val tapir      = "0.12.20"
-    val tsecV      = "0.1.0"
-    val http4s     = "0.20.15"
+    val tsec       = "0.2.0"
+    val http4s     = "0.21.1"
     val logback    = "1.2.3"
     val doobie     = "0.7.1"
-    val webjars    = "3.22.0"
     val log4Cats   = "1.0.1"
     val scalaTest  = "3.1.0"
     val quicklens  = "1.4.12"
@@ -33,7 +32,8 @@ object Dependencies {
   )
 
   private val cats: Seq[ModuleID] = Seq(
-    "org.typelevel" %% "cats-core" % Versions.cats
+    "org.typelevel" %% "cats-core"   % Versions.cats,
+    "org.typelevel" %% "cats-effect" % Versions.cats
   )
   private val fuuid: Seq[ModuleID] = Seq(
     "io.chrisdavenport" %% "fuuid"        % Versions.fuuid,
@@ -62,9 +62,9 @@ object Dependencies {
   )
 
   private val tsecV: Seq[ModuleID] = Seq(
-    "io.github.jmcardon" %% "tsec-common"   % Versions.tsecV,
-    "io.github.jmcardon" %% "tsec-password" % Versions.tsecV,
-    "io.github.jmcardon" %% "tsec-http4s"   % Versions.tsecV
+    "io.github.jmcardon" %% "tsec-common"   % Versions.tsec,
+    "io.github.jmcardon" %% "tsec-password" % Versions.tsec,
+    "io.github.jmcardon" %% "tsec-http4s"   % Versions.tsec
   )
 
   private val tapir: Seq[ModuleID] = Seq(

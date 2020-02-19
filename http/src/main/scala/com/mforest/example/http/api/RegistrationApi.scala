@@ -13,7 +13,7 @@ class RegistrationApi[F[_]: Sync: ContextShift](registrationService: Registratio
 
   override def routes: HttpRoutes[F] = registerUser
 
-  private val registerUser: HttpRoutes[F] = registerUserEndpoint.toRoutes { request =>
+  private val registerUser: HttpRoutes[F] = registerUserEndpoint.toHandleRoutes { request =>
     validate(request)
       .map(_.toDto)
       .flatMap(registrationService.register)

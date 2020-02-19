@@ -17,9 +17,9 @@ import tsec.authentication.{Authenticator, BearerTokenAuthenticator, SecuredRequ
 
 trait AuthService[F[_], I, V, A] extends Service {
 
-  def validate(raw: String): EitherT[F, Error, AuthInfo]
-  def create(identity: I): F[A]
-  def discard(token: A): F[A]
+  def validateToken(raw: String): EitherT[F, Error, AuthInfo]
+  def createToken(identity: I): F[A]
+  def discardToken(token: A): F[A]
 
   case class AuthInfo(identity: V, authenticator: A)
 }
@@ -28,18 +28,18 @@ class AuthServiceImpl[F[_]: Sync, I, V, A](val auth: Authenticator[F, I, V, A]) 
 
   private val forbidden: String = "The server is refusing to respond to it! You don't have permission!"
 
-  override def validate(raw: String): EitherT[F, Error, AuthInfo] = {
+  override def validateToken(raw: String): EitherT[F, Error, AuthInfo] = {
     auth
       .parseRaw(raw, Request())
       .map(info)
       .toRight(ForbiddenError(forbidden))
   }
 
-  override def create(identity: I): F[A] = {
+  override def createToken(identity: I): F[A] = {
     auth.create(identity)
   }
 
-  override def discard(token: A): F[A] = {
+  override def discardToken(token: A): F[A] = {
     auth.discard(token)
   }
 
@@ -50,7 +50,7 @@ class AuthServiceImpl[F[_]: Sync, I, V, A](val auth: Authenticator[F, I, V, A]) 
 
 object AuthService {
 
-  def apply[F[_]: Sync, I, V](
+  def apply[F[_]: Sync](
       permissionDao: PermissionDao,
       transactor: Transactor[F],
       config: TokenConfig

@@ -7,8 +7,9 @@ import com.mforest.example.application.layer.DaoLayer
 import com.mforest.example.core.ConfigLoader
 import com.mforest.example.db.Database
 import com.mforest.example.http.Server
-import com.mforest.example.http.api.{LoginApi, PermissionApi, RegistrationApi, SwaggerApi}
+import com.mforest.example.http.api.{AuthenticationApi, PermissionApi, RegistrationApi, SwaggerApi}
 import com.mforest.example.http.yaml.OpenApi
+import com.mforest.example.service.auth.AuthService
 import com.mforest.example.service.hash.SCryptEngine
 import com.mforest.example.service.login.LoginService
 import com.mforest.example.service.permission.PermissionService
@@ -29,11 +30,12 @@ object Application extends IOApp with DaoLayer {
       registrationService = RegistrationService[F, SCrypt](userDao, hashEngine, transactor)
       permissionService   = PermissionService[F](permissionDao, transactor)
       loginService        = LoginService[F, SCrypt](userDao, hashEngine, transactor)
+      authService         = AuthService[F](permissionDao, transactor, config.auth.token)
       registrationApi     = RegistrationApi[F](registrationService)
       permissionApi       = PermissionApi[F](permissionService)
-      loginApi            = LoginApi[F](loginService)
-      docs                = OpenApi(config.app, BuildInfo.version)
-      swaggerApi          = SwaggerApi(docs.yaml)
+      loginApi            = AuthenticationApi(loginService, authService)
+      docs                = OpenApi(config.app, BuildInfo.version, registrationApi, permissionApi, loginApi)
+      swaggerApi          = SwaggerApi[F](docs.yaml)
       server              <- Server[F](config, registrationApi, permissionApi, loginApi, swaggerApi).resource
     } yield server
   }

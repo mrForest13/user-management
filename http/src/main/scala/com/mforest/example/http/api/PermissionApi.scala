@@ -13,22 +13,22 @@ class PermissionApi[F[_]: Sync: ContextShift](permissionService: PermissionServi
     extends Api[F]
     with PermissionApiDoc {
 
-  override def routes: HttpRoutes[F] = addPermission <+> deletePermission <+> findPermission
+  override def routes: HttpRoutes[F] = addPermission <+> deletePermission <+> findPermissions
 
-  private val addPermission: HttpRoutes[F] = addPermissionEndpoint.toRoutes { request =>
+  private val addPermission: HttpRoutes[F] = addPermissionEndpoint.toHandleRoutes { request =>
     validate(request)
       .map(_.toDto)
       .flatMap(permissionService.addPermission)
       .bimap(StatusResponse.fail, StatusResponse.ok)
   }
 
-  private val deletePermission: HttpRoutes[F] = deletePermissionEndpoint.toRoutes { id =>
+  private val deletePermission: HttpRoutes[F] = deletePermissionEndpoint.toHandleRoutes { id =>
     permissionService
       .deletePermission(id)
       .bimap(StatusResponse.fail, StatusResponse.ok)
   }
 
-  private val findPermission: HttpRoutes[F] = findPermissionEndpoint.toRoutes { pagination =>
+  private val findPermissions: HttpRoutes[F] = findPermissionsEndpoint.toHandleRoutes { pagination =>
     validate(Pagination(pagination))
       .flatMap(permissionService.getPermissions)
       .bimap(StatusResponse.fail, StatusResponse.ok)

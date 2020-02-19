@@ -15,9 +15,10 @@ import sttp.tapir.Endpoint
 
 trait PermissionApiDoc extends Doc {
 
-  type AddPermission = Endpoint[PermissionForm, Fail[Error], Ok[String], Nothing]
+  override def endpoints: Seq[Endpoint[_, _, _, _]] =
+    Seq(addPermissionEndpoint, deletePermissionEndpoint, findPermissionsEndpoint)
 
-  val addPermissionEndpoint: AddPermission = {
+  val addPermissionEndpoint: Endpoint[PermissionForm, Fail[Error], Ok[String], Nothing] = {
     endpoint.post
       .tag("Permission")
       .summary("Add new permission")
@@ -71,9 +72,7 @@ trait PermissionApiDoc extends Doc {
       )
   }
 
-  type DeletePermission = Endpoint[FUUID, Fail[Error], Ok[String], Nothing]
-
-  val deletePermissionEndpoint: DeletePermission = {
+  val deletePermissionEndpoint: Endpoint[FUUID, Fail[Error], Ok[String], Nothing] = {
     endpoint.delete
       .tag("Permission")
       .summary("Delete permission")
@@ -123,9 +122,7 @@ trait PermissionApiDoc extends Doc {
       )
   }
 
-  type FindPermission = Endpoint[(Option[Int], Option[Int]), Fail[Error], Ok[Chain[PermissionDto]], Nothing]
-
-  val findPermissionEndpoint: FindPermission = {
+  val findPermissionsEndpoint: Endpoint[(Option[Int], Option[Int]), Fail[Error], Ok[Chain[PermissionDto]], Nothing] = {
     endpoint.get
       .tag("Permission")
       .summary("Find permissions")
