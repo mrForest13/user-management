@@ -13,7 +13,7 @@ trait RegistrationApiDoc extends Doc {
 
   protected val registerUserEndpoint: Endpoint[RegistrationForm, Fail[Error], Ok[String], Nothing] = {
     endpoint.post
-      .tag("Registration")
+      .tag("Registration Api")
       .summary("Create user")
       .in("users")
       .in(

@@ -12,6 +12,8 @@ import io.chrisdavenport.fuuid.FUUID
 
 trait UserDao extends Dao[Id[FUUID], UserRow] {
 
+  val tableName: String = "USERS"
+
   def delete(userId: Id[FUUID], permissionId: Id[FUUID]): ConnectionIO[Int]
   def add(userId: Id[FUUID], permissionId: Id[FUUID]): ConnectionIO[Int]
   def find(email: String): OptionT[ConnectionIO, UserRow]

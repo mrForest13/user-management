@@ -14,7 +14,7 @@ trait AuthenticationApiDoc extends Doc {
 
   protected val loginUserEndpoint: Endpoint[UsernamePassword, Fail[Error], (BarerToken, Ok[String]), Nothing] = {
     endpoint.post
-      .tag("Authentication")
+      .tag("Authentication Api")
       .summary("create token for user")
       .in("api" / "login")
       .in(auth.basic)

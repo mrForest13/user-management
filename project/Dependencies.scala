@@ -12,6 +12,7 @@ object Dependencies {
     val http4s     = "0.21.1"
     val logback    = "1.2.3"
     val doobie     = "0.7.1"
+    val flyway     = "6.2.4"
     val log4Cats   = "1.0.1"
     val scalaTest  = "3.1.0"
     val quicklens  = "1.4.12"
@@ -46,6 +47,10 @@ object Dependencies {
     "org.tpolecat" %% "doobie-core"     % Versions.doobie,
     "org.tpolecat" %% "doobie-postgres" % Versions.doobie,
     "org.tpolecat" %% "doobie-hikari"   % Versions.doobie
+  )
+
+  private val flyway: Seq[ModuleID] = Seq(
+    "org.flywaydb" % "flyway-core" % Versions.flyway
   )
 
   private val http4s: Seq[ModuleID] = Seq(
@@ -85,7 +90,7 @@ object Dependencies {
   val application: Seq[ModuleID] = test ++ logging
   val http: Seq[ModuleID]        = http4s ++ tapir ++ test ++ logging
   val service: Seq[ModuleID]     = tsecV ++ test ++ logging
-  val db: Seq[ModuleID]          = doobie ++ test ++ logging
+  val db: Seq[ModuleID]          = doobie ++ flyway ++ test ++ logging
   val core: Seq[ModuleID]        = config ++ fuuid ++ cats ++ circe ++ test ++ logging
 
   implicit class ModuleSettings(modules: Seq[ModuleID]) {

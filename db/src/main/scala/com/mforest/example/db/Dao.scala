@@ -10,6 +10,8 @@ import doobie.util.update.Update0
 
 trait Dao[Id, Row] extends CustomInstances with CustomCompacts with AllSyntax {
 
+  def tableName: String
+
   def insert(row: Row): ConnectionIO[Int] = {
     query.insert(row).run
   }

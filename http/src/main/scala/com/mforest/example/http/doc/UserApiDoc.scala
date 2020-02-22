@@ -63,7 +63,7 @@ trait UserApiDoc extends Doc {
 
   protected val revokePermissionEndpoint: Endpoint[(FUUID, FUUID), Fail[Error], Ok[String], Nothing] = {
     endpoint.delete
-      .tag("User")
+      .tag("User Api")
       .summary("Revoke permission for user")
       .in("users" / path[FUUID]("userId") / "permissions" / path[FUUID]("permissionId"))
       .out(

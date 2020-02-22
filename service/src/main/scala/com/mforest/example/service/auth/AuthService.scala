@@ -17,6 +17,8 @@ import tsec.authentication.{Authenticator, BearerTokenAuthenticator, SecuredRequ
 
 trait AuthService[F[_], I, V, A] extends Service {
 
+  val name: String = "Auth-Service"
+
   def authorize(raw: String, permissions: String*): EitherT[F, Error, AuthInfo]
   def validateToken(raw: String): EitherT[F, Error, AuthInfo]
   def createToken(identity: I): F[A]

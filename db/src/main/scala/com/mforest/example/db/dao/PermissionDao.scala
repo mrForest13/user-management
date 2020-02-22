@@ -12,6 +12,8 @@ import io.chrisdavenport.fuuid.FUUID
 
 trait PermissionDao extends Dao[Id[FUUID], PermissionRow] {
 
+  val tableName: String = "PERMISSIONS"
+
   def find(name: String): OptionT[ConnectionIO, PermissionRow]
   def findByUser(id: Id[FUUID]): ConnectionIO[Chain[PermissionRow]]
   def delete(id: Id[FUUID]): ConnectionIO[Int]

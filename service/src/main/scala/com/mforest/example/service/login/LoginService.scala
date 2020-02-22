@@ -17,6 +17,8 @@ import tsec.common.{VerificationFailed, VerificationStatus, Verified}
 
 trait LoginService[F[_]] extends Service {
 
+  val name: String = "Login-Service"
+
   def login(credentials: Credentials): EitherT[F, Error, FUUID]
 }
 

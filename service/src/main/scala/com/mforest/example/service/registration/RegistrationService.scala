@@ -17,6 +17,8 @@ import tsec.passwordhashers.PasswordHash
 
 trait RegistrationService[F[_]] extends Service {
 
+  val name: String = "Registration-Service"
+
   def register(user: User): EitherT[F, Error, String]
 }
 

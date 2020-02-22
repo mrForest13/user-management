@@ -20,6 +20,8 @@ import io.chrisdavenport.fuuid.FUUID
 
 trait PermissionService[F[_]] extends Service {
 
+  val name: String = "Permission-Service"
+
   def getPermissions(pagination: Pagination): EitherT[F, Error, Chain[PermissionDto]]
   def addPermission(permission: Permission): EitherT[F, Error, String]
   def deletePermission(id: Id[FUUID]): EitherT[F, Error, String]

@@ -17,6 +17,8 @@ import io.chrisdavenport.fuuid.FUUID
 
 trait UserService[F[_]] extends Service {
 
+  val name: String = "User-Service"
+
   def revokePermission(userId: Id[FUUID], permissionId: Id[FUUID]): EitherT[F, Error, String]
   def addPermission(userId: Id[FUUID], permissionId: Id[FUUID]): EitherT[F, Error, String]
   def getUsers(pagination: Pagination): EitherT[F, Error, Chain[UserDto]]

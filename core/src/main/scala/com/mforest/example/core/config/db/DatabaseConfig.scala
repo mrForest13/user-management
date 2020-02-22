@@ -7,7 +7,9 @@ final case class DatabaseConfig(
     user: String,
     password: String,
     driver: String,
-    poolSize: Int
+    poolSize: Int,
+    migrate: Boolean,
+    migrationTable: String
 ) {
 
   val postgresUrl: String = s"jdbc:postgresql://$host:$port/$schema"

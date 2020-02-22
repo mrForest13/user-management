@@ -125,7 +125,7 @@ trait PermissionApiDoc extends Doc {
 
   protected val findPermissionsEndpoint: Endpoint[PaginationParams, Fail[Error], Ok[Chain[PermissionDto]], Nothing] = {
     endpoint.get
-      .tag("Permission")
+      .tag("Permission Api")
       .summary("Find permissions")
       .in("permissions")
       .in(query[Option[Int]]("size").example(10.some))
