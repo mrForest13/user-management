@@ -11,7 +11,7 @@ trait RegistrationApiDoc extends Doc {
 
   override def endpoints: Seq[Endpoint[_, _, _, _]] = Seq(registerUserEndpoint)
 
-  val registerUserEndpoint: Endpoint[RegistrationForm, Fail[Error], Ok[String], Nothing] = {
+  protected val registerUserEndpoint: Endpoint[RegistrationForm, Fail[Error], Ok[String], Nothing] = {
     endpoint.post
       .tag("Registration")
       .summary("Create user")

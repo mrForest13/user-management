@@ -17,6 +17,7 @@ import tsec.authentication.{Authenticator, BearerTokenAuthenticator, SecuredRequ
 
 trait AuthService[F[_], I, V, A] extends Service {
 
+  def authorize(raw: String, permissions: String*): EitherT[F, Error, AuthInfo]
   def validateToken(raw: String): EitherT[F, Error, AuthInfo]
   def createToken(identity: I): F[A]
   def discardToken(token: A): F[A]
@@ -24,7 +25,8 @@ trait AuthService[F[_], I, V, A] extends Service {
   case class AuthInfo(identity: V, authenticator: A)
 }
 
-class AuthServiceImpl[F[_]: Sync, I, V, A](val auth: Authenticator[F, I, V, A]) extends AuthService[F, I, V, A] {
+class AuthServiceImpl[F[_]: Sync, I, A](val auth: Authenticator[F, I, NonEmptyChain[PermissionDto], A])
+    extends AuthService[F, I, NonEmptyChain[PermissionDto], A] {
 
   private val forbidden: String = "The server is refusing to respond to it! You don't have permission!"
 
@@ -43,7 +45,13 @@ class AuthServiceImpl[F[_]: Sync, I, V, A](val auth: Authenticator[F, I, V, A]) 
     auth.discard(token)
   }
 
-  private def info(request: SecuredRequest[F, V, A]): AuthInfo = {
+  override def authorize(raw: String, permissions: String*): EitherT[F, Error, AuthInfo] = {
+    for {
+      info <- validateToken(raw)
+    } yield info
+  }
+
+  private def info(request: SecuredRequest[F, NonEmptyChain[PermissionDto], A]): AuthInfo = {
     AuthInfo(request.identity, request.authenticator)
   }
 }

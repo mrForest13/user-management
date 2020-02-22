@@ -16,6 +16,8 @@ trait Doc extends Tapir with TapirJsonCirce with TapirCodecCats {
   type Ok[T]   = StatusResponse.Ok[T]
   type Fail[T] = StatusResponse.Fail[T]
 
+  type PaginationParams = (Option[Int], Option[Int])
+
   implicit val schemaForFuuid: Schema[FUUID] = Schema(SString)
 
   implicit val fuuidPlainCodec: PlainCodec[FUUID] =

@@ -8,7 +8,7 @@ import sttp.tapir.docs.openapi.TapirOpenAPIDocs
 import sttp.tapir.openapi.circe.yaml.TapirOpenAPICirceYaml
 import sttp.tapir.openapi.{Contact, Info, License, OpenAPI}
 
-class OpenApi(config: AppConfig, version: String, docs: Seq[Doc])
+class SwaggerDocs(config: AppConfig, version: String, docs: Seq[Doc])
     extends AuthenticationApiDoc
     with PermissionApiDoc
     with RegistrationApiDoc
@@ -39,7 +39,7 @@ class OpenApi(config: AppConfig, version: String, docs: Seq[Doc])
   val yaml: String = openApi.toYaml
 }
 
-object OpenApi {
+object SwaggerDocs {
 
-  def apply(config: AppConfig, version: String, docs: Doc*): OpenApi = new OpenApi(config, version, docs)
+  def apply(config: AppConfig, version: String, docs: Seq[Doc]): SwaggerDocs = new SwaggerDocs(config, version, docs)
 }

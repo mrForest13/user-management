@@ -6,85 +6,30 @@ import cats.data.Chain
 import cats.syntax.option._
 import com.mforest.example.core.error.Error
 import com.mforest.example.http.Doc
-import com.mforest.example.http.form.PermissionForm
 import com.mforest.example.http.response.StatusResponse
-import com.mforest.example.service.dto.PermissionDto
+import com.mforest.example.service.dto.{PermissionDto, UserDto}
 import io.chrisdavenport.fuuid.FUUID
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
 
-trait PermissionApiDoc extends Doc {
+trait UserApiDoc extends Doc {
 
   override def endpoints: Seq[Endpoint[_, _, _, _]] = {
-    Seq(addPermissionEndpoint, deletePermissionEndpoint, findPermissionsEndpoint)
+    Seq(addPermissionEndpoint, revokePermissionEndpoint, findUsersEndpoint)
   }
 
-  protected val addPermissionEndpoint: Endpoint[PermissionForm, Fail[Error], Ok[String], Nothing] = {
+  protected val addPermissionEndpoint: Endpoint[(FUUID, FUUID), Fail[Error], Ok[String], Nothing] = {
     endpoint.post
-      .tag("Permission")
-      .summary("Add new permission")
-      .in("permissions")
-      .in(
-        jsonBody[PermissionForm]
-          .example(PermissionApiDoc.form)
-      )
+      .tag("User")
+      .summary("Add permission for user")
+      .in("users" / path[FUUID]("userId") / "permissions" / path[FUUID]("permissionId"))
       .out(
         oneOf(
           statusMappingFromMatchType(
-            StatusCode.Created,
+            StatusCode.Ok,
             jsonBody[Ok[String]]
               .example(
-                StatusResponse.Ok("The permission with name EXAMPLE_PERMISSION has been created")
-              )
-          )
-        )
-      )
-      .errorOut(
-        oneOf[Fail[Error]](
-          statusMappingFromMatchType(
-            StatusCode.Conflict,
-            jsonBody[Fail[Error.ConflictError]]
-              .example(
-                StatusResponse.Fail(Error.ConflictError("The permission with name EXAMPLE_PERMISSION already exists!"))
-              )
-          ),
-          statusMappingFromMatchType(
-            StatusCode.ServiceUnavailable,
-            jsonBody[Fail[Error.UnavailableError]]
-              .example(
-                StatusResponse.Fail(Error.UnavailableError("The server is currently unavailable!"))
-              )
-          ),
-          statusMappingFromMatchType(
-            StatusCode.BadRequest,
-            jsonBody[Fail[Error.ValidationError]]
-              .example(
-                StatusResponse.Fail(Error.ValidationError("Permission cannot be empty!"))
-              )
-          ),
-          statusMappingFromMatchType(
-            StatusCode.InternalServerError,
-            jsonBody[Fail[Error.InternalError]]
-              .example(
-                StatusResponse.Fail(Error.InternalError("There was an internal server error!"))
-              )
-          )
-        )
-      )
-  }
-
-  protected val deletePermissionEndpoint: Endpoint[FUUID, Fail[Error], Ok[String], Nothing] = {
-    endpoint.delete
-      .tag("Permission")
-      .summary("Delete permission")
-      .in("permissions" / path[FUUID]("permissionId"))
-      .out(
-        oneOf(
-          statusMappingFromMatchType(
-            StatusCode.Created,
-            jsonBody[Ok[String]]
-              .example(
-                StatusResponse.Ok("The permission with name EXAMPLE_PERMISSION has been deleted")
+                StatusResponse.Ok("The permission has been added!")
               )
           )
         )
@@ -93,9 +38,9 @@ trait PermissionApiDoc extends Doc {
         oneOf[Fail[Error]](
           statusMappingFromMatchType(
             StatusCode.NotFound,
-            jsonBody[Fail[Error.NotFoundError]]
+            jsonBody[Fail[Error.ConflictError]]
               .example(
-                StatusResponse.Fail(Error.NotFoundError("The permission with name EXAMPLE_PERMISSION not exists!"))
+                StatusResponse.Fail(Error.ConflictError("The User or permission does not exist!"))
               )
           ),
           statusMappingFromMatchType(
@@ -103,13 +48,6 @@ trait PermissionApiDoc extends Doc {
             jsonBody[Fail[Error.UnavailableError]]
               .example(
                 StatusResponse.Fail(Error.UnavailableError("The server is currently unavailable!"))
-              )
-          ),
-          statusMappingFromMatchType(
-            StatusCode.BadRequest,
-            jsonBody[Fail[Error.ValidationError]]
-              .example(
-                StatusResponse.Fail(Error.ValidationError("Permission cannot be empty!"))
               )
           ),
           statusMappingFromMatchType(
@@ -123,21 +61,64 @@ trait PermissionApiDoc extends Doc {
       )
   }
 
-  protected val findPermissionsEndpoint: Endpoint[PaginationParams, Fail[Error], Ok[Chain[PermissionDto]], Nothing] = {
+  protected val revokePermissionEndpoint: Endpoint[(FUUID, FUUID), Fail[Error], Ok[String], Nothing] = {
+    endpoint.delete
+      .tag("User")
+      .summary("Revoke permission for user")
+      .in("users" / path[FUUID]("userId") / "permissions" / path[FUUID]("permissionId"))
+      .out(
+        oneOf(
+          statusMappingFromMatchType(
+            StatusCode.Ok,
+            jsonBody[Ok[String]]
+              .example(
+                StatusResponse.Ok("The permission has been revoked!")
+              )
+          )
+        )
+      )
+      .errorOut(
+        oneOf[Fail[Error]](
+          statusMappingFromMatchType(
+            StatusCode.NotFound,
+            jsonBody[Fail[Error.ConflictError]]
+              .example(
+                StatusResponse.Fail(Error.ConflictError("The User or permission does not exist!"))
+              )
+          ),
+          statusMappingFromMatchType(
+            StatusCode.ServiceUnavailable,
+            jsonBody[Fail[Error.UnavailableError]]
+              .example(
+                StatusResponse.Fail(Error.UnavailableError("The server is currently unavailable!"))
+              )
+          ),
+          statusMappingFromMatchType(
+            StatusCode.InternalServerError,
+            jsonBody[Fail[Error.InternalError]]
+              .example(
+                StatusResponse.Fail(Error.InternalError("There was an internal server error!"))
+              )
+          )
+        )
+      )
+  }
+
+  protected val findUsersEndpoint: Endpoint[PaginationParams, Fail[Error], Ok[Chain[UserDto]], Nothing] = {
     endpoint.get
-      .tag("Permission")
-      .summary("Find permissions")
-      .in("permissions")
+      .tag("User")
+      .summary("Find users")
+      .in("users")
       .in(query[Option[Int]]("size").example(10.some))
       .in(query[Option[Int]]("page").example(0.some))
       .out(
         oneOf(
           statusMappingClassMatcher(
             StatusCode.Ok,
-            jsonBody[Ok[Chain[PermissionDto]]]
+            jsonBody[Ok[Chain[UserDto]]]
               .example(
                 StatusResponse.Ok(
-                  Chain(PermissionApiDoc.dto, PermissionApiDoc.dto, PermissionApiDoc.dto)
+                  Chain(UserApiDoc.dto, UserApiDoc.dto, UserApiDoc.dto)
                 )
               ),
             classOf[Ok[Chain[PermissionDto]]]
@@ -172,12 +153,15 @@ trait PermissionApiDoc extends Doc {
   }
 }
 
-object PermissionApiDoc {
+object UserApiDoc {
 
-  private def dto = PermissionDto(
+  private def dto = UserDto(
     id = FUUID.fromUUID(UUID.randomUUID()),
-    name = "FIRST_EXAMPLE_PERMISSION"
+    email = "john.smith@gmail.com",
+    firstName = "john",
+    lastName = "smith",
+    city = "London",
+    country = "England",
+    phone = "123456789"
   )
-
-  private val form = PermissionForm("EXAMPLE_PERMISSION")
 }

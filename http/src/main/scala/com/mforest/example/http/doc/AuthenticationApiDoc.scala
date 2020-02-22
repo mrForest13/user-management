@@ -12,7 +12,7 @@ trait AuthenticationApiDoc extends Doc {
 
   override def endpoints: Seq[Endpoint[_, _, _, _]] = Seq(loginUserEndpoint, logoutUserEndpoint)
 
-  val loginUserEndpoint: Endpoint[UsernamePassword, Fail[Error], (BarerToken, Ok[String]), Nothing] = {
+  protected val loginUserEndpoint: Endpoint[UsernamePassword, Fail[Error], (BarerToken, Ok[String]), Nothing] = {
     endpoint.post
       .tag("Authentication")
       .summary("create token for user")
@@ -57,7 +57,7 @@ trait AuthenticationApiDoc extends Doc {
       )
   }
 
-  val logoutUserEndpoint: Endpoint[String, Fail[Error], Ok[String], Nothing] = {
+  protected val logoutUserEndpoint: Endpoint[String, Fail[Error], Ok[String], Nothing] = {
     endpoint.delete
       .tag("Authentication")
       .summary("delete user token")

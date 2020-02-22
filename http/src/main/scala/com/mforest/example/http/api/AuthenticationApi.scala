@@ -20,6 +20,9 @@ class AuthenticationApi[F[_]: Sync: ContextShift, V](
 ) extends Api[F]
     with AuthenticationApiDoc {
 
+  private val loginMsg: String  = "Login succeeded!"
+  private val logoutMsg: String = "Logout succeeded!"
+
   override def routes: HttpRoutes[F] = loginUser <+> logoutUser
 
   private val loginUser: HttpRoutes[F] = loginUserEndpoint.toHandleRoutes { credentials =>
@@ -28,8 +31,7 @@ class AuthenticationApi[F[_]: Sync: ContextShift, V](
       .flatMap(loginService.login)
       .semiflatMap(authService.createToken)
       .map(BarerToken.apply[Id[FUUID]])
-      .map(_ -> StatusResponse.Ok("Login succeeded!"))
-      .leftMap(StatusResponse.fail)
+      .bimap(StatusResponse.fail, _ -> StatusResponse.Ok(loginMsg))
   }
 
   private val logoutUser: HttpRoutes[F] = logoutUserEndpoint.toHandleRoutes { token =>
@@ -37,8 +39,7 @@ class AuthenticationApi[F[_]: Sync: ContextShift, V](
       .validateToken(token)
       .map(_.authenticator)
       .semiflatMap(authService.discardToken)
-      .map(_ => StatusResponse.Ok("Logout succeeded!"))
-      .leftMap(StatusResponse.fail)
+      .bimap(StatusResponse.fail, _ => StatusResponse.Ok(logoutMsg))
   }
 }
 

@@ -13,38 +13,23 @@ import io.chrisdavenport.fuuid.FUUID
 trait PermissionDao extends Dao[Id[FUUID], PermissionRow] {
 
   def find(name: String): OptionT[ConnectionIO, PermissionRow]
-  def find(pagination: Pagination): ConnectionIO[Chain[PermissionRow]]
   def findByUser(id: Id[FUUID]): ConnectionIO[Chain[PermissionRow]]
   def delete(id: Id[FUUID]): ConnectionIO[Int]
 }
 
 class PermissionDaoImpl extends PermissionDao {
 
-  override def insert(row: PermissionRow): ConnectionIO[Int] = {
-    Query.insert(row).run
-  }
-
-  override def find(id: Id[FUUID]): OptionT[ConnectionIO, PermissionRow] = OptionT {
-    Query.select(id).option
-  }
-
   override def find(name: String): OptionT[ConnectionIO, PermissionRow] = OptionT {
-    Query.select(name).option
-  }
-
-  override def find(pagination: Pagination): ConnectionIO[Chain[PermissionRow]] = {
-    Query.select(pagination).to[Chain]
-  }
-
-  override def delete(id: Id[FUUID]): ConnectionIO[Int] = {
-    Query.delete(id).run
+    query.select(name).option
   }
 
   override def findByUser(id: Id[FUUID]): ConnectionIO[Chain[PermissionRow]] = {
-    Query.selectByUser(id).to[Chain]
+    query.selectByUser(id).to[Chain]
   }
 
-  private object Query extends Query {
+  protected val query: Query = new Query
+
+  protected class Query extends BaseQuery {
 
     def insert(permission: PermissionRow): Update0 = sql"""
       INSERT INTO PERMISSIONS (ID, NAME) VALUES (${permission.id}, ${permission.name})
@@ -52,6 +37,17 @@ class PermissionDaoImpl extends PermissionDao {
 
     def select(id: Id[FUUID]): Query0[PermissionRow] = sql"""
       SELECT ID, NAME FROM PERMISSIONS WHERE ID = $id
+    """.query
+
+    def delete(id: Id[FUUID]): Update0 = sql"""
+      DELETE FROM PERMISSIONS WHERE ID = $id
+    """.update
+
+    def select(pagination: Pagination): Query0[PermissionRow] = sql"""
+      SELECT ID, NAME
+      FROM PERMISSIONS
+      ORDER BY CREATED_AT ASC
+      LIMIT ${pagination.size} OFFSET ${pagination.offset}
     """.query
 
     def selectByUser(id: Id[FUUID])(implicit d: DummyImplicit): Query0[PermissionRow] = sql"""
@@ -62,18 +58,8 @@ class PermissionDaoImpl extends PermissionDao {
       WHERE USERS_PERMISSIONS.USER_ID = $id
     """.query
 
-    def delete(id: Id[FUUID]): Update0 = sql"""
-      DELETE FROM PERMISSIONS WHERE ID = $id
-    """.update
-
     def select(name: String): Query0[PermissionRow] = sql"""
       SELECT ID, NAME FROM PERMISSIONS WHERE NAME = $name
-    """.query
-
-    def select(pagination: Pagination): Query0[PermissionRow] = sql"""
-      SELECT ID, NAME FROM PERMISSIONS
-      ORDER BY CREATED_AT ASC
-      LIMIT ${pagination.size} OFFSET ${pagination.offset}
     """.query
   }
 }

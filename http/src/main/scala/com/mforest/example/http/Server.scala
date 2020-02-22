@@ -25,7 +25,7 @@ class Server[F[_]: ContextShift: ConcurrentEffect: Timer](config: Config, apis: 
 
 object Server {
 
-  def apply[F[_]: ContextShift: ConcurrentEffect: Timer](config: Config, apis: Api[F]*): Server[F] = {
+  def apply[F[_]: ContextShift: ConcurrentEffect: Timer](config: Config, apis: Seq[Api[F]]): Server[F] = {
     new Server(config, apis)
   }
 }
