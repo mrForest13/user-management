@@ -7,8 +7,8 @@ import cats.data.EitherT.right
 import cats.effect.Sync
 import cats.implicits._
 import com.mforest.example.core.error.Error
-import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import com.mforest.example.http.response.StatusResponse.Fail
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
 trait ErrorHandlerSupport {
 

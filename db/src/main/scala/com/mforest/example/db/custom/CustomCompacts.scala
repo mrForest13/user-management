@@ -5,7 +5,7 @@ import doobie.util.compat.FactoryCompat
 
 import scala.collection.mutable
 
-trait CustomCompacts {
+private[db] trait CustomCompacts {
 
   implicit def chainCompact[Row]: FactoryCompat[Row, Chain[Row]] = new FactoryCompat[Row, Chain[Row]] {
 
