@@ -22,4 +22,4 @@ jobs:
     - name: Integration tests
       run: sbt it:test
     - name: End-to-end tests
-      run: sbt it:e2e
+      run: sbt e2e:test
