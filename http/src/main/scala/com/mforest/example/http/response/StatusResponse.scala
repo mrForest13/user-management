@@ -14,13 +14,17 @@ object StatusResponse {
   case class Ok[+T](data: T)   extends StatusResponse[T](ResponseType.OK)
   case class Fail[+T](data: T) extends StatusResponse[T](ResponseType.FAIL)
 
+  private def tuple[T](response: StatusResponse[T]): (ResponseType.Type, T) = {
+    (response.status, response.data)
+  }
+
   implicit def okDecoder[T: Decoder]: Decoder[StatusResponse.Ok[T]] =
-    Decoder.forProduct1("data")((data: T) => StatusResponse.Ok[T](data))
+    Decoder.forProduct1("data")(StatusResponse.Ok[T])
   implicit def okEncoder[T: Encoder]: Encoder[StatusResponse.Ok[T]] =
-    Encoder.forProduct2("status", "data")(response => (response.status, response.data))
+    Encoder.forProduct2("status", "data")(tuple[T](_))
 
   implicit def failDecoder[T: Decoder]: Decoder[StatusResponse.Fail[T]] =
-    Decoder.forProduct1("data")((data: T) => StatusResponse.Fail[T](data))
+    Decoder.forProduct1("data")(StatusResponse.Fail[T])
   implicit def failEncoder[T: Encoder]: Encoder[StatusResponse.Fail[T]] =
-    Encoder.forProduct2("status", "data")(response => (response.status, response.data))
+    Encoder.forProduct2("status", "data")(tuple[T](_))
 }

@@ -7,23 +7,23 @@ import com.mforest.example.service.model.Permission
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 import io.circe.{Decoder, Encoder}
 
-final case class PermissionForm(name: String) {
+final case class AddPermissionForm(name: String) {
 
   def toDto: Permission = {
     Permission(name)
   }
 }
 
-object PermissionForm {
+object AddPermissionForm {
 
-  implicit val validator: Validator[PermissionForm] = {
-    case form: PermissionForm if form.name.isEmpty =>
+  implicit val validator: Validator[AddPermissionForm] = {
+    case form: AddPermissionForm if form.name.isEmpty =>
       ValidationError(s"Name cannot be empty!").invalid
-    case form: PermissionForm if form.name.length > 100 =>
+    case form: AddPermissionForm if form.name.length > 100 =>
       ValidationError(s"Name cannot be longer than 100 characters!").invalid
-    case form @ (_: PermissionForm) => form.valid
+    case form @ (_: AddPermissionForm) => form.valid
   }
 
-  implicit val encoder: Encoder[PermissionForm] = deriveEncoder
-  implicit val decoder: Decoder[PermissionForm] = deriveDecoder
+  implicit val encoder: Encoder[AddPermissionForm] = deriveEncoder
+  implicit val decoder: Decoder[AddPermissionForm] = deriveDecoder
 }

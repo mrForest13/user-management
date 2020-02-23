@@ -20,7 +20,7 @@ trait UserApiDoc extends Doc {
 
   protected val addPermissionEndpoint: Endpoint[(FUUID, FUUID), Fail[Error], Ok[String], Nothing] = {
     endpoint.post
-      .tag("User")
+      .tag("User Api")
       .summary("Add permission for user")
       .in("users" / path[FUUID]("userId") / "permissions" / path[FUUID]("permissionId"))
       .out(
@@ -106,7 +106,7 @@ trait UserApiDoc extends Doc {
 
   protected val findUsersEndpoint: Endpoint[PaginationParams, Fail[Error], Ok[Chain[UserDto]], Nothing] = {
     endpoint.get
-      .tag("User")
+      .tag("User Api")
       .summary("Find users")
       .in("users")
       .in(query[Option[Int]]("size").example(10.some))

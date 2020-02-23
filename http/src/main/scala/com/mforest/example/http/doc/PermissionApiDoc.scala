@@ -6,7 +6,7 @@ import cats.data.Chain
 import cats.syntax.option._
 import com.mforest.example.core.error.Error
 import com.mforest.example.http.Doc
-import com.mforest.example.http.form.PermissionForm
+import com.mforest.example.http.form.AddPermissionForm
 import com.mforest.example.http.response.StatusResponse
 import com.mforest.example.service.dto.PermissionDto
 import io.chrisdavenport.fuuid.FUUID
@@ -19,13 +19,13 @@ trait PermissionApiDoc extends Doc {
     Seq(addPermissionEndpoint, deletePermissionEndpoint, findPermissionsEndpoint)
   }
 
-  protected val addPermissionEndpoint: Endpoint[PermissionForm, Fail[Error], Ok[String], Nothing] = {
+  protected val addPermissionEndpoint: Endpoint[AddPermissionForm, Fail[Error], Ok[String], Nothing] = {
     endpoint.post
-      .tag("Permission")
+      .tag("Permission Api")
       .summary("Add new permission")
       .in("permissions")
       .in(
-        jsonBody[PermissionForm]
+        jsonBody[AddPermissionForm]
           .example(PermissionApiDoc.form)
       )
       .out(
@@ -75,7 +75,7 @@ trait PermissionApiDoc extends Doc {
 
   protected val deletePermissionEndpoint: Endpoint[FUUID, Fail[Error], Ok[String], Nothing] = {
     endpoint.delete
-      .tag("Permission")
+      .tag("Permission Api")
       .summary("Delete permission")
       .in("permissions" / path[FUUID]("permissionId"))
       .out(
@@ -179,5 +179,5 @@ object PermissionApiDoc {
     name = "FIRST_EXAMPLE_PERMISSION"
   )
 
-  private val form = PermissionForm("EXAMPLE_PERMISSION")
+  private val form = AddPermissionForm("EXAMPLE_PERMISSION")
 }

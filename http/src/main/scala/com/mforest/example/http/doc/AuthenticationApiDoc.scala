@@ -59,7 +59,7 @@ trait AuthenticationApiDoc extends Doc {
 
   protected val logoutUserEndpoint: Endpoint[String, Fail[Error], Ok[String], Nothing] = {
     endpoint.delete
-      .tag("Authentication")
+      .tag("Authentication Api")
       .summary("delete user token")
       .in("api" / "logout")
       .in(auth.bearer)
