@@ -1,7 +1,7 @@
 ---
 name: Bugfix report
 about: Create a report to help us improve
-title: Bugfix/
+title: ''
 labels: bug
 assignees: mrForest13
 
