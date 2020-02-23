@@ -45,12 +45,13 @@ object Settings {
 
   lazy val root: Seq[Def.Setting[_]] = commonSettings
 
-  lazy val application: Seq[Def.Setting[_]] = commonSettings ++ buildInfoSettings ++ Dependencies.application.asSettings
+  lazy val application: Seq[Def.Setting[_]] = commonSettings ++ buildInfoSettings ++
+    Dependencies.application.asSettings ++ Testing.testSettings ++ Testing.e2eSettings
 
-  private lazy val moduleSettings: Seq[Def.Setting[_]] = commonSettings
+  private lazy val moduleSettings: Seq[Def.Setting[_]] = commonSettings ++ Testing.testSettings
 
-  lazy val http: Seq[Def.Setting[_]]    = moduleSettings ++ Dependencies.http.asSettings
-  lazy val service: Seq[Def.Setting[_]] = moduleSettings ++ Dependencies.service.asSettings
-  lazy val db: Seq[Def.Setting[_]]      = moduleSettings ++ Dependencies.db.asSettings
+  lazy val http: Seq[Def.Setting[_]]    = moduleSettings ++ Dependencies.http.asSettings ++ Testing.itSettings
+  lazy val service: Seq[Def.Setting[_]] = moduleSettings ++ Dependencies.service.asSettings ++ Testing.itSettings
+  lazy val db: Seq[Def.Setting[_]]      = moduleSettings ++ Dependencies.db.asSettings ++ Testing.itSettings
   lazy val core: Seq[Def.Setting[_]]    = moduleSettings ++ Dependencies.core.asSettings
 }

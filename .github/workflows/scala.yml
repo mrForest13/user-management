@@ -13,9 +13,13 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Build
-      run: sbt clean compile
     - name: Code Format & Style
       run: sbt scalafmtCheckAll scalastyle
-    - name: Run tests
+    - name: Build
+      run: sbt clean compile
+    - name: Unit tests
       run: sbt test
+    - name: Integration tests
+      run: sbt it:test
+    - name: End-to-end tests
+      run: sbt it:e2e
