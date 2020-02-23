@@ -23,6 +23,7 @@ object Dependencies {
     "com.github.pureconfig" %% "pureconfig-core"        % Versions.pureConfig,
     "com.github.pureconfig" %% "pureconfig-cats"        % Versions.pureConfig,
     "com.github.pureconfig" %% "pureconfig-circe"       % Versions.pureConfig,
+    "com.github.pureconfig" %% "pureconfig-generic"     % Versions.pureConfig,
     "com.github.pureconfig" %% "pureconfig-cats-effect" % Versions.pureConfig
   )
 
