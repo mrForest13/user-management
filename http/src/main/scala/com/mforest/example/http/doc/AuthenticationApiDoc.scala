@@ -33,6 +33,13 @@ trait AuthenticationApiDoc extends Doc {
       .errorOut(
         oneOf[Fail[Error]](
           statusMappingFromMatchType(
+            StatusCode.BadRequest,
+            jsonBody[Fail[Error.ValidationError]]
+              .example(
+                StatusResponse.Fail(Error.ValidationError("Invalid value for: header Authorization!"))
+              )
+          ),
+          statusMappingFromMatchType(
             StatusCode.Unauthorized,
             jsonBody[Fail[Error.UnauthorizedError]]
               .example(
@@ -76,6 +83,13 @@ trait AuthenticationApiDoc extends Doc {
       )
       .errorOut(
         oneOf[Fail[Error]](
+          statusMappingFromMatchType(
+            StatusCode.BadRequest,
+            jsonBody[Fail[Error.ValidationError]]
+              .example(
+                StatusResponse.Fail(Error.ValidationError("Invalid value for: header Authorization!"))
+              )
+          ),
           statusMappingFromMatchType(
             StatusCode.Forbidden,
             jsonBody[Fail[Error.ForbiddenError]]

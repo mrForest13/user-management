@@ -32,6 +32,13 @@ trait AuthorizationApiDoc extends Doc {
       .errorOut(
         oneOf[Fail[Error]](
           statusMappingFromMatchType(
+            StatusCode.BadRequest,
+            jsonBody[Fail[Error.ValidationError]]
+              .example(
+                StatusResponse.Fail(Error.ValidationError("Invalid value for: header Authorization!"))
+              )
+          ),
+          statusMappingFromMatchType(
             StatusCode.NotFound,
             jsonBody[Fail[Error.NotFoundError]]
               .example(

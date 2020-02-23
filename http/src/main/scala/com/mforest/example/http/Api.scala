@@ -1,7 +1,13 @@
 package com.mforest.example.http
 
 import cats.SemigroupK.ToSemigroupKOps
-import com.mforest.example.http.support._
+import com.mforest.example.http.support.{
+  AuthorizationSupport,
+  ErrorHandlerSupport,
+  HttpOptionsSupport,
+  HttpServerSupport,
+  ValidationSupport
+}
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 

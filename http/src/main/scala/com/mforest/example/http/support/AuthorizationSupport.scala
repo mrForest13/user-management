@@ -15,14 +15,21 @@ trait AuthorizationSupport {
   def hasPermission[F[_]: Sync, R](token: String, permission: String)(
       logic: () => EitherT[F, Error, R]
   )(implicit authService: AuthService[F]): EitherT[F, Fail[Error], (BarerToken, StatusResponse.Ok[R])] = {
-    val result = for {
+    checkPermissions(token, permission, logic)
+      .leftMap(StatusResponse.fail)
+      .map {
+        case (token, result) =>
+          token -> StatusResponse.ok(result)
+      }
+  }
+
+  private def checkPermissions[F[_]: Sync, R](token: String, permission: String, logic: () => EitherT[F, Error, R])(
+      implicit authService: AuthService[F]
+  ): EitherT[F, Error, (BarerToken, R)] = {
+    for {
       info   <- authService.authorize(token, permission)
       token  = BarerToken.apply[Id[FUUID]](info.authenticator)
       result <- logic.apply()
     } yield token -> result
-
-    result
-      .leftMap(StatusResponse.fail)
-      .map(t => t._1 -> StatusResponse.ok(t._2))
   }
 }

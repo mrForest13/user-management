@@ -3,7 +3,6 @@ package com.mforest.example.http.doc
 import java.util.UUID
 
 import cats.data.Chain
-import cats.syntax.option._
 import com.mforest.example.core.error.Error
 import com.mforest.example.core.permissions.Permissions
 import com.mforest.example.http.Doc
@@ -52,6 +51,15 @@ trait PermissionApiDoc extends Doc {
             jsonBody[Fail[Error.ConflictError]]
               .example(
                 StatusResponse.Fail(Error.ConflictError("The permission with name EXAMPLE_PERMISSION already exists!"))
+              )
+          ),
+          statusMappingFromMatchType(
+            StatusCode.Forbidden,
+            jsonBody[Fail[Error.ForbiddenError]]
+              .example(
+                StatusResponse.Fail(
+                  Error.ForbiddenError("The server is refusing to respond to it! You don't have permission!")
+                )
               )
           ),
           statusMappingFromMatchType(
@@ -108,6 +116,15 @@ trait PermissionApiDoc extends Doc {
               )
           ),
           statusMappingFromMatchType(
+            StatusCode.Forbidden,
+            jsonBody[Fail[Error.ForbiddenError]]
+              .example(
+                StatusResponse.Fail(
+                  Error.ForbiddenError("The server is refusing to respond to it! You don't have permission!")
+                )
+              )
+          ),
+          statusMappingFromMatchType(
             StatusCode.ServiceUnavailable,
             jsonBody[Fail[Error.UnavailableError]]
               .example(
@@ -159,6 +176,15 @@ trait PermissionApiDoc extends Doc {
       )
       .errorOut(
         oneOf[Fail[Error]](
+          statusMappingFromMatchType(
+            StatusCode.Forbidden,
+            jsonBody[Fail[Error.ForbiddenError]]
+              .example(
+                StatusResponse.Fail(
+                  Error.ForbiddenError("The server is refusing to respond to it! You don't have permission!")
+                )
+              )
+          ),
           statusMappingFromMatchType(
             StatusCode.ServiceUnavailable,
             jsonBody[Fail[Error.UnavailableError]]
