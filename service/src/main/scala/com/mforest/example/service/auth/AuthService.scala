@@ -1,7 +1,7 @@
 package com.mforest.example.service.auth
 
 import cats.Id
-import cats.data.{EitherT, NonEmptyChain}
+import cats.data.{EitherT, NonEmptyChain, OptionT}
 import cats.effect.Sync
 import com.mforest.example.core.config.auth.TokenConfig
 import com.mforest.example.core.error.Error
@@ -19,7 +19,7 @@ trait AuthService[F[_], I, V, A] extends Service {
 
   val name: String = "Auth-Service"
 
-  def authorize(raw: String, permissions: String*): EitherT[F, Error, AuthInfo]
+  def authorize(raw: String, permission: String): EitherT[F, Error, AuthInfo]
   def validateToken(raw: String): EitherT[F, Error, AuthInfo]
   def createToken(identity: I): F[A]
   def discardToken(token: A): F[A]
@@ -47,10 +47,13 @@ class AuthServiceImpl[F[_]: Sync, I, A](val auth: Authenticator[F, I, NonEmptyCh
     auth.discard(token)
   }
 
-  override def authorize(raw: String, permissions: String*): EitherT[F, Error, AuthInfo] = {
-    for {
-      info <- validateToken(raw)
-    } yield info
+  override def authorize(raw: String, permission: String): EitherT[F, Error, AuthInfo] = {
+    validateToken(raw).flatMap { info =>
+      OptionT
+        .fromOption(info.identity.find(_.name == permission))
+        .map(_ => info)
+        .toRight(ForbiddenError(forbidden))
+    }
   }
 
   private def info(request: SecuredRequest[F, NonEmptyChain[PermissionDto], A]): AuthInfo = {

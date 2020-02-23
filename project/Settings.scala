@@ -17,8 +17,6 @@ object Settings {
       "-unchecked",
       "-Xfatal-warnings",
       "-Xlint",
-      "-Yno-adapted-args",
-      "-Ypartial-unification",
       "-Ywarn-dead-code",
       "-Ywarn-numeric-widen",
       "-Ywarn-unused",
@@ -40,7 +38,7 @@ object Settings {
 
   private lazy val commonSettings: Seq[Def.Setting[_]] = Seq(
     version := "1.0.0-SNAPSHOT",
-    scalaVersion := "2.12.9",
+    scalaVersion := "2.13.1",
     organization := "com.mforest.example",
     scalacOptions ++= Options.scalaOptions
   ) ++ Options.styleOptions

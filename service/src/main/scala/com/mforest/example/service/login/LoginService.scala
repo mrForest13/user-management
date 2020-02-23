@@ -46,9 +46,9 @@ class LoginServiceImpl[F[_]: Async, A](dao: UserDao, hashEngine: HashEngine[F, A
     hashEngine.checkPassword(password, salt, hash)
   }
 
-  private def validateStatus(hash: VerificationStatus): Either[Error, Unit.type] = {
+  private def validateStatus(hash: VerificationStatus): Either[Error, Unit] = {
     hash match {
-      case Verified           => Unit.asRight
+      case Verified           => ().asRight
       case VerificationFailed => UnauthorizedError(unauthorized).asLeft
     }
   }

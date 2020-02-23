@@ -1,13 +1,20 @@
 package com.mforest.example.application
 
 import cats.Functor.ops.toAllFunctorOps
-import cats.effect.{ConcurrentEffect, ContextShift, ExitCode, IO, IOApp, Resource, Timer}
+import cats.effect.{Blocker, ConcurrentEffect, ContextShift, ExitCode, IO, IOApp, Resource, Timer}
 import com.mforest.example.application.info.BuildInfo
-import com.mforest.example.application.layer.DaoLayer
 import com.mforest.example.core.ConfigLoader
 import com.mforest.example.db.Database
+import com.mforest.example.db.dao.{PermissionDao, UserDao}
 import com.mforest.example.http.Server
-import com.mforest.example.http.api.{AuthenticationApi, PermissionApi, RegistrationApi, SwaggerApi, UserApi}
+import com.mforest.example.http.api.{
+  AuthenticationApi,
+  AuthorizationApi,
+  PermissionApi,
+  RegistrationApi,
+  SwaggerApi,
+  UserApi
+}
 import com.mforest.example.http.yaml.SwaggerDocs
 import com.mforest.example.service.auth.AuthService
 import com.mforest.example.service.hash.SCryptEngine
@@ -19,14 +26,16 @@ import doobie.util.ExecutionContexts
 import org.http4s.server.{Server => BlazeServer}
 import tsec.passwordhashers.jca.SCrypt
 
-object Application extends IOApp with DaoLayer {
+object Application extends IOApp {
 
   private def initApplication[F[_]: ContextShift: ConcurrentEffect: Timer]: Resource[F, BlazeServer[F]] = {
     for {
       config              <- ConfigLoader[F].load
-      connEc              <- ExecutionContexts.fixedThreadPool[F](config.database.poolSize)
-      txnEc               <- ExecutionContexts.cachedThreadPool[F]
-      transactor          <- Database[F](config.database).transactor(connEc, txnEc)
+      connectEC           <- ExecutionContexts.fixedThreadPool[F](config.database.poolSize)
+      blocker             <- Blocker[F]
+      transactor          <- Database[F](config.database).transactor(connectEC, blocker)
+      userDao             = UserDao()
+      permissionDao       = PermissionDao()
       hashEngine          = SCryptEngine[F]()
       registrationService = RegistrationService[F, SCrypt](userDao, hashEngine, transactor)
       permissionService   = PermissionService[F](permissionDao, transactor)
@@ -36,8 +45,9 @@ object Application extends IOApp with DaoLayer {
       registrationApi     = RegistrationApi[F](registrationService)
       permissionApi       = PermissionApi[F](permissionService)
       authenticationApi   = AuthenticationApi(loginService, authService)
+      authorizationApi    = AuthorizationApi(authService)
       userApi             = UserApi[F](userService)
-      apisWithDocs        = Seq(registrationApi, permissionApi, authenticationApi, userApi)
+      apisWithDocs        = Seq(registrationApi, permissionApi, authenticationApi, authorizationApi, userApi)
       swaggerDocs         = SwaggerDocs(config.app, BuildInfo.version, apisWithDocs)
       swaggerApi          = SwaggerApi[F](swaggerDocs.yaml)
       server              <- Server[F](config, apisWithDocs.+:(swaggerApi)).resource
