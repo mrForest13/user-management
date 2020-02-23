@@ -1,7 +1,6 @@
 package com.mforest.example.http.api
 
 import cats.Id
-import cats.SemigroupK.nonInheritedOps._
 import cats.effect.{ContextShift, Sync}
 import com.mforest.example.http.Api
 import com.mforest.example.http.doc.AuthenticationApiDoc
@@ -12,12 +11,9 @@ import com.mforest.example.service.auth.AuthService
 import com.mforest.example.service.login.LoginService
 import io.chrisdavenport.fuuid.FUUID
 import org.http4s.HttpRoutes
-import tsec.authentication.TSecBearerToken
 
-class AuthenticationApi[F[_]: Sync: ContextShift, V](
-    loginService: LoginService[F],
-    authService: AuthService[F, Id[FUUID], V, TSecBearerToken[Id[FUUID]]]
-) extends Api[F]
+class AuthenticationApi[F[_]: Sync: ContextShift](loginService: LoginService[F], authService: AuthService[F])
+    extends Api[F]
     with AuthenticationApiDoc {
 
   private val loginMsg: String  = "Login succeeded!"
@@ -45,10 +41,10 @@ class AuthenticationApi[F[_]: Sync: ContextShift, V](
 
 object AuthenticationApi {
 
-  def apply[F[_]: Sync: ContextShift, V](
+  def apply[F[_]: Sync: ContextShift](
       loginService: LoginService[F],
-      authService: AuthService[F, Id[FUUID], V, TSecBearerToken[Id[FUUID]]]
-  ): AuthenticationApi[F, V] = {
+      authService: AuthService[F]
+  ): AuthenticationApi[F] = {
     new AuthenticationApi(loginService, authService)
   }
 }

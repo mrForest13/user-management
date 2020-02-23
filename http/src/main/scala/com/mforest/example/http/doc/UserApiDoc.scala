@@ -5,8 +5,10 @@ import java.util.UUID
 import cats.data.Chain
 import cats.syntax.option._
 import com.mforest.example.core.error.Error
+import com.mforest.example.core.permissions.Permissions
 import com.mforest.example.http.Doc
 import com.mforest.example.http.response.StatusResponse
+import com.mforest.example.http.token.BarerToken
 import com.mforest.example.service.dto.{PermissionDto, UserDto}
 import io.chrisdavenport.fuuid.FUUID
 import sttp.model.StatusCode
@@ -18,11 +20,15 @@ trait UserApiDoc extends Doc {
     Seq(addPermissionEndpoint, revokePermissionEndpoint, findUsersEndpoint)
   }
 
-  protected val addPermissionEndpoint: Endpoint[(FUUID, FUUID), Fail[Error], Ok[String], Nothing] = {
+  protected val addPermissionEndpoint
+      : Endpoint[(FUUID, FUUID, Token), Fail[Error], (BarerToken, Ok[String]), Nothing] = {
     endpoint.post
       .tag("User Api")
       .summary("Add permission for user")
+      .description(s"Permission ${Permissions.USER_MANAGEMENT_ADD_PERMISSION_FOR_USERS}")
       .in("users" / path[FUUID]("userId") / "permissions" / path[FUUID]("permissionId"))
+      .in(auth.bearer)
+      .out(header[BarerToken]("Authorization"))
       .out(
         oneOf(
           statusMappingFromMatchType(
@@ -61,11 +67,15 @@ trait UserApiDoc extends Doc {
       )
   }
 
-  protected val revokePermissionEndpoint: Endpoint[(FUUID, FUUID), Fail[Error], Ok[String], Nothing] = {
+  protected val revokePermissionEndpoint
+      : Endpoint[(FUUID, FUUID, Token), Fail[Error], (BarerToken, Ok[String]), Nothing] = {
     endpoint.delete
       .tag("User Api")
       .summary("Revoke permission for user")
+      .description(s"Permission ${Permissions.USER_MANAGEMENT_REVOKE_PERMISSION_FOR_USERS}")
       .in("users" / path[FUUID]("userId") / "permissions" / path[FUUID]("permissionId"))
+      .in(auth.bearer)
+      .out(header[BarerToken]("Authorization"))
       .out(
         oneOf(
           statusMappingFromMatchType(
@@ -104,13 +114,17 @@ trait UserApiDoc extends Doc {
       )
   }
 
-  protected val findUsersEndpoint: Endpoint[PaginationParams, Fail[Error], Ok[Chain[UserDto]], Nothing] = {
+  protected val findUsersEndpoint
+      : Endpoint[PaginationParams, Fail[Error], (BarerToken, Ok[Chain[UserDto]]), Nothing] = {
     endpoint.get
       .tag("User Api")
       .summary("Find users")
+      .description(s"Permission ${Permissions.USER_MANAGEMENT_GET_USERS}")
       .in("users")
       .in(query[Option[Int]]("size").example(10.some))
       .in(query[Option[Int]]("page").example(0.some))
+      .in(auth.bearer)
+      .out(header[BarerToken]("Authorization"))
       .out(
         oneOf(
           statusMappingClassMatcher(

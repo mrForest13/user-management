@@ -1,43 +1,49 @@
 package com.mforest.example.http.api
 
-import cats.SemigroupK.nonInheritedOps._
 import cats.effect.{ContextShift, Sync}
 import com.mforest.example.core.model.Pagination
+import com.mforest.example.core.permissions.Permissions
 import com.mforest.example.http.Api
 import com.mforest.example.http.doc.PermissionApiDoc
-import com.mforest.example.http.response.StatusResponse
+import com.mforest.example.service.auth.AuthService
 import com.mforest.example.service.permission.PermissionService
 import org.http4s.HttpRoutes
 
-class PermissionApi[F[_]: Sync: ContextShift](permissionService: PermissionService[F])
+class PermissionApi[F[_]: Sync: ContextShift](service: PermissionService[F])(implicit authService: AuthService[F])
     extends Api[F]
     with PermissionApiDoc {
 
   override def routes: HttpRoutes[F] = addPermission <+> deletePermission <+> findPermissions
 
-  private val addPermission: HttpRoutes[F] = addPermissionEndpoint.toHandleRoutes { request =>
-    validate(request)
-      .map(_.toDto)
-      .flatMap(permissionService.addPermission)
-      .bimap(StatusResponse.fail, StatusResponse.ok)
+  private val addPermission: HttpRoutes[F] = addPermissionEndpoint.toHandleRoutes {
+    case (token, request) =>
+      hasPermission(token, Permissions.USER_MANAGEMENT_ADD_PERMISSION) { () =>
+        validate(request).map(_.toDto).flatMap(service.addPermission)
+      }
   }
 
-  private val deletePermission: HttpRoutes[F] = deletePermissionEndpoint.toHandleRoutes { id =>
-    permissionService
-      .deletePermission(id)
-      .bimap(StatusResponse.fail, StatusResponse.ok)
+  private val deletePermission: HttpRoutes[F] = deletePermissionEndpoint.toHandleRoutes {
+    case (id, token) =>
+      hasPermission(token, Permissions.USER_MANAGEMENT_DELETE_PERMISSION) { () =>
+        service.deletePermission(id)
+      }
   }
 
-  private val findPermissions: HttpRoutes[F] = findPermissionsEndpoint.toHandleRoutes { pagination =>
-    validate(Pagination(pagination))
-      .flatMap(permissionService.getPermissions)
-      .bimap(StatusResponse.fail, StatusResponse.ok)
+  private val findPermissions: HttpRoutes[F] = findPermissionsEndpoint.toHandleRoutes {
+    case (size, page, token) =>
+      hasPermission(token, Permissions.USER_MANAGEMENT_GET_PERMISSIONS) { () =>
+        validate(Pagination(size, page)).flatMap(service.getPermissions)
+      }
   }
 }
 
 object PermissionApi {
 
-  def apply[F[_]: Sync: ContextShift](loginService: PermissionService[F]): PermissionApi[F] = {
-    new PermissionApi(loginService)
+  def apply[F[_]: Sync: ContextShift](
+      permissionService: PermissionService[F],
+      authService: AuthService[F]
+  ): PermissionApi[F] = {
+    implicit val authServiceImplicit: AuthService[F] = authService
+    new PermissionApi[F](permissionService)
   }
 }

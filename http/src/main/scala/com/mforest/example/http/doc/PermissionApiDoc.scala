@@ -5,9 +5,11 @@ import java.util.UUID
 import cats.data.Chain
 import cats.syntax.option._
 import com.mforest.example.core.error.Error
+import com.mforest.example.core.permissions.Permissions
 import com.mforest.example.http.Doc
 import com.mforest.example.http.form.AddPermissionForm
 import com.mforest.example.http.response.StatusResponse
+import com.mforest.example.http.token.BarerToken
 import com.mforest.example.service.dto.PermissionDto
 import io.chrisdavenport.fuuid.FUUID
 import sttp.model.StatusCode
@@ -19,15 +21,19 @@ trait PermissionApiDoc extends Doc {
     Seq(addPermissionEndpoint, deletePermissionEndpoint, findPermissionsEndpoint)
   }
 
-  protected val addPermissionEndpoint: Endpoint[AddPermissionForm, Fail[Error], Ok[String], Nothing] = {
+  protected val addPermissionEndpoint
+      : Endpoint[(Token, AddPermissionForm), Fail[Error], (BarerToken, Ok[String]), Nothing] = {
     endpoint.post
       .tag("Permission Api")
       .summary("Add new permission")
+      .description(s"Permission ${Permissions.USER_MANAGEMENT_ADD_PERMISSION}")
       .in("permissions")
+      .in(auth.bearer)
       .in(
         jsonBody[AddPermissionForm]
           .example(PermissionApiDoc.form)
       )
+      .out(header[BarerToken]("Authorization"))
       .out(
         oneOf(
           statusMappingFromMatchType(
@@ -73,11 +79,14 @@ trait PermissionApiDoc extends Doc {
       )
   }
 
-  protected val deletePermissionEndpoint: Endpoint[FUUID, Fail[Error], Ok[String], Nothing] = {
+  protected val deletePermissionEndpoint: Endpoint[(FUUID, Token), Fail[Error], (BarerToken, Ok[String]), Nothing] = {
     endpoint.delete
       .tag("Permission Api")
       .summary("Delete permission")
+      .description(s"Permission ${Permissions.USER_MANAGEMENT_DELETE_PERMISSION}")
       .in("permissions" / path[FUUID]("permissionId"))
+      .in(auth.bearer)
+      .out(header[BarerToken]("Authorization"))
       .out(
         oneOf(
           statusMappingFromMatchType(
@@ -123,13 +132,17 @@ trait PermissionApiDoc extends Doc {
       )
   }
 
-  protected val findPermissionsEndpoint: Endpoint[PaginationParams, Fail[Error], Ok[Chain[PermissionDto]], Nothing] = {
+  protected val findPermissionsEndpoint
+      : Endpoint[PaginationParams, Fail[Error], (BarerToken, Ok[Chain[PermissionDto]]), Nothing] = {
     endpoint.get
       .tag("Permission Api")
       .summary("Find permissions")
+      .description(s"Permission ${Permissions.USER_MANAGEMENT_GET_PERMISSIONS}")
       .in("permissions")
       .in(query[Option[Int]]("size").example(10.some))
       .in(query[Option[Int]]("page").example(0.some))
+      .in(auth.bearer)
+      .out(header[BarerToken]("Authorization"))
       .out(
         oneOf(
           statusMappingClassMatcher(

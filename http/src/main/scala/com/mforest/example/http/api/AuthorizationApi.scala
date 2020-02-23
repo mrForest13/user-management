@@ -1,15 +1,13 @@
 package com.mforest.example.http.api
 
-import cats.data.NonEmptyChain
+import cats.data.EitherT
 import cats.effect.{ContextShift, Sync}
 import com.mforest.example.http.Api
 import com.mforest.example.http.doc.AuthorizationApiDoc
-import com.mforest.example.http.response.StatusResponse
 import com.mforest.example.service.auth.AuthService
-import com.mforest.example.service.dto.PermissionDto
 import org.http4s.HttpRoutes
 
-class AuthorizationApi[F[_]: Sync: ContextShift, I, A](authService: AuthService[F, I, NonEmptyChain[PermissionDto], A])
+class AuthorizationApi[F[_]: Sync: ContextShift](implicit authService: AuthService[F])
     extends Api[F]
     with AuthorizationApiDoc {
 
@@ -19,18 +17,16 @@ class AuthorizationApi[F[_]: Sync: ContextShift, I, A](authService: AuthService[
 
   private val validatePermission: HttpRoutes[F] = validatePermissionEndpoint.toHandleRoutes {
     case (permission, token) =>
-      authService
-        .authorize(token, permission)
-        .map(_ => validateMsg)
-        .bimap(StatusResponse.fail, StatusResponse.ok)
+      hasPermission(token, permission) { () =>
+        EitherT.rightT(validateMsg)
+      }
   }
 }
 
 object AuthorizationApi {
 
-  def apply[F[_]: Sync: ContextShift, I, A](
-      authService: AuthService[F, I, NonEmptyChain[PermissionDto], A]
-  ): AuthorizationApi[F, I, A] = {
-    new AuthorizationApi(authService)
+  def apply[F[_]: Sync: ContextShift](authService: AuthService[F]): AuthorizationApi[F] = {
+    implicit val authServiceImplicit: AuthService[F] = authService
+    new AuthorizationApi[F]
   }
 }

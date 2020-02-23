@@ -13,8 +13,8 @@ object Pagination {
 
   val default: Pagination = new Pagination(size = 10, page = 0)
 
-  def apply(tuple: (Option[Int], Option[Int])): Pagination = {
-    tuple.mapN(Pagination(_, _)).getOrElse(default)
+  def apply(size: Option[Int], page: Option[Int]): Pagination = {
+    (size, page).mapN(Pagination(_, _)).getOrElse(default)
   }
 
   implicit val validator: Validator[Pagination] = {
