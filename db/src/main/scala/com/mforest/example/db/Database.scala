@@ -8,7 +8,7 @@ import org.flywaydb.core.Flyway
 
 import scala.concurrent.ExecutionContext
 
-case class Database[F[_]: Async: ContextShift](config: DatabaseConfig) {
+class Database[F[_]: Async: ContextShift](config: DatabaseConfig) {
 
   def transactor(connectEC: ExecutionContext, blocker: Blocker): Resource[F, HikariTransactor[F]] = {
     for {

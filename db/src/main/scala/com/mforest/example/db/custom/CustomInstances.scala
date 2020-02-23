@@ -5,7 +5,7 @@ import doobie.util.meta.Meta
 import io.chrisdavenport.fuuid.FUUID
 import io.chrisdavenport.fuuid.doobie.implicits.FuuidType
 
-trait CustomInstances extends Instances {
+private[db] trait CustomInstances extends Instances {
 
-  implicit def fuuidType: Meta[FUUID] = FuuidType
+  implicit val fuuidType: Meta[FUUID] = FuuidType
 }
