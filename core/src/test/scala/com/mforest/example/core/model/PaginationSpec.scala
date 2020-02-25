@@ -1,5 +1,6 @@
 package com.mforest.example.core.model
 
+import cats.data.NonEmptyList
 import cats.implicits.catsSyntaxValidatedId
 import cats.syntax.OptionSyntax
 import com.mforest.example.core.error.Error.ValidationError
@@ -50,7 +51,7 @@ class PaginationSpec extends AnyWordSpec with Matchers with OptionSyntax {
         val page       = 0
         val pagination = new Pagination(size, page)
 
-        validate(pagination) shouldBe ValidationError("Size cannot be less than 0!").invalid
+        validate(pagination) shouldBe ValidationError("Size cannot be less than 0!").invalidNel
       }
 
       "respond with validation error for page less than 0" in {
@@ -58,7 +59,18 @@ class PaginationSpec extends AnyWordSpec with Matchers with OptionSyntax {
         val page       = -1
         val pagination = new Pagination(size, page)
 
-        validate(pagination) shouldBe ValidationError("Page cannot be less than 0!").invalid
+        validate(pagination) shouldBe ValidationError("Page cannot be less than 0!").invalidNel
+      }
+
+      "respond with validation error for page and size less than 0" in {
+        val size       = -1
+        val page       = -1
+        val pagination = new Pagination(size, page)
+
+        val sizeError = ValidationError("Size cannot be less than 0!")
+        val pageError = ValidationError("Page cannot be less than 0!")
+
+        validate(pagination) shouldBe NonEmptyList.of(sizeError, pageError).invalid
       }
     }
   }

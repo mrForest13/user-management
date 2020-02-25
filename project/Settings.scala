@@ -1,3 +1,4 @@
+import Dependencies.ModuleSettings
 import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.{Docker, dockerExposedPorts, dockerUsername}
 import org.scalafmt.sbt.ScalafmtPlugin.autoImport.scalafmtOnCompile
 import org.scalastyle.sbt.ScalastylePlugin.autoImport.{scalastyleFailOnError, scalastyleFailOnWarning}
@@ -6,8 +7,6 @@ import sbt.Keys.{organization, scalaVersion, version, _}
 import sbtbuildinfo.BuildInfoPlugin.autoImport.{BuildInfoKey, buildInfoKeys, buildInfoPackage}
 
 object Settings {
-
-  import Dependencies._
 
   private object Options {
     lazy val scalaOptions: Seq[String] = Seq(
