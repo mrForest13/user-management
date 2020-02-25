@@ -1,3 +1,5 @@
+import Dependencies.ModuleSettings
+import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.{Docker, dockerExposedPorts, dockerUsername}
 import org.scalafmt.sbt.ScalafmtPlugin.autoImport.scalafmtOnCompile
 import org.scalastyle.sbt.ScalastylePlugin.autoImport.{scalastyleFailOnError, scalastyleFailOnWarning}
 import sbt.Def
@@ -5,8 +7,6 @@ import sbt.Keys.{organization, scalaVersion, version, _}
 import sbtbuildinfo.BuildInfoPlugin.autoImport.{BuildInfoKey, buildInfoKeys, buildInfoPackage}
 
 object Settings {
-
-  import Dependencies._
 
   private object Options {
     lazy val scalaOptions: Seq[String] = Seq(
@@ -43,12 +43,23 @@ object Settings {
     scalacOptions ++= Options.scalaOptions
   ) ++ Options.styleOptions
 
-  lazy val root: Seq[Def.Setting[_]] = commonSettings
+  private lazy val dockerSettings: Seq[Def.Setting[_]] = Seq(
+    dockerUsername := Some("mforest"),
+    dockerExposedPorts ++= Seq(
+      sys.env.getOrElse("APP_PORT", "9000").toInt
+    )
+  )
 
-  lazy val application: Seq[Def.Setting[_]] = commonSettings ++ buildInfoSettings ++
+  private lazy val noDockerSettings: Seq[Def.Setting[_]] = Seq(
+    publish in Docker := {}
+  )
+
+  lazy val root: Seq[Def.Setting[_]] = commonSettings ++ noDockerSettings
+
+  lazy val application: Seq[Def.Setting[_]] = commonSettings ++ buildInfoSettings ++ dockerSettings ++
     Dependencies.application.asSettings ++ Testing.testSettings ++ Testing.e2eSettings
 
-  private lazy val moduleSettings: Seq[Def.Setting[_]] = commonSettings ++ Testing.testSettings
+  private lazy val moduleSettings: Seq[Def.Setting[_]] = commonSettings ++ noDockerSettings ++ Testing.testSettings
 
   lazy val http: Seq[Def.Setting[_]]    = moduleSettings ++ Dependencies.http.asSettings ++ Testing.itSettings
   lazy val service: Seq[Def.Setting[_]] = moduleSettings ++ Dependencies.service.asSettings ++ Testing.itSettings

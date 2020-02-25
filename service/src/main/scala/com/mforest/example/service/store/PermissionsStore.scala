@@ -1,9 +1,9 @@
 package com.mforest.example.service.store
 
+import cats.Functor.ops.toAllFunctorOps
 import cats.Id
 import cats.data.{NonEmptyChain, OptionT}
 import cats.effect.Sync
-import cats.implicits._
 import com.mforest.example.db.dao.PermissionDao
 import com.mforest.example.service.converter.DtoConverter.DtoChainConverter
 import com.mforest.example.service.dto.PermissionDto

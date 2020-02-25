@@ -18,6 +18,8 @@ lazy val root = (project in file("."))
  */
 lazy val application = project
   .enablePlugins(BuildInfoPlugin)
+  .enablePlugins(JavaAppPackaging)
+  .enablePlugins(DockerPlugin)
   .configs(Config.all: _*)
   .settings(name := "user-management", Settings.application)
   .dependsOn(core, db, service, http)

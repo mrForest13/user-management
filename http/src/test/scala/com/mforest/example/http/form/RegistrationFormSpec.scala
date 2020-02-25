@@ -24,7 +24,7 @@ object RegistrationFormSpec {
 
   private val formMock = RegistrationForm(
     email = "john.smith@gmail.com",
-    password = "example",
+    password = "examplea",
     firstName = "john",
     lastName = "smith",
     city = "London",
