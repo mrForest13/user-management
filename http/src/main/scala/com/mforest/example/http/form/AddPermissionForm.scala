@@ -21,7 +21,7 @@ object AddPermissionForm {
   private val nameRegex: Regex = "[A-Z]+(_[A-Z])*".r
 
   implicit val validator: Validator[AddPermissionForm] = { form =>
-    validate(nameRegex.matches(form.name), msg = "Wrong permission form. It should look like XXX_XXX!")
+    validate(!nameRegex.matches(form.name), msg = "Wrong permission form. It should look like XXX_XXX!")
       .combine(validate(form.name.length > 100, msg = "Name cannot be longer than 100 characters!"))
       .combine(validate(form.name.isEmpty, msg = "Name cannot be empty!"))
       .as(form)
