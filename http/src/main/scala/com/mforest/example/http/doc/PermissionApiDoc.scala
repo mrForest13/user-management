@@ -1,8 +1,7 @@
 package com.mforest.example.http.doc
 
-import java.util.UUID
-
 import cats.data.Chain
+import cats.effect.IO
 import com.mforest.example.core.error.Error
 import com.mforest.example.core.permissions.Permissions
 import com.mforest.example.http.Doc
@@ -214,7 +213,7 @@ trait PermissionApiDoc extends Doc {
 object PermissionApiDoc {
 
   private def dto = PermissionDto(
-    id = FUUID.fromUUID(UUID.randomUUID()),
+    id = FUUID.randomFUUID[IO].unsafeRunSync(),
     name = "FIRST_EXAMPLE_PERMISSION"
   )
 

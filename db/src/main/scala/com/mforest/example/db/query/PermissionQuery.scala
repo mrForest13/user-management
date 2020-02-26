@@ -29,7 +29,7 @@ private[db] class PermissionQuery extends Query[Id[FUUID], PermissionRow] {
       LIMIT ${pagination.size} OFFSET ${pagination.offset}
     """.query
 
-  def selectByUser(id: Id[FUUID])(implicit d: DummyImplicit): Query0[PermissionRow] = sql"""
+  def selectByUser(id: Id[FUUID]): Query0[PermissionRow] = sql"""
       SELECT ID, NAME
       FROM PERMISSIONS
       JOIN USERS_PERMISSIONS

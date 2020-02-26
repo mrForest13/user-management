@@ -1,8 +1,7 @@
 package com.mforest.example.http.doc
 
-import java.util.UUID
-
 import cats.data.Chain
+import cats.effect.IO
 import com.mforest.example.core.error.Error
 import com.mforest.example.core.permissions.Permissions
 import com.mforest.example.http.Doc
@@ -210,7 +209,7 @@ trait UserApiDoc extends Doc {
 object UserApiDoc {
 
   private def dto = UserDto(
-    id = FUUID.fromUUID(UUID.randomUUID()),
+    id = FUUID.randomFUUID[IO].unsafeRunSync(),
     email = "john.smith@gmail.com",
     firstName = "john",
     lastName = "smith",

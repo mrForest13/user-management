@@ -27,7 +27,7 @@ trait AuthService[F[_]] extends Service {
   case class AuthInfo(identity: NonEmptyChain[PermissionDto], authenticator: TSecBearerToken[Id[FUUID]])
 }
 
-class AuthServiceImpl[F[_]: Sync](val auth: BearerTokenAuthenticator[F, Id[FUUID], NonEmptyChain[PermissionDto]])
+class AuthServiceImpl[F[_]: Sync](auth: BearerTokenAuthenticator[F, Id[FUUID], NonEmptyChain[PermissionDto]])
     extends AuthService[F] {
 
   private val forbidden: String = "The server is refusing to respond to it! You don't have permission!"

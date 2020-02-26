@@ -45,9 +45,10 @@ object Dependencies {
   )
 
   private val doobie: Seq[ModuleID] = Seq(
-    "org.tpolecat" %% "doobie-core"     % Versions.doobie,
-    "org.tpolecat" %% "doobie-hikari"   % Versions.doobie,
-    "org.tpolecat" %% "doobie-postgres" % Versions.doobie
+    "org.tpolecat" %% "doobie-core"      % Versions.doobie,
+    "org.tpolecat" %% "doobie-hikari"    % Versions.doobie,
+    "org.tpolecat" %% "doobie-postgres"  % Versions.doobie,
+    "org.tpolecat" %% "doobie-scalatest" % Versions.doobie % "test,it,e2e"
   )
 
   private val flyway: Seq[ModuleID] = Seq(
@@ -84,8 +85,8 @@ object Dependencies {
   )
 
   private val test: Seq[ModuleID] = Seq(
-    "org.scalatest"              %% "scalatest" % Versions.scalaTest % Test,
-    "com.softwaremill.quicklens" %% "quicklens" % Versions.quicklens % Test
+    "org.scalatest"              %% "scalatest" % Versions.scalaTest % "test,it,e2e",
+    "com.softwaremill.quicklens" %% "quicklens" % Versions.quicklens % "test,it,e2e"
   )
 
   val application: Seq[ModuleID] = test ++ logging

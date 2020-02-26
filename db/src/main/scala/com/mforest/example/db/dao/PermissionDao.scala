@@ -14,7 +14,6 @@ trait PermissionDao extends Dao[Id[FUUID], PermissionRow] {
 
   def find(name: String): OptionT[ConnectionIO, PermissionRow]
   def findByUser(id: Id[FUUID]): ConnectionIO[Chain[PermissionRow]]
-  def delete(id: Id[FUUID]): ConnectionIO[Int]
 }
 
 class PermissionDaoImpl extends PermissionDao {
