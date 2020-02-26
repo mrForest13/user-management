@@ -17,29 +17,16 @@ jobs:
         java-version: 1.8
     - name: Build
       run: sbt clean compile
-
-  code-quality:
-    name: Code quality
-
-    needs: build
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
     - name: Code Format
       run: sbt scalafmtCheckAll scalastyle
     - name: Code Style
       run: sbt scalastyle
 
+
   unit-tests:
     name: Unite tests
 
-    needs: [build, code-quality]
+    needs: build
 
     runs-on: ubuntu-latest
 
@@ -53,9 +40,9 @@ jobs:
         run: sbt test
 
   it-tests:
-    name: Unite tests
+    name: Integration tests
 
-    needs: [build, code-quality]
+    needs: build
 
     runs-on: ubuntu-latest
 
@@ -63,6 +50,10 @@ jobs:
       postgres:
         image: postgres
         ports: ["5432:5432"]
+        env:
+          POSTGRES_DB: user-management
+          POSTGRES_USER: user-management
+          POSTGRES_PASSWORD: user-management
 
 
     steps:
@@ -72,12 +63,12 @@ jobs:
         with:
           java-version: 1.8
       - name: Unit tests
-        run: sbt test
+        run: sbt it:test
 
   e2e-tests:
     name: E2e tests
 
-    needs: [build, code-quality]
+    needs: build
 
     runs-on: ubuntu-latest
 
