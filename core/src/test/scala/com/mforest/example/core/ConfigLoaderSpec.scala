@@ -14,7 +14,7 @@ class ConfigLoaderSpec extends AnyWordSpec with Matchers {
     "call load" must {
 
       "respond with application config" in {
-        val config = ConfigLoader[IO].asResource
+        val config = ConfigLoader[IO].load
           .use(IO.pure)
           .unsafeRunSync()
 
@@ -26,7 +26,7 @@ class ConfigLoaderSpec extends AnyWordSpec with Matchers {
       }
 
       "respond with http config" in {
-        val config = ConfigLoader[IO].asResource
+        val config = ConfigLoader[IO].load
           .use(IO.pure)
           .unsafeRunSync()
 
@@ -34,7 +34,7 @@ class ConfigLoaderSpec extends AnyWordSpec with Matchers {
       }
 
       "respond with database config" in {
-        val config = ConfigLoader[IO].asResource
+        val config = ConfigLoader[IO].load
           .use(IO.pure)
           .unsafeRunSync()
 

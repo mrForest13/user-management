@@ -1,7 +1,11 @@
 package com.mforest.example.db.dao
 
+import cats.data.Chain
+import cats.effect.IO
+import com.mforest.example.core.model.Pagination
 import com.mforest.example.db.DatabaseSpec
-import com.mforest.example.db.row.PermissionRow
+import com.mforest.example.db.row.PermissionRowMock
+import io.chrisdavenport.fuuid.FUUID
 import org.postgresql.util.PSQLException
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
@@ -23,18 +27,16 @@ class PermissionDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec with
     "call insert" must {
 
       "respond with one inserted row" in {
-        val name = "EXAMPLE_PERMISSION"
-        val row  = PermissionRow(randomUnsafeId, name)
+        val row  = PermissionRowMock.gen
 
         val action = dao.insert(row)
 
         action.transact(transactor).unsafeRunSync() shouldBe 1
       }
 
-      "throw exception on unique field" in {
-        val name      = "EXAMPLE_PERMISSION"
-        val firstRow  = PermissionRow(randomUnsafeId, name)
-        val secondRow = PermissionRow(randomUnsafeId, name)
+      "throw exception on unique name field" in {
+        val firstRow  = PermissionRowMock.gen
+        val secondRow = PermissionRowMock.gen
 
         val action = dao.insert(firstRow).flatMap(_ => dao.insert(secondRow))
 
@@ -47,7 +49,7 @@ class PermissionDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec with
     "call delete" must {
 
       "respond with zero deleted row" in {
-        val id = randomUnsafeId
+        val id = FUUID.randomFUUID[IO].unsafeRunSync()
 
         val action = dao.delete(id)
 
@@ -57,8 +59,8 @@ class PermissionDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec with
       "respond with one deleted row" in {
         val firstName  = "FIRST_EXAMPLE_PERMISSION"
         val secondName = "SECOND_EXAMPLE_PERMISSION"
-        val firstRow   = PermissionRow(randomUnsafeId, firstName)
-        val secondRow  = PermissionRow(randomUnsafeId, secondName)
+        val firstRow   = PermissionRowMock.gen(firstName)
+        val secondRow  = PermissionRowMock.gen(secondName)
 
         val action = for {
           _     <- dao.insert(firstRow)
@@ -73,7 +75,7 @@ class PermissionDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec with
     "find by id" must {
 
       "respond with none" in {
-        val id = randomUnsafeId
+        val id = FUUID.randomFUUID[IO].unsafeRunSync()
 
         val action = dao.find(id)
 
@@ -83,8 +85,8 @@ class PermissionDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec with
       "respond with one record" in {
         val firstName  = "FIRST_EXAMPLE_PERMISSION"
         val secondName = "SECOND_EXAMPLE_PERMISSION"
-        val firstRow   = PermissionRow(randomUnsafeId, firstName)
-        val secondRow  = PermissionRow(randomUnsafeId, secondName)
+        val firstRow   = PermissionRowMock.gen(firstName)
+        val secondRow  = PermissionRowMock.gen(secondName)
 
         val action = for {
           _      <- dao.insert(firstRow)
@@ -99,7 +101,7 @@ class PermissionDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec with
     "find by name" must {
 
       "respond with none" in {
-        val id = randomUnsafeId
+        val id = FUUID.randomFUUID[IO].unsafeRunSync()
 
         val action = dao.find(id)
 
@@ -109,8 +111,8 @@ class PermissionDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec with
       "respond with one record" in {
         val firstName  = "FIRST_EXAMPLE_PERMISSION"
         val secondName = "SECOND_EXAMPLE_PERMISSION"
-        val firstRow   = PermissionRow(randomUnsafeId, firstName)
-        val secondRow  = PermissionRow(randomUnsafeId, secondName)
+        val firstRow   = PermissionRowMock.gen(firstName)
+        val secondRow  = PermissionRowMock.gen(secondName)
 
         val action = for {
           _      <- dao.insert(firstRow)
@@ -119,6 +121,49 @@ class PermissionDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec with
         } yield record
 
         action.transact(transactor).unsafeRunSync() shouldBe firstRow.some
+      }
+    }
+
+    "find with pagination" must {
+
+      "respond with empty chain" in {
+        val pagination = Pagination.default
+
+        val action = dao.find(pagination)
+
+        action.transact(transactor).unsafeRunSync() shouldBe Chain.empty
+      }
+
+      "respond with one record" in {
+        val pagination= new Pagination(size = 1, page = 0)
+        val firstName  = "FIRST_EXAMPLE_PERMISSION"
+        val secondName = "SECOND_EXAMPLE_PERMISSION"
+        val firstRow   = PermissionRowMock.gen(firstName)
+        val secondRow  = PermissionRowMock.gen(secondName)
+
+        val action = for {
+          _      <- dao.insert(firstRow)
+          _      <- dao.insert(secondRow)
+          record <- dao.find(pagination)
+        } yield record
+
+        action.transact(transactor).unsafeRunSync() shouldBe Chain(firstRow)
+      }
+
+      "respond with all records" in {
+        val pagination = Pagination.default
+        val firstName  = "FIRST_EXAMPLE_PERMISSION"
+        val secondName = "SECOND_EXAMPLE_PERMISSION"
+        val firstRow   = PermissionRowMock.gen(firstName)
+        val secondRow  = PermissionRowMock.gen(secondName)
+
+        val action = for {
+          _      <- dao.insert(firstRow)
+          _      <- dao.insert(secondRow)
+          record <- dao.find(pagination)
+        } yield record
+
+        action.transact(transactor).unsafeRunSync() shouldBe Chain(firstRow, secondRow)
       }
     }
   }

@@ -31,7 +31,7 @@ object Application extends IOApp {
 
   private def initApplication[F[_]: ContextShift: ConcurrentEffect: Timer]: Resource[F, BlazeServer[F]] = {
     for {
-      config              <- ConfigLoader[F].asResource
+      config              <- ConfigLoader[F].load
       connectEC           <- ExecutionContexts.fixedThreadPool[F](config.database.poolSize)
       blocker             <- Blocker[F]
       transactor          <- Database[F](config.database).transactor(connectEC, blocker)

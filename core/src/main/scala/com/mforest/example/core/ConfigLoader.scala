@@ -7,9 +7,7 @@ import pureconfig.module.catseffect.loadConfigF
 
 class ConfigLoader[F[_]: Sync] {
 
-  def load: F[Config] = loadConfigF[F, Config]
-
-  def asResource: Resource[F, Config] = Resource.liftF(load)
+  def load: Resource[F, Config] = Resource.liftF(loadConfigF[F, Config])
 }
 
 object ConfigLoader {
