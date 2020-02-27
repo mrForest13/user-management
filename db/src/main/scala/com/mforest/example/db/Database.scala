@@ -6,7 +6,7 @@ import doobie.hikari.HikariTransactor
 
 import scala.concurrent.ExecutionContext
 
-class Database[F[_]: Async: ContextShift](config: DatabaseConfig) {
+final class Database[F[_]: Async: ContextShift](config: DatabaseConfig) {
 
   def transactor(connectEC: ExecutionContext, blocker: Blocker): Resource[F, HikariTransactor[F]] = {
     HikariTransactor.newHikariTransactor[F](

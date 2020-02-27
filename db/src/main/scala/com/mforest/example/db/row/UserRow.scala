@@ -3,7 +3,7 @@ package com.mforest.example.db.row
 import cats.Id
 import io.chrisdavenport.fuuid.FUUID
 
-case class UserRow(
+final case class UserRow(
     id: Id[FUUID],
     email: String,
     hash: String,

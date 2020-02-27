@@ -6,7 +6,7 @@ import com.mforest.example.core.config.db.DatabaseConfig
 import doobie.hikari.HikariTransactor
 import org.flywaydb.core.Flyway
 
-class MigrationManager[F[_]: Async](config: DatabaseConfig) {
+final class MigrationManager[F[_]: Async](config: DatabaseConfig) {
 
   def migrate(transactor: HikariTransactor[F]): F[Unit] = migrate {
     flyway(transactor)

@@ -17,6 +17,10 @@ object UserRowMock {
     phone = "123456789"
   )
 
+  def gen(email: String): UserRow = {
+    gen.copy(email = email)
+  }
+
   private def randomUnsafeId: FUUID = {
     FUUID.randomFUUID[IO].unsafeRunSync()
   }

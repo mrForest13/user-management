@@ -17,7 +17,7 @@ trait UserDao extends Dao[Id[FUUID], UserRow] {
   def find(email: String): OptionT[ConnectionIO, UserRow]
 }
 
-class UserDaoImpl extends UserDao {
+final class UserDaoImpl extends UserDao {
 
   override def find(email: String): OptionT[ConnectionIO, UserRow] = OptionT {
     query.select(email).option

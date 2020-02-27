@@ -8,7 +8,7 @@ import doobie.util.query.Query0
 import doobie.util.update.Update0
 import io.chrisdavenport.fuuid.FUUID
 
-private[db] class PermissionQuery extends Query[Id[FUUID], PermissionRow] {
+private[db] final class PermissionQuery extends Query[Id[FUUID], PermissionRow] {
 
   def insert(permission: PermissionRow): Update0 = sql"""
       INSERT INTO PERMISSIONS (ID, NAME) VALUES (${permission.id}, ${permission.name})
