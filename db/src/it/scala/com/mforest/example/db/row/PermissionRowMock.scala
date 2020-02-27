@@ -5,12 +5,12 @@ import io.chrisdavenport.fuuid.FUUID
 
 object PermissionRowMock {
 
-  def gen: PermissionRow = {
+  def gen(): PermissionRow = {
     PermissionRow(randomUnsafeId, "EXAMPLE_PERMISSION")
   }
 
   def gen(name: String): PermissionRow = {
-    PermissionRow(randomUnsafeId, name)
+    gen().copy(name = name)
   }
 
   private def randomUnsafeId: FUUID = {

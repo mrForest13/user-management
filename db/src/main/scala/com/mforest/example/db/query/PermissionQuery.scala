@@ -10,6 +10,8 @@ import io.chrisdavenport.fuuid.FUUID
 
 private[db] final class PermissionQuery extends Query[Id[FUUID], PermissionRow] {
 
+  val tableName: String = "PERMISSIONS"
+
   def insert(permission: PermissionRow): Update0 = sql"""
       INSERT INTO PERMISSIONS (ID, NAME) VALUES (${permission.id}, ${permission.name})
     """.update
@@ -31,10 +33,10 @@ private[db] final class PermissionQuery extends Query[Id[FUUID], PermissionRow] 
 
   def selectByUser(id: Id[FUUID]): Query0[PermissionRow] = sql"""
       SELECT ID, NAME
-      FROM PERMISSIONS
-      JOIN USERS_PERMISSIONS
-      ON PERMISSIONS.ID = USERS_PERMISSIONS.PERMISSION_ID
-      WHERE USERS_PERMISSIONS.USER_ID = $id
+      FROM PERMISSIONS  P
+      JOIN USERS_PERMISSIONS UP
+      ON P.ID = UP.PERMISSION_ID
+      WHERE UP.USER_ID = $id
     """.query
 
   def select(name: String): Query0[PermissionRow] = sql"""

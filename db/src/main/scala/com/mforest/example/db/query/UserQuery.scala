@@ -10,6 +10,8 @@ import io.chrisdavenport.fuuid.FUUID
 
 private[db] final class UserQuery extends Query[Id[FUUID], UserRow] {
 
+  val tableName: String = "USERS"
+
   def insert(user: UserRow): Update0 = sql"""
       INSERT INTO USERS (ID, EMAIL, HASH, SALT, FIRST_NAME, LAST_NAME, CITY, COUNTRY, PHONE)
       VALUES (${user.id}, ${user.email}, ${user.hash}, ${user.salt}, ${user.firstName},

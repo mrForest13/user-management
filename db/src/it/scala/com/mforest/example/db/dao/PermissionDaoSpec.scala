@@ -28,7 +28,7 @@ final class PermissionDaoSpec extends AnyWordSpec with Matchers with DatabaseSpe
     "call insert" must {
 
       "respond with one inserted row" in {
-        val row = PermissionRowMock.gen
+        val row = PermissionRowMock.gen()
 
         val action = permissionDao.insert(row)
 
@@ -36,8 +36,8 @@ final class PermissionDaoSpec extends AnyWordSpec with Matchers with DatabaseSpe
       }
 
       "throw exception on unique name field" in {
-        val firstRow  = PermissionRowMock.gen
-        val secondRow = PermissionRowMock.gen
+        val firstRow  = PermissionRowMock.gen()
+        val secondRow = PermissionRowMock.gen()
 
         val action = for {
           _ <- permissionDao.insert(firstRow)
@@ -182,7 +182,7 @@ final class PermissionDaoSpec extends AnyWordSpec with Matchers with DatabaseSpe
       }
 
       "respond with user permissions" in {
-        val userRow    = UserRowMock.gen
+        val userRow    = UserRowMock.gen()
         val firstName  = "FIRST_EXAMPLE_PERMISSION"
         val secondName = "SECOND_EXAMPLE_PERMISSION"
         val firstRow   = PermissionRowMock.gen(firstName)

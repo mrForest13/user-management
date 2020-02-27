@@ -1,13 +1,17 @@
 package com.mforest.example.core
 
 import cats.effect.IO
+import cats.syntax.OptionSyntax
 import com.mforest.example.core.config.app.AppConfig
+import com.mforest.example.core.config.auth.TokenConfig
 import com.mforest.example.core.config.db.DatabaseConfig
 import com.mforest.example.core.config.http.HttpConfig
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class ConfigLoaderSpec extends AnyWordSpec with Matchers {
+import scala.concurrent.duration.DurationInt
+
+class ConfigLoaderSpec extends AnyWordSpec with Matchers with OptionSyntax {
 
   "ConfigLoader" when {
 
@@ -23,6 +27,14 @@ class ConfigLoaderSpec extends AnyWordSpec with Matchers {
           description = "Example",
           banner = "Example"
         )
+      }
+
+      "respond with token config" in {
+        val config = ConfigLoader[IO].load
+          .use(IO.pure)
+          .unsafeRunSync()
+
+        config.auth.token shouldBe TokenConfig(10.minutes, 2.minutes.some)
       }
 
       "respond with http config" in {

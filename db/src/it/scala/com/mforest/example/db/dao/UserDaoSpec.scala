@@ -28,7 +28,7 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec with
     "call insert" must {
 
       "respond with one inserted row" in {
-        val row = UserRowMock.gen
+        val row = UserRowMock.gen()
 
         val action = userDao.insert(row)
 
@@ -36,8 +36,8 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec with
       }
 
       "throw exception on unique email field" in {
-        val firstRow  = UserRowMock.gen
-        val secondRow = UserRowMock.gen
+        val firstRow  = UserRowMock.gen()
+        val secondRow = UserRowMock.gen()
 
         val action = for {
           _ <- userDao.insert(firstRow)
@@ -185,8 +185,8 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec with
       }
 
       "respond with one inserted row" in {
-        val userRow       = UserRowMock.gen
-        val permissionRow = PermissionRowMock.gen
+        val userRow       = UserRowMock.gen()
+        val permissionRow = PermissionRowMock.gen()
 
         val action = for {
           _     <- userDao.insert(userRow)
@@ -195,6 +195,20 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec with
         } yield count
 
         action.transact(transactor).unsafeRunSync() shouldBe 1
+      }
+
+      "do nothing on conflict" in {
+        val userRow       = UserRowMock.gen()
+        val permissionRow = PermissionRowMock.gen()
+
+        val action = for {
+          _     <- userDao.insert(userRow)
+          _     <- permissionDao.insert(permissionRow)
+          _     <- userDao.add(userRow.id, permissionRow.id)
+          count <- userDao.add(userRow.id, permissionRow.id)
+        } yield count
+
+        action.transact(transactor).unsafeRunSync() shouldBe 0
       }
     }
 
@@ -210,8 +224,8 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec with
       }
 
       "respond with one deleted row" in {
-        val userRow       = UserRowMock.gen
-        val permissionRow = PermissionRowMock.gen
+        val userRow       = UserRowMock.gen()
+        val permissionRow = PermissionRowMock.gen()
 
         val action = for {
           _     <- userDao.insert(userRow)

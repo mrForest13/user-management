@@ -5,7 +5,7 @@ import io.chrisdavenport.fuuid.FUUID
 
 object UserRowMock {
 
-  def gen: UserRow = UserRow(
+  def gen(): UserRow = UserRow(
     id = randomUnsafeId,
     email = "john.smith@gmail.com",
     hash = "hash",
@@ -18,7 +18,7 @@ object UserRowMock {
   )
 
   def gen(email: String): UserRow = {
-    gen.copy(email = email)
+    gen().copy(email = email)
   }
 
   private def randomUnsafeId: FUUID = {
