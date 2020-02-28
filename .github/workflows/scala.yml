@@ -1,9 +1,11 @@
-name: Scala CI
+name: Scala Continuous Integration
 
 on: [push]
 
 jobs:
+
   build:
+    name: Build Code
 
     runs-on: ubuntu-latest
 
@@ -13,13 +15,63 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Code Format & Style
-      run: sbt scalafmtCheckAll scalastyle
     - name: Build
       run: sbt clean compile
-    - name: Unit tests
-      run: sbt test
-    - name: Integration tests
-      run: sbt it:test
-    - name: End-to-end tests
-      run: sbt e2e:test
+    - name: Code Format
+      run: sbt scalafmtCheckAll scalastyle
+    - name: Code Style
+      run: sbt scalastyle
+
+
+  unit-tests:
+    name: Unite tests
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Tests
+        run: sbt test
+
+  it-tests:
+    name: Integration tests
+
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_DB: user-management
+          POSTGRES_USER: user-management
+          POSTGRES_PASSWORD: user-management
+
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Tests
+        run: sbt it:test
+
+  e2e-tests:
+    name: E2e tests
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Tests
+        run: sbt e2e:test
+

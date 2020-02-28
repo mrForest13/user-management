@@ -8,7 +8,9 @@ import doobie.util.query.Query0
 import doobie.util.update.Update0
 import io.chrisdavenport.fuuid.FUUID
 
-private[db] class UserQuery extends Query[Id[FUUID], UserRow] {
+private[db] final class UserQuery extends Query[Id[FUUID], UserRow] {
+
+  val tableName: String = "USERS"
 
   def insert(user: UserRow): Update0 = sql"""
       INSERT INTO USERS (ID, EMAIL, HASH, SALT, FIRST_NAME, LAST_NAME, CITY, COUNTRY, PHONE)

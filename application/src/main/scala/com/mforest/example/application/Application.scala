@@ -6,6 +6,7 @@ import com.mforest.example.application.info.BuildInfo
 import com.mforest.example.core.ConfigLoader
 import com.mforest.example.db.Database
 import com.mforest.example.db.dao.{PermissionDao, UserDao}
+import com.mforest.example.db.migration.MigrationManager
 import com.mforest.example.http.Server
 import com.mforest.example.http.api.{
   AuthenticationApi,
@@ -34,6 +35,7 @@ object Application extends IOApp {
       connectEC           <- ExecutionContexts.fixedThreadPool[F](config.database.poolSize)
       blocker             <- Blocker[F]
       transactor          <- Database[F](config.database).transactor(connectEC, blocker)
+      _                   = MigrationManager[F](config.database).migrate(transactor)
       userDao             = UserDao()
       permissionDao       = PermissionDao()
       hashEngine          = SCryptEngine[F]()
