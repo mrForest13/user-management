@@ -9,7 +9,7 @@ object Dependencies {
     val fuuid      = "0.3.0"
     val tapir      = "0.12.20"
     val tsec       = "0.2.0"
-    val jedis      = "3.2.0"
+    val jedis      = "2.10.2"
     val http4s     = "0.21.1"
     val logback    = "1.2.3"
     val doobie     = "0.8.8"

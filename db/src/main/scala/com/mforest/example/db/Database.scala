@@ -13,15 +13,15 @@ import scala.concurrent.ExecutionContext
 final class Database[F[_]: Async: ContextShift](config: PostgresConfig) extends AsJavaExtensions {
 
   val databaseConfig: HikariConfig = {
-    val hikari     = new HikariConfig();
+    val hikari     = new HikariConfig()
     val properties = new Properties()
 
     properties.putAll(config.properties.asJava)
 
-    hikari.setSchema(config.schema)
-    hikari.setUsername(config.user);
-    hikari.setPassword(config.password);
-    hikari.setDriverClassName(config.driver);
+    hikari.setUsername(config.user)
+    hikari.setPassword(config.password)
+    hikari.setJdbcUrl(config.postgresUrl)
+    hikari.setDriverClassName(config.driver)
     hikari.setDataSourceProperties(properties)
     hikari.setPoolName(config.maxConnectionsPoolName)
     hikari.setMaximumPoolSize(config.maxConnectionsPoolSize)

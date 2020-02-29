@@ -1,20 +1,42 @@
 package com.mforest.example.db.cache
 
+import cats.Functor.ops.toAllFunctorOps
 import cats.effect.{Resource, Sync}
+import cats.implicits.toFlatMapOps
 import com.mforest.example.core.config.db.RedisConfig
-import redis.clients.jedis.{JedisPool, JedisPoolConfig}
+import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig
+import redis.clients.jedis.{JedisPool, JedisPoolConfig, Protocol}
 
-class Cache[F[_]: Sync](config: RedisConfig) {
+final class Cache[F[_]: Sync](config: RedisConfig) {
 
-  def pool: Resource[F, JedisPool] = {
-    val alloc = Sync[F].delay(client)
-    val free  = (pool: JedisPool) => Sync[F].delay(pool.close())
+  private val startMsg = (size: Int) => s"Starting pool with max active instances: $size"
+  private val closeMsg = (size: Int) => s"Closing pool with active instances: $size"
 
-    Resource.make(alloc)(free)
+  def pool(): Resource[F, JedisPool] = {
+    Resource.make(client(new JedisPoolConfig))(close)
   }
 
-  private def client: JedisPool = {
-    new JedisPool(new JedisPoolConfig, config.host, config.port)
+  private def client(poolConfig: GenericObjectPoolConfig): F[JedisPool] = Sync[F].suspend {
+    Slf4jLogger
+      .create[F]
+      .flatMap(_.info(startMsg(poolConfig.getMaxTotal)))
+      .as {
+        new JedisPool(
+          poolConfig,
+          config.host,
+          config.port,
+          Protocol.DEFAULT_TIMEOUT,
+          config.password
+        )
+      }
+  }
+
+  private def close(pool: JedisPool): F[Unit] = Sync[F].suspend {
+    Slf4jLogger
+      .create[F]
+      .flatMap(_.info(closeMsg(pool.getNumActive)))
+      .as(pool.close())
   }
 }
 

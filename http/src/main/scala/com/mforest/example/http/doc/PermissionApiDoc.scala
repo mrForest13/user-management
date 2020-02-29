@@ -88,7 +88,7 @@ trait PermissionApiDoc extends Doc {
 
   protected val findUserPermissionsEndpoint
       : Endpoint[(FUUID, Token), Fail[Error], (BarerToken, Ok[Chain[PermissionDto]]), Nothing] = {
-    endpoint.delete
+    endpoint.get
       .tag("Permission Api")
       .summary("Find user permissions")
       .description(s"Permission ${Permissions.USER_MANAGEMENT_GET_USER_PERMISSIONS}")

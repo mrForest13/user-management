@@ -9,14 +9,7 @@ import com.mforest.example.db.cache.Cache
 import com.mforest.example.db.dao.{PermissionDao, UserDao}
 import com.mforest.example.db.migration.MigrationManager
 import com.mforest.example.http.Server
-import com.mforest.example.http.api.{
-  AuthenticationApi,
-  AuthorizationApi,
-  PermissionApi,
-  RegistrationApi,
-  SwaggerApi,
-  UserApi
-}
+import com.mforest.example.http.api._
 import com.mforest.example.http.yaml.SwaggerDocs
 import com.mforest.example.service.auth.AuthService
 import com.mforest.example.service.hash.SCryptEngine
@@ -36,8 +29,8 @@ object Application extends IOApp {
       connectEC           <- ExecutionContexts.fixedThreadPool[F](config.database.postgres.connectPoolSize)
       blocker             <- Blocker[F]
       transactor          <- Database[F](config.database.postgres).transactor(connectEC, blocker)
-      pool                <- Cache[F](config.database.redis).pool
       _                   = MigrationManager[F](config.database).migrate(transactor)
+      pool                <- Cache[F](config.database.redis).pool()
       userDao             = UserDao()
       permissionDao       = PermissionDao()
       hashEngine          = SCryptEngine[F]()

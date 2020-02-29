@@ -69,7 +69,11 @@ class ConfigLoaderSpec extends AnyWordSpec with Matchers with OptionSyntax {
           .use(IO.pure)
           .unsafeRunSync()
 
-        config.database.redis shouldBe RedisConfig(host = "localhost", port = 1)
+        config.database.redis shouldBe RedisConfig(
+          host = "localhost",
+          port = 1,
+          password = "user-management"
+        )
       }
 
       "respond with migration config" in {
