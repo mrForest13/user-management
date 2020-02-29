@@ -4,7 +4,7 @@ An implementation of the authorization/authentication microservice using functio
 
 ## What are we using?
 
-I am going to work with libraries from functional programing world. However, i would rather use libraries based on cats effect rather than others.
+I am going to work with libraries from functional programing world. However, i would rather use libraries based on cats effect.
 
 - [Cats Effect](https://typelevel.org/cats-effect/) - ast the app core
 - [Http4s](https://http4s.org/) - as the web server

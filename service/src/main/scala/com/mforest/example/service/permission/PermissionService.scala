@@ -6,12 +6,12 @@ import cats.data.{Chain, EitherT}
 import cats.effect.Async
 import cats.implicits._
 import com.mforest.example.core.error.Error
-import com.mforest.example.core.error.Error.{ConflictError, NotFoundError}
+import com.mforest.example.core.error.Error.ConflictError
 import com.mforest.example.core.model.Pagination
 import com.mforest.example.db.dao.PermissionDao
 import com.mforest.example.db.row.PermissionRow
 import com.mforest.example.service.Service
-import com.mforest.example.service.converter.DtoConverter.DtoChainConverter
+import com.mforest.example.service.converter.DtoConverter.ChainConverter
 import com.mforest.example.service.dto.PermissionDto
 import com.mforest.example.service.model.Permission
 import doobie.implicits.AsyncConnectionIO
@@ -23,14 +23,12 @@ trait PermissionService[F[_]] extends Service {
   val name: String = "Permission-Service"
 
   def getPermissions(pagination: Pagination): EitherT[F, Error, Chain[PermissionDto]]
+  def getPermissions(userId: Id[FUUID]): EitherT[F, Error, Chain[PermissionDto]]
   def addPermission(permission: Permission): EitherT[F, Error, String]
-  def deletePermission(id: Id[FUUID]): EitherT[F, Error, String]
 }
 
 class PermissionServiceImpl[F[_]: Async](dao: PermissionDao, transactor: Transactor[F]) extends PermissionService[F] {
 
-  private val deleted  = (id: Id[FUUID]) => s"The permission with id: $id has been deleted!"
-  private val notFound = (id: Id[FUUID]) => s"The permission with id: $id does not exist!"
   private val created  = (name: String) => s"The permission with name: $name has been created!"
   private val conflict = (name: String) => s"The permission with name: $name already exists!"
 
@@ -41,11 +39,12 @@ class PermissionServiceImpl[F[_]: Async](dao: PermissionDao, transactor: Transac
       .map(_ => created(permission.name))
   }
 
-  override def deletePermission(id: Id[FUUID]): EitherT[F, Error, String] = EitherT {
-    dao.delete(id).transact(transactor).map {
-      case count: Int if count > 0  => deleted(id).asRight
-      case count: Int if count <= 0 => NotFoundError(notFound(id)).asLeft
-    }
+  override def getPermissions(userId: Id[FUUID]): EitherT[F, Error, Chain[PermissionDto]] = EitherT {
+    dao
+      .findByUser(userId)
+      .transact(transactor)
+      .map(_.to[PermissionDto])
+      .map(_.asRight[Error])
   }
 
   override def getPermissions(pagination: Pagination): EitherT[F, Error, Chain[PermissionDto]] = EitherT {

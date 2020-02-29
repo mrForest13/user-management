@@ -5,6 +5,7 @@ import cats.effect.{Blocker, ConcurrentEffect, ContextShift, ExitCode, IO, IOApp
 import com.mforest.example.application.info.BuildInfo
 import com.mforest.example.core.ConfigLoader
 import com.mforest.example.db.Database
+import com.mforest.example.db.cache.Cache
 import com.mforest.example.db.dao.{PermissionDao, UserDao}
 import com.mforest.example.db.migration.MigrationManager
 import com.mforest.example.http.Server
@@ -32,9 +33,10 @@ object Application extends IOApp {
   private def initApplication[F[_]: ContextShift: ConcurrentEffect: Timer]: Resource[F, BlazeServer[F]] = {
     for {
       config              <- ConfigLoader[F].load
-      connectEC           <- ExecutionContexts.fixedThreadPool[F](config.database.poolSize)
+      connectEC           <- ExecutionContexts.fixedThreadPool[F](config.database.postgres.connectPoolSize)
       blocker             <- Blocker[F]
-      transactor          <- Database[F](config.database).transactor(connectEC, blocker)
+      transactor          <- Database[F](config.database.postgres).transactor(connectEC, blocker)
+      pool                <- Cache[F](config.database.redis).pool
       _                   = MigrationManager[F](config.database).migrate(transactor)
       userDao             = UserDao()
       permissionDao       = PermissionDao()
@@ -43,7 +45,7 @@ object Application extends IOApp {
       permissionService   = PermissionService[F](permissionDao, transactor)
       loginService        = LoginService[F, SCrypt](userDao, hashEngine, transactor)
       userService         = UserService[F](userDao, permissionDao, transactor)
-      authService         = AuthService[F](permissionDao, transactor, config.auth.token)
+      authService         = AuthService[F](permissionDao, transactor, pool, config.auth.token)
       registrationApi     = RegistrationApi[F](registrationService)
       permissionApi       = PermissionApi[F](permissionService, authService)
       authenticationApi   = AuthenticationApi(loginService, authService)

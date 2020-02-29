@@ -7,7 +7,7 @@ import sttp.tapir.docs.openapi.TapirOpenAPIDocs
 import sttp.tapir.openapi.circe.yaml.TapirOpenAPICirceYaml
 import sttp.tapir.openapi.{Contact, Info, License, OpenAPI}
 
-class SwaggerDocs(config: AppConfig, version: String, docs: Seq[Doc])
+final class SwaggerDocs(config: AppConfig, version: String, docs: Seq[Doc])
     extends AuthenticationApiDoc
     with PermissionApiDoc
     with RegistrationApiDoc

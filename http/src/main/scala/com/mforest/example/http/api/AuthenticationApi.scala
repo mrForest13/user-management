@@ -12,7 +12,7 @@ import com.mforest.example.service.login.LoginService
 import io.chrisdavenport.fuuid.FUUID
 import org.http4s.HttpRoutes
 
-class AuthenticationApi[F[_]: Sync: ContextShift](loginService: LoginService[F], authService: AuthService[F])
+final class AuthenticationApi[F[_]: Sync: ContextShift](loginService: LoginService[F], authService: AuthService[F])
     extends Api[F]
     with AuthenticationApiDoc {
 

@@ -8,6 +8,11 @@ import org.flywaydb.core.Flyway
 
 final class MigrationManager[F[_]: Async](config: DatabaseConfig) {
 
+  private val url: String      = config.postgres.postgresUrl
+  private val user: String     = config.postgres.user
+  private val table: String    = config.migration.migrationTable
+  private val password: String = config.postgres.password
+
   def migrate(transactor: HikariTransactor[F]): F[Unit] = migrate {
     flyway(transactor)
   }
@@ -20,20 +25,20 @@ final class MigrationManager[F[_]: Async](config: DatabaseConfig) {
     Flyway
       .configure()
       .dataSource(transactor.kernel)
-      .table(config.migrationTable)
+      .table(table)
       .load()
   }
 
   private def flyway(): Flyway = {
     Flyway
       .configure()
-      .dataSource(config.postgresUrl, config.user, config.password)
-      .table(config.migrationTable)
+      .dataSource(url, user, password)
+      .table(table)
       .load()
   }
 
   private def migrate(flyway: Flyway)(implicit F: Sync[F]): F[Unit] = {
-    if (config.migrate) F.delay(flyway.migrate()).as(()) else F.pure(())
+    if (config.migration.migrate) F.delay(flyway.migrate()).as(()) else F.pure(())
   }
 }
 

@@ -2,7 +2,7 @@ package com.mforest.example.service.auth
 
 import cats.Id
 import cats.data.{EitherT, NonEmptyChain, OptionT}
-import cats.effect.Sync
+import cats.effect.Async
 import com.mforest.example.core.config.auth.TokenConfig
 import com.mforest.example.core.error.Error
 import com.mforest.example.core.error.Error.ForbiddenError
@@ -13,6 +13,7 @@ import com.mforest.example.service.store.{BarerTokenStore, PermissionsStore}
 import doobie.util.transactor.Transactor
 import io.chrisdavenport.fuuid.FUUID
 import org.http4s.Request
+import redis.clients.jedis.JedisPool
 import tsec.authentication.{BearerTokenAuthenticator, SecuredRequest, TSecBearerToken, TSecTokenSettings}
 
 trait AuthService[F[_]] extends Service {
@@ -27,7 +28,7 @@ trait AuthService[F[_]] extends Service {
   case class AuthInfo(identity: NonEmptyChain[PermissionDto], authenticator: TSecBearerToken[Id[FUUID]])
 }
 
-class AuthServiceImpl[F[_]: Sync](auth: BearerTokenAuthenticator[F, Id[FUUID], NonEmptyChain[PermissionDto]])
+class AuthServiceImpl[F[_]: Async](auth: BearerTokenAuthenticator[F, Id[FUUID], NonEmptyChain[PermissionDto]])
     extends AuthService[F] {
 
   private val forbidden: String = "The server is refusing to respond to it! You don't have permission!"
@@ -63,9 +64,14 @@ class AuthServiceImpl[F[_]: Sync](auth: BearerTokenAuthenticator[F, Id[FUUID], N
 
 object AuthService {
 
-  def apply[F[_]: Sync](dao: PermissionDao, transactor: Transactor[F], config: TokenConfig): AuthService[F] = {
+  def apply[F[_]: Async](
+      dao: PermissionDao,
+      transactor: Transactor[F],
+      client: JedisPool,
+      config: TokenConfig
+  ): AuthService[F] = {
 
-    val tokenStore    = BarerTokenStore[F]
+    val tokenStore    = BarerTokenStore[F](client)
     val identityStore = PermissionsStore[F](dao, transactor)
     val settings      = TSecTokenSettings(config.expiryDuration, config.maxIdle)
 

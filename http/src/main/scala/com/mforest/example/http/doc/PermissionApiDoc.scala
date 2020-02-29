@@ -16,7 +16,7 @@ import sttp.tapir.Endpoint
 trait PermissionApiDoc extends Doc {
 
   override def endpoints: Seq[Endpoint[_, _, _, _]] = {
-    Seq(addPermissionEndpoint, deletePermissionEndpoint, findPermissionsEndpoint)
+    Seq(addPermissionEndpoint, findUserPermissionsEndpoint, findPermissionsEndpoint)
   }
 
   protected val addPermissionEndpoint
@@ -86,34 +86,31 @@ trait PermissionApiDoc extends Doc {
       )
   }
 
-  protected val deletePermissionEndpoint: Endpoint[(FUUID, Token), Fail[Error], (BarerToken, Ok[String]), Nothing] = {
+  protected val findUserPermissionsEndpoint
+      : Endpoint[(FUUID, Token), Fail[Error], (BarerToken, Ok[Chain[PermissionDto]]), Nothing] = {
     endpoint.delete
       .tag("Permission Api")
-      .summary("Delete permission")
-      .description(s"Permission ${Permissions.USER_MANAGEMENT_DELETE_PERMISSION}")
-      .in("permissions" / path[FUUID]("permissionId"))
+      .summary("Find user permissions")
+      .description(s"Permission ${Permissions.USER_MANAGEMENT_GET_USER_PERMISSIONS}")
+      .in("users" / path[FUUID]("userId") / "permissions")
       .in(auth.bearer)
       .out(header[BarerToken]("Authorization"))
       .out(
         oneOf(
-          statusMappingFromMatchType(
-            StatusCode.Created,
-            jsonBody[Ok[String]]
+          statusMappingClassMatcher(
+            StatusCode.Ok,
+            jsonBody[Ok[Chain[PermissionDto]]]
               .example(
-                StatusResponse.Ok("The permission with name EXAMPLE_PERMISSION has been deleted")
-              )
+                StatusResponse.Ok(
+                  Chain(PermissionApiDoc.dto, PermissionApiDoc.dto, PermissionApiDoc.dto)
+                )
+              ),
+            classOf[Ok[Chain[PermissionDto]]]
           )
         )
       )
       .errorOut(
         oneOf[Fail[Error]](
-          statusMappingFromMatchType(
-            StatusCode.NotFound,
-            jsonBody[Fail[Error.NotFoundError]]
-              .example(
-                StatusResponse.Fail(Error.NotFoundError("The permission with name EXAMPLE_PERMISSION not exists!"))
-              )
-          ),
           statusMappingFromMatchType(
             StatusCode.Forbidden,
             jsonBody[Fail[Error.ForbiddenError]]
@@ -134,7 +131,7 @@ trait PermissionApiDoc extends Doc {
             StatusCode.BadRequest,
             jsonBody[Fail[Error.ValidationError]]
               .example(
-                StatusResponse.Fail(Error.ValidationError("Permission cannot be empty!"))
+                StatusResponse.Fail(Error.ValidationError("Invalid value for: header Authorization!"))
               )
           ),
           statusMappingFromMatchType(

@@ -6,7 +6,7 @@ import org.http4s.HttpRoutes
 import sttp.tapir.Endpoint
 import sttp.tapir.swagger.http4s.SwaggerHttp4s
 
-class SwaggerApi[F[_]: Sync: ContextShift](yaml: String) extends SwaggerHttp4s(yaml) with Api[F] with Doc {
+final class SwaggerApi[F[_]: Sync: ContextShift](yaml: String) extends SwaggerHttp4s(yaml) with Api[F] with Doc {
 
   override def routes: HttpRoutes[F] = super.routes[F]
 

@@ -9,6 +9,7 @@ object Dependencies {
     val fuuid      = "0.3.0"
     val tapir      = "0.12.20"
     val tsec       = "0.2.0"
+    val jedis      = "3.2.0"
     val http4s     = "0.21.1"
     val logback    = "1.2.3"
     val doobie     = "0.8.8"
@@ -16,6 +17,7 @@ object Dependencies {
     val log4Cats   = "1.0.1"
     val scalaTest  = "3.1.0"
     val quicklens  = "1.4.12"
+    val scalaCache = "0.28.0"
     val pureConfig = "0.12.2"
   }
 
@@ -49,6 +51,17 @@ object Dependencies {
     "org.tpolecat" %% "doobie-hikari"    % Versions.doobie,
     "org.tpolecat" %% "doobie-postgres"  % Versions.doobie,
     "org.tpolecat" %% "doobie-scalatest" % Versions.doobie % "test,it,e2e"
+  )
+
+  private val jedis: Seq[ModuleID] = Seq(
+    "redis.clients" % "jedis" % Versions.jedis
+  )
+
+  private val cache: Seq[ModuleID] = Seq(
+    "com.github.cb372" %% "scalacache-core"        % Versions.scalaCache,
+    "com.github.cb372" %% "scalacache-redis"       % Versions.scalaCache,
+    "com.github.cb372" %% "scalacache-circe"       % Versions.scalaCache,
+    "com.github.cb372" %% "scalacache-cats-effect" % Versions.scalaCache
   )
 
   private val flyway: Seq[ModuleID] = Seq(
@@ -91,8 +104,8 @@ object Dependencies {
 
   val application: Seq[ModuleID] = test ++ logging
   val http: Seq[ModuleID]        = http4s ++ tapir ++ test ++ logging
-  val service: Seq[ModuleID]     = tsecV ++ test ++ logging
-  val db: Seq[ModuleID]          = doobie ++ flyway ++ test ++ logging
+  val service: Seq[ModuleID]     = tsecV ++ cache ++ test ++ logging
+  val db: Seq[ModuleID]          = doobie ++ jedis ++ flyway ++ test ++ logging
   val core: Seq[ModuleID]        = config ++ fuuid ++ cats ++ circe ++ test ++ logging
 
   implicit class ModuleSettings(modules: Seq[ModuleID]) {

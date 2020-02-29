@@ -9,11 +9,11 @@ import com.mforest.example.service.auth.AuthService
 import com.mforest.example.service.permission.PermissionService
 import org.http4s.HttpRoutes
 
-class PermissionApi[F[_]: Sync: ContextShift](service: PermissionService[F])(implicit authService: AuthService[F])
+final class PermissionApi[F[_]: Sync: ContextShift](service: PermissionService[F])(implicit authService: AuthService[F])
     extends Api[F]
     with PermissionApiDoc {
 
-  override def routes: HttpRoutes[F] = addPermission <+> deletePermission <+> findPermissions
+  override def routes: HttpRoutes[F] = addPermission <+> findUserPermissions <+> findPermissions
 
   private val addPermission: HttpRoutes[F] = addPermissionEndpoint.toHandleRoutes {
     case (token, request) =>
@@ -22,10 +22,10 @@ class PermissionApi[F[_]: Sync: ContextShift](service: PermissionService[F])(imp
       }
   }
 
-  private val deletePermission: HttpRoutes[F] = deletePermissionEndpoint.toHandleRoutes {
+  private val findUserPermissions: HttpRoutes[F] = findUserPermissionsEndpoint.toHandleRoutes {
     case (id, token) =>
-      hasPermission(token, Permissions.USER_MANAGEMENT_DELETE_PERMISSION) { () =>
-        service.deletePermission(id)
+      hasPermission(token, Permissions.USER_MANAGEMENT_GET_USER_PERMISSIONS) { () =>
+        service.getPermissions(id)
       }
   }
 

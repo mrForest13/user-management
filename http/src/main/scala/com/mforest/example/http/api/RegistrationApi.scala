@@ -7,7 +7,7 @@ import com.mforest.example.http.response.StatusResponse
 import com.mforest.example.service.registration.RegistrationService
 import org.http4s.HttpRoutes
 
-class RegistrationApi[F[_]: Sync: ContextShift](registrationService: RegistrationService[F])
+final class RegistrationApi[F[_]: Sync: ContextShift](registrationService: RegistrationService[F])
     extends Api[F]
     with RegistrationApiDoc {
 

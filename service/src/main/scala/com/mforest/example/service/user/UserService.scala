@@ -10,7 +10,7 @@ import com.mforest.example.core.error.Error.NotFoundError
 import com.mforest.example.core.model.Pagination
 import com.mforest.example.db.dao.{PermissionDao, UserDao}
 import com.mforest.example.service.Service
-import com.mforest.example.service.converter.DtoConverter.DtoChainConverter
+import com.mforest.example.service.converter.DtoConverter.ChainConverter
 import com.mforest.example.service.dto.UserDto
 import doobie.util.transactor.Transactor
 import io.chrisdavenport.fuuid.FUUID
