@@ -9,7 +9,7 @@ import com.mforest.example.service.auth.AuthService
 import com.mforest.example.service.user.UserService
 import org.http4s.HttpRoutes
 
-class UserApi[F[_]: Sync: ContextShift](userService: UserService[F])(implicit authService: AuthService[F])
+final class UserApi[F[_]: Sync: ContextShift](userService: UserService[F])(implicit authService: AuthService[F])
     extends Api[F]
     with UserApiDoc {
 

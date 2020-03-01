@@ -1,14 +1,15 @@
 package com.mforest.example.service.hash
 
+import cats.Functor.ops.toAllFunctorOps
 import cats.effect.Sync
-import cats.implicits._
+import cats.implicits.toFlatMapOps
 import io.chrisdavenport.fuuid.FUUID
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 import tsec.common.VerificationStatus
 import tsec.passwordhashers.PasswordHash
 import tsec.passwordhashers.jca.SCrypt
 
-class SCryptEngine[F[_]: Sync] extends HashEngine[F, SCrypt] {
+final class SCryptEngine[F[_]: Sync] extends HashEngine[F, SCrypt] {
 
   private val generated = (hash: String) => s"Generated hash: $hash"
   private val check     = (hash: String) => s"Checking hash: $hash"

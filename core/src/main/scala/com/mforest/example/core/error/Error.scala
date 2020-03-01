@@ -9,6 +9,7 @@ sealed trait Error {
 
 object Error {
 
+  def forbidden(reason: String): Error  = ForbiddenError(reason)
   def validation(reason: String): Error = ValidationError(reason)
 
   case class NotFoundError(reason: String)     extends Error

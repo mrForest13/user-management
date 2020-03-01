@@ -7,21 +7,13 @@ import com.mforest.example.db.DatabaseSpec
 import com.mforest.example.db.row.{PermissionRowMock, UserRowMock}
 import io.chrisdavenport.fuuid.FUUID
 import org.postgresql.util.PSQLException
-import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-final class PermissionDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec with BeforeAndAfterEach {
+final class PermissionDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
 
   private val userDao: UserDao             = UserDao()
   private val permissionDao: PermissionDao = PermissionDao()
-
-  override def beforeEach(): Unit = {
-    sql"""TRUNCATE TABLE USERS, PERMISSIONS, USERS_PERMISSIONS""".update.run
-      .transact(transactor)
-      .map(_ => ())
-      .unsafeRunSync()
-  }
 
   "PermissionDao" when {
 

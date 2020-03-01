@@ -5,7 +5,7 @@ import cats.Id
 import cats.data.{NonEmptyChain, OptionT}
 import cats.effect.Sync
 import com.mforest.example.db.dao.PermissionDao
-import com.mforest.example.service.converter.DtoConverter.DtoChainConverter
+import com.mforest.example.service.converter.DtoConverter.ChainConverter
 import com.mforest.example.service.dto.PermissionDto
 import doobie.syntax.ToConnectionIOOps
 import doobie.util.transactor.Transactor

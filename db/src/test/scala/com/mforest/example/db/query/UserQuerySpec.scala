@@ -8,7 +8,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 final class UserQuerySpec extends AnyWordSpec with Matchers {
 
-  private val query = new UserQuery
+  private val query: UserQuery = new UserQuery
 
   "UserQuery" when {
 

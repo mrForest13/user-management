@@ -1,6 +1,5 @@
 package com.mforest.example.service.login
 
-import cats.syntax.either._
 import cats.data.EitherT
 import cats.data.EitherT.{fromEither, right}
 import cats.effect.Async
@@ -22,7 +21,7 @@ trait LoginService[F[_]] extends Service {
   def login(credentials: Credentials): EitherT[F, Error, FUUID]
 }
 
-class LoginServiceImpl[F[_]: Async, A](dao: UserDao, hashEngine: HashEngine[F, A], transactor: Transactor[F])
+class LoginServiceImpl[F[_]: Async, A](userDao: UserDao, hashEngine: HashEngine[F, A], transactor: Transactor[F])
     extends LoginService[F] {
 
   private val unauthorized: String = s"Wrong email or password"
@@ -36,7 +35,7 @@ class LoginServiceImpl[F[_]: Async, A](dao: UserDao, hashEngine: HashEngine[F, A
   }
 
   private def findUser(email: String): EitherT[F, Error, UserRow] = {
-    dao
+    userDao
       .find(email)
       .transact(transactor)
       .toRight(UnauthorizedError(unauthorized))
@@ -56,7 +55,11 @@ class LoginServiceImpl[F[_]: Async, A](dao: UserDao, hashEngine: HashEngine[F, A
 
 object LoginService {
 
-  def apply[F[_]: Async, A](dao: UserDao, hashEngine: HashEngine[F, A], transactor: Transactor[F]): LoginService[F] = {
-    new LoginServiceImpl[F, A](dao, hashEngine, transactor)
+  def apply[F[_]: Async, A](
+      userDao: UserDao,
+      hashEngine: HashEngine[F, A],
+      transactor: Transactor[F]
+  ): LoginService[F] = {
+    new LoginServiceImpl[F, A](userDao, hashEngine, transactor)
   }
 }

@@ -1,6 +1,6 @@
 package com.mforest.example.http.form
 
-import cats.implicits._
+import cats.implicits.catsSyntaxValidatedId
 import com.mforest.example.core.validation.validate
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

@@ -2,7 +2,7 @@ package com.mforest.example.service.auth
 
 import cats.Id
 import cats.data.{EitherT, NonEmptyChain, OptionT}
-import cats.effect.Sync
+import cats.effect.Async
 import com.mforest.example.core.config.auth.TokenConfig
 import com.mforest.example.core.error.Error
 import com.mforest.example.core.error.Error.ForbiddenError
@@ -13,6 +13,7 @@ import com.mforest.example.service.store.{BarerTokenStore, PermissionsStore}
 import doobie.util.transactor.Transactor
 import io.chrisdavenport.fuuid.FUUID
 import org.http4s.Request
+import redis.clients.jedis.JedisPool
 import tsec.authentication.{BearerTokenAuthenticator, SecuredRequest, TSecBearerToken, TSecTokenSettings}
 
 trait AuthService[F[_]] extends Service {
@@ -20,40 +21,51 @@ trait AuthService[F[_]] extends Service {
   val name: String = "Auth-Service"
 
   def authorize(raw: String, permission: String): EitherT[F, Error, AuthInfo]
-  def validateToken(raw: String): EitherT[F, Error, AuthInfo]
-  def createToken(identity: Id[FUUID]): F[TSecBearerToken[Id[FUUID]]]
-  def discardToken(token: TSecBearerToken[Id[FUUID]]): F[TSecBearerToken[Id[FUUID]]]
+  def validateAndRenew(raw: String): EitherT[F, Error, AuthInfo]
+  def create(identity: Id[FUUID]): F[TSecBearerToken[Id[FUUID]]]
+  def discard(token: TSecBearerToken[Id[FUUID]]): F[TSecBearerToken[Id[FUUID]]]
 
   case class AuthInfo(identity: NonEmptyChain[PermissionDto], authenticator: TSecBearerToken[Id[FUUID]])
 }
 
-class AuthServiceImpl[F[_]: Sync](auth: BearerTokenAuthenticator[F, Id[FUUID], NonEmptyChain[PermissionDto]])
+class AuthServiceImpl[F[_]: Async](auth: BearerTokenAuthenticator[F, Id[FUUID], NonEmptyChain[PermissionDto]])
     extends AuthService[F] {
 
   private val forbidden: String = "The server is refusing to respond to it! You don't have permission!"
 
-  override def validateToken(raw: String): EitherT[F, Error, AuthInfo] = {
-    auth
-      .parseRaw(raw, Request())
-      .map(info)
-      .toRight(ForbiddenError(forbidden))
+  override def validateAndRenew(raw: String): EitherT[F, Error, AuthInfo] = {
+    for {
+      info      <- validate(raw)
+      refreshed <- renew(info.authenticator)
+    } yield AuthInfo(info.identity, refreshed)
   }
 
-  override def createToken(identity: Id[FUUID]): F[TSecBearerToken[Id[FUUID]]] = {
+  override def create(identity: Id[FUUID]): F[TSecBearerToken[Id[FUUID]]] = {
     auth.create(identity)
   }
 
-  override def discardToken(token: TSecBearerToken[Id[FUUID]]): F[TSecBearerToken[Id[FUUID]]] = {
+  override def discard(token: TSecBearerToken[Id[FUUID]]): F[TSecBearerToken[Id[FUUID]]] = {
     auth.discard(token)
   }
 
   override def authorize(raw: String, permission: String): EitherT[F, Error, AuthInfo] = {
-    validateToken(raw).flatMap { info =>
+    validateAndRenew(raw).flatMap { info =>
       OptionT
         .fromOption(info.identity.find(_.name == permission))
-        .map(_ => info)
-        .toRight(ForbiddenError(forbidden))
+        .toRight(Error.forbidden(forbidden))
+        .as(info)
     }
+  }
+
+  private def renew(token: TSecBearerToken[Id[FUUID]]): EitherT[F, Error, TSecBearerToken[Id[FUUID]]] = {
+    EitherT.right[Error](auth.renew(token))
+  }
+
+  private def validate(raw: String): EitherT[F, Error, AuthInfo] = {
+    auth
+      .parseRaw(raw, Request())
+      .map(info)
+      .toRight(ForbiddenError(forbidden))
   }
 
   private def info(request: SecuredRequest[F, NonEmptyChain[PermissionDto], TSecBearerToken[Id[FUUID]]]): AuthInfo = {
@@ -63,9 +75,14 @@ class AuthServiceImpl[F[_]: Sync](auth: BearerTokenAuthenticator[F, Id[FUUID], N
 
 object AuthService {
 
-  def apply[F[_]: Sync](dao: PermissionDao, transactor: Transactor[F], config: TokenConfig): AuthService[F] = {
+  def apply[F[_]: Async](
+      dao: PermissionDao,
+      transactor: Transactor[F],
+      client: JedisPool,
+      config: TokenConfig
+  ): AuthService[F] = {
 
-    val tokenStore    = BarerTokenStore[F]
+    val tokenStore    = BarerTokenStore[F](client, config)
     val identityStore = PermissionsStore[F](dao, transactor)
     val settings      = TSecTokenSettings(config.expiryDuration, config.maxIdle)
 

@@ -8,7 +8,7 @@ import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.{Server => BlazeServer}
 import org.http4s.syntax.KleisliSyntax
 
-class Server[F[_]: ContextShift: ConcurrentEffect: Timer](config: Config, apis: Seq[Api[F]])
+final class Server[F[_]: ContextShift: ConcurrentEffect: Timer](config: Config, apis: Seq[Api[F]])
     extends KleisliSyntax
     with ToSemigroupKOps {
 

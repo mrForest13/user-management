@@ -12,7 +12,7 @@ import com.mforest.example.service.login.LoginService
 import io.chrisdavenport.fuuid.FUUID
 import org.http4s.HttpRoutes
 
-class AuthenticationApi[F[_]: Sync: ContextShift](loginService: LoginService[F], authService: AuthService[F])
+final class AuthenticationApi[F[_]: Sync: ContextShift](loginService: LoginService[F], authService: AuthService[F])
     extends Api[F]
     with AuthenticationApiDoc {
 
@@ -25,16 +25,16 @@ class AuthenticationApi[F[_]: Sync: ContextShift](loginService: LoginService[F],
     validate(LoginForm(credentials))
       .map(_.toDto)
       .flatMap(loginService.login)
-      .semiflatMap(authService.createToken)
+      .semiflatMap(authService.create)
       .map(BarerToken.apply[Id[FUUID]])
       .bimap(StatusResponse.fail, _ -> StatusResponse.Ok(loginMsg))
   }
 
   private val logoutUser: HttpRoutes[F] = logoutUserEndpoint.toHandleRoutes { token =>
     authService
-      .validateToken(token)
+      .validateAndRenew(token)
       .map(_.authenticator)
-      .semiflatMap(authService.discardToken)
+      .semiflatMap(authService.discard)
       .bimap(StatusResponse.fail, _ => StatusResponse.Ok(logoutMsg))
   }
 }

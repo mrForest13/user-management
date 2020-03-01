@@ -7,7 +7,7 @@ import com.mforest.example.http.doc.AuthorizationApiDoc
 import com.mforest.example.service.auth.AuthService
 import org.http4s.HttpRoutes
 
-class AuthorizationApi[F[_]: Sync: ContextShift](implicit authService: AuthService[F])
+final class AuthorizationApi[F[_]: Sync: ContextShift](implicit authService: AuthService[F])
     extends Api[F]
     with AuthorizationApiDoc {
 

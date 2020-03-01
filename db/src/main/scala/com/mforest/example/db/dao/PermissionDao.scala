@@ -16,7 +16,7 @@ trait PermissionDao extends Dao[Id[FUUID], PermissionRow] {
   def findByUser(id: Id[FUUID]): ConnectionIO[Chain[PermissionRow]]
 }
 
-final class PermissionDaoImpl extends PermissionDao {
+private[dao] final class PermissionDaoImpl extends PermissionDao {
 
   override def find(name: String): OptionT[ConnectionIO, PermissionRow] = OptionT {
     query.select(name).option
