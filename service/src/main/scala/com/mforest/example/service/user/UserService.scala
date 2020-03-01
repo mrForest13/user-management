@@ -3,8 +3,6 @@ package com.mforest.example.service.user
 import cats.Id
 import cats.data.{Chain, EitherT}
 import cats.effect.Async
-import cats.implicits._
-import doobie.implicits.AsyncConnectionIO
 import com.mforest.example.core.error.Error
 import com.mforest.example.core.error.Error.NotFoundError
 import com.mforest.example.core.model.Pagination
@@ -12,6 +10,7 @@ import com.mforest.example.db.dao.{PermissionDao, UserDao}
 import com.mforest.example.service.Service
 import com.mforest.example.service.converter.DtoConverter.ChainConverter
 import com.mforest.example.service.dto.UserDto
+import doobie.implicits.AsyncConnectionIO
 import doobie.util.transactor.Transactor
 import io.chrisdavenport.fuuid.FUUID
 
@@ -45,7 +44,7 @@ class UserServiceImpl[F[_]: Async](userDao: UserDao, permissionDao: PermissionDa
       .flatMap(_ => userDao.find(userId))
       .toRight(Error.validation(notFound))
       .semiflatMap(_ => userDao.add(userId, permissionId))
-      .map(_ => created)
+      .as(created)
       .transact(transactor)
   }
 

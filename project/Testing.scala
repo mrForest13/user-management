@@ -1,6 +1,6 @@
 import Config.EndToEndTest
-import sbt.Keys._
-import sbt.{Def, _}
+import sbt.Keys.{fork, parallelExecution, scalaSource, resourceDirectory, baseDirectory}
+import sbt.{Def, inConfig, Test, IntegrationTest, Defaults}
 
 object Testing {
 

@@ -4,7 +4,6 @@ import cats.Id
 import cats.data.EitherT.right
 import cats.data.{Chain, EitherT}
 import cats.effect.Async
-import cats.implicits._
 import com.mforest.example.core.error.Error
 import com.mforest.example.core.error.Error.ConflictError
 import com.mforest.example.core.model.Pagination
@@ -36,7 +35,7 @@ class PermissionServiceImpl[F[_]: Async](dao: PermissionDao, transactor: Transac
     right(FUUID.randomFUUID[F])
       .map(prepareRow(permission))
       .flatMap(insertPermission)
-      .map(_ => created(permission.name))
+      .as(created(permission.name))
   }
 
   override def getPermissions(userId: Id[FUUID]): EitherT[F, Error, Chain[PermissionDto]] = EitherT {

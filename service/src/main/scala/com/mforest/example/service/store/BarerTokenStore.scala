@@ -24,7 +24,7 @@ class BarerTokenStore[F[_]: Async](cache: Cache[TSecBearerToken[Id[FUUID]]], con
   implicit val mode: Mode[F] = CatsEffect.modes.async[F]
 
   override def put(token: TSecBearerToken[Id[FUUID]]): F[TSecBearerToken[Id[FUUID]]] = {
-    cache.put(token.id)(token, config.max.some).as(token)
+    cache.put(token.id)(token, config.expiryDuration.some).as(token)
   }
 
   override def update(token: TSecBearerToken[Id[FUUID]]): F[TSecBearerToken[Id[FUUID]]] = {

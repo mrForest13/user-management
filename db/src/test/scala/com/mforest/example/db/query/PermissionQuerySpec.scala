@@ -8,7 +8,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 final class PermissionQuerySpec extends AnyWordSpec with Matchers {
 
-  private val query = new PermissionQuery
+  private val query: PermissionQuery = new PermissionQuery
 
   "PermissionQuery" when {
 

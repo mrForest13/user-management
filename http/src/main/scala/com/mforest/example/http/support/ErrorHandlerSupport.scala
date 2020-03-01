@@ -18,7 +18,7 @@ trait ErrorHandlerSupport extends EitherSyntax {
       either.value.handleErrorWith { th =>
         logger
           .error(th)(th.getMessage)
-          .map(_ => Fail(handle(th)).asLeft[R])
+          .as(Fail(handle(th)).asLeft[R])
       }
     }
   }

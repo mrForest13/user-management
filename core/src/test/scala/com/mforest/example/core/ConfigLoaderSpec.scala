@@ -11,7 +11,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 import scala.concurrent.duration.DurationInt
 
-class ConfigLoaderSpec extends AnyWordSpec with Matchers with OptionSyntax {
+final class ConfigLoaderSpec extends AnyWordSpec with Matchers with OptionSyntax {
 
   "ConfigLoader" when {
 

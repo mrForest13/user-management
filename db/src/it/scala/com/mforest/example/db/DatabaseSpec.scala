@@ -1,5 +1,6 @@
 package com.mforest.example.db
 
+import cats.Functor.ops.toAllFunctorOps
 import cats.effect.{Blocker, ContextShift, IO}
 import cats.syntax.OptionSyntax
 import com.mforest.example.core.config.Config
@@ -9,8 +10,8 @@ import doobie.scalatest.IOChecker
 import doobie.syntax.{AllSyntax, ToConnectionIOOps}
 import doobie.util.ExecutionContexts
 import doobie.util.transactor.Transactor
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import pureconfig.generic.auto.exportReader
 import pureconfig.module.catseffect.loadConfigF
 
@@ -51,7 +52,7 @@ trait DatabaseSpec
   def clean(): Unit = {
     sql"""TRUNCATE TABLE USERS, PERMISSIONS, USERS_PERMISSIONS""".update.run
       .transact(transactor)
-      .map(_ => ())
+      .as(())
       .unsafeRunSync()
   }
 }

@@ -2,7 +2,7 @@ package com.mforest.example.service.converter
 
 import cats.data.Chain
 
-object DtoConverter {
+private[service] object DtoConverter {
 
   type Converter[Row, Dto] = Row => Dto
 

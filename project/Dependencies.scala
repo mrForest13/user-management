@@ -1,5 +1,6 @@
+import sbt.Keys.libraryDependencies
+import sbt.librarymanagement.ModuleID
 import sbt.{Def, _}
-import sbt.Keys._
 
 object Dependencies {
 

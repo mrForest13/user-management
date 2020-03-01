@@ -22,7 +22,7 @@ trait RegistrationService[F[_]] extends Service {
   def register(user: User): EitherT[F, Error, String]
 }
 
-class RegistrationServiceImpl[F[_]: Async, A](dao: UserDao, hashEngine: HashEngine[F, A], transactor: Transactor[F])
+class RegistrationServiceImpl[F[_]: Async, A](userDao: UserDao, hashEngine: HashEngine[F, A], transactor: Transactor[F])
     extends RegistrationService[F] {
 
   private val created  = (email: String) => s"The user with email $email has been created"
@@ -39,12 +39,12 @@ class RegistrationServiceImpl[F[_]: Async, A](dao: UserDao, hashEngine: HashEngi
   }
 
   private def insertUser(row: UserRow): EitherT[F, Error, Int] = {
-    dao
+    userDao
       .find(row.email)
       .map(user => conflict(user.email))
       .map[Error](ConflictError)
       .toLeft(row)
-      .semiflatMap(dao.insert)
+      .semiflatMap(userDao.insert)
       .transact(transactor)
   }
 
@@ -70,10 +70,10 @@ class RegistrationServiceImpl[F[_]: Async, A](dao: UserDao, hashEngine: HashEngi
 object RegistrationService {
 
   def apply[F[_]: Async, A](
-      dao: UserDao,
+      userDao: UserDao,
       hashEngine: HashEngine[F, A],
       transactor: Transactor[F]
   ): RegistrationService[F] = {
-    new RegistrationServiceImpl[F, A](dao, hashEngine, transactor)
+    new RegistrationServiceImpl[F, A](userDao, hashEngine, transactor)
   }
 }

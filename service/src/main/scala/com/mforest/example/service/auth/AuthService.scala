@@ -21,7 +21,7 @@ trait AuthService[F[_]] extends Service {
   val name: String = "Auth-Service"
 
   def authorize(raw: String, permission: String): EitherT[F, Error, AuthInfo]
-  def validateAndRefresh(raw: String): EitherT[F, Error, AuthInfo]
+  def validateAndRenew(raw: String): EitherT[F, Error, AuthInfo]
   def create(identity: Id[FUUID]): F[TSecBearerToken[Id[FUUID]]]
   def discard(token: TSecBearerToken[Id[FUUID]]): F[TSecBearerToken[Id[FUUID]]]
 
@@ -33,10 +33,10 @@ class AuthServiceImpl[F[_]: Async](auth: BearerTokenAuthenticator[F, Id[FUUID], 
 
   private val forbidden: String = "The server is refusing to respond to it! You don't have permission!"
 
-  override def validateAndRefresh(raw: String): EitherT[F, Error, AuthInfo] = {
+  override def validateAndRenew(raw: String): EitherT[F, Error, AuthInfo] = {
     for {
       info      <- validate(raw)
-      refreshed <- refresh(info.authenticator)
+      refreshed <- renew(info.authenticator)
     } yield AuthInfo(info.identity, refreshed)
   }
 
@@ -49,15 +49,15 @@ class AuthServiceImpl[F[_]: Async](auth: BearerTokenAuthenticator[F, Id[FUUID], 
   }
 
   override def authorize(raw: String, permission: String): EitherT[F, Error, AuthInfo] = {
-    validateAndRefresh(raw).flatMap { info =>
+    validateAndRenew(raw).flatMap { info =>
       OptionT
         .fromOption(info.identity.find(_.name == permission))
-        .map(_ => info)
-        .toRight(ForbiddenError(forbidden))
+        .toRight(Error.forbidden(forbidden))
+        .as(info)
     }
   }
 
-  private def refresh(token: TSecBearerToken[Id[FUUID]]): EitherT[F, Error, TSecBearerToken[Id[FUUID]]] = {
+  private def renew(token: TSecBearerToken[Id[FUUID]]): EitherT[F, Error, TSecBearerToken[Id[FUUID]]] = {
     EitherT.right[Error](auth.renew(token))
   }
 

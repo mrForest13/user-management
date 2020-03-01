@@ -8,7 +8,7 @@ import com.mforest.example.core.validation.validate
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class PaginationSpec extends AnyWordSpec with Matchers with OptionSyntax {
+final class PaginationSpec extends AnyWordSpec with Matchers with OptionSyntax {
 
   "Pagination" when {
 

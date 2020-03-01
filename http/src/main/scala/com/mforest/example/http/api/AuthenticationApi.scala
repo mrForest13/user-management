@@ -32,7 +32,7 @@ final class AuthenticationApi[F[_]: Sync: ContextShift](loginService: LoginServi
 
   private val logoutUser: HttpRoutes[F] = logoutUserEndpoint.toHandleRoutes { token =>
     authService
-      .validateAndRefresh(token)
+      .validateAndRenew(token)
       .map(_.authenticator)
       .semiflatMap(authService.discard)
       .bimap(StatusResponse.fail, _ => StatusResponse.Ok(logoutMsg))
