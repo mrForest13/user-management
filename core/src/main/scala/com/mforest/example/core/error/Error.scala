@@ -9,6 +9,7 @@ sealed trait Error {
 
 object Error {
 
+  def notFound(reason: String): Error   = NotFoundError(reason)
   def forbidden(reason: String): Error  = ForbiddenError(reason)
   def validation(reason: String): Error = ValidationError(reason)
 

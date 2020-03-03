@@ -13,7 +13,7 @@ import io.circe.{Decoder, Encoder}
 import redis.clients.jedis.JedisPool
 import scalacache.redis.RedisCache
 import scalacache.serialization.circe.codec
-import scalacache.{Cache, CatsEffect, Mode}
+import scalacache.{Cache, CatsEffect, Flags, Mode}
 import tsec.authentication.{BackingStore, TSecBearerToken}
 import tsec.common.SecureRandomId
 
@@ -21,7 +21,8 @@ class BarerTokenStore[F[_]: Async](cache: Cache[TSecBearerToken[Id[FUUID]]], con
     extends BackingStore[F, SecureRandomId, TSecBearerToken[Id[FUUID]]]
     with OptionSyntax {
 
-  implicit val mode: Mode[F] = CatsEffect.modes.async[F]
+  private implicit val flags: Flags  = Flags.defaultFlags
+  private implicit val mode: Mode[F] = CatsEffect.modes.async[F]
 
   override def put(token: TSecBearerToken[Id[FUUID]]): F[TSecBearerToken[Id[FUUID]]] = {
     cache.put(token.id)(token, config.expiryDuration.some).as(token)

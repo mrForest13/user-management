@@ -121,9 +121,9 @@ private[http] trait UserApiDoc extends Doc {
           ),
           statusMappingFromMatchType(
             StatusCode.NotFound,
-            jsonBody[Fail[Error.ConflictError]]
+            jsonBody[Fail[Error.NotFoundError]]
               .example(
-                StatusResponse.Fail(Error.ConflictError("The User or permission does not exist!"))
+                StatusResponse.Fail(Error.NotFoundError("The User or permission does not exist!"))
               )
           ),
           statusMappingFromMatchType(

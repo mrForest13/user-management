@@ -5,8 +5,8 @@ import com.mforest.example.core.formatter.FuuidFormatter
 import com.mforest.example.db.row.UserRow
 import com.mforest.example.service.converter.DtoConverter.Converter
 import io.chrisdavenport.fuuid.FUUID
-import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
+import io.circe.{Decoder, Encoder}
 
 final case class UserDto(
     id: Id[FUUID],

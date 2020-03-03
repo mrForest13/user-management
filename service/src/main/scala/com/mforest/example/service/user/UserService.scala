@@ -19,7 +19,7 @@ import io.chrisdavenport.fuuid.FUUID
 import redis.clients.jedis.JedisPool
 import scalacache.redis.RedisCache
 import scalacache.serialization.circe.codec
-import scalacache.{Cache, CatsEffect, Mode}
+import scalacache.{Cache, CatsEffect, Flags, Mode}
 
 trait UserService[F[_]] extends Service {
 
@@ -37,7 +37,8 @@ class UserServiceImpl[F[_]: Async](
     transactor: Transactor[F]
 ) extends UserService[F] {
 
-  implicit val mode: Mode[F] = CatsEffect.modes.async[F]
+  private implicit val flags: Flags  = Flags.defaultFlags
+  private implicit val mode: Mode[F] = CatsEffect.modes.async[F]
 
   private val created  = "The permission has been added!"
   private val deleted  = "The permission has been revoked!"
@@ -62,7 +63,7 @@ class UserServiceImpl[F[_]: Async](
 
     action
       .transact(transactor)
-      .toRight(Error.validation(notFound))
+      .toRight(Error.notFound(notFound))
   }
 
   override def revokePermission(userId: Id[FUUID], permissionId: Id[FUUID]): EitherT[F, Error, String] = EitherT {

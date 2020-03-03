@@ -12,31 +12,35 @@ import doobie.syntax.ToConnectionIOOps
 import doobie.util.transactor.Transactor
 import io.chrisdavenport.fuuid.FUUID
 import redis.clients.jedis.JedisPool
-import scalacache.memoization.memoizeF
 import scalacache.redis.RedisCache
 import scalacache.serialization.circe.codec
 import scalacache.{Cache, CatsEffect, Flags, Mode}
 import tsec.authentication.IdentityStore
+
+import scala.language.implicitConversions
 
 class PermissionsStore[F[_]: Async](dao: PermissionDao, cache: Cache[Chain[PermissionDto]], transactor: Transactor[F])
     extends IdentityStore[F, Id[FUUID], NonEmptyChain[PermissionDto]]
     with ToConnectionIOOps
     with OptionSyntax {
 
-  private val mode: Mode[F] = CatsEffect.modes.async[F]
+  private implicit val flags: Flags  = Flags.defaultFlags
+  private implicit val mode: Mode[F] = CatsEffect.modes.async[F]
 
   override def get(userId: Id[FUUID]): OptionT[F, NonEmptyChain[PermissionDto]] = OptionT {
     getOrLoad(userId).map(NonEmptyChain.fromChain)
   }
 
   private def getOrLoad(userId: Id[FUUID]): F[Chain[PermissionDto]] = {
-    memoizeF[F, Chain[PermissionDto]](none) {
+    cache.cachingForMemoizeF(userId)(none) {
       dao
         .findByUser(userId)
         .transact(transactor)
         .map(_.to[PermissionDto])
-    }(cache, mode, Flags.defaultFlags)
+    }
   }
+
+  private implicit def toString(id: Id[FUUID]): String = id.toString()
 }
 
 object PermissionsStore {
