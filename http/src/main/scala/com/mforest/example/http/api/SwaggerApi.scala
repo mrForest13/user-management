@@ -6,7 +6,10 @@ import org.http4s.HttpRoutes
 import sttp.tapir.Endpoint
 import sttp.tapir.swagger.http4s.SwaggerHttp4s
 
-final class SwaggerApi[F[_]: Sync: ContextShift](yaml: String) extends SwaggerHttp4s(yaml) with Api[F] with Doc {
+final class SwaggerApi[F[_]: Sync: ContextShift](yaml: String, swagger: Map[String, Seq[String]])
+    extends SwaggerHttp4s(yaml = yaml, redirectQuery = swagger)
+    with Api[F]
+    with Doc {
 
   override def routes: HttpRoutes[F] = super.routes[F]
 
@@ -15,5 +18,7 @@ final class SwaggerApi[F[_]: Sync: ContextShift](yaml: String) extends SwaggerHt
 
 object SwaggerApi {
 
-  def apply[F[_]: Sync: ContextShift](yaml: String): SwaggerApi[F] = new SwaggerApi(yaml)
+  def apply[F[_]: Sync: ContextShift](yaml: String, swagger: Map[String, Seq[String]]): SwaggerApi[F] = {
+    new SwaggerApi(yaml, swagger)
+  }
 }

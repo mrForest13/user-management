@@ -11,7 +11,7 @@ import com.mforest.example.core.error.Error
 import com.mforest.example.http.response.StatusResponse.Fail
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
-trait ErrorHandlerSupport extends EitherSyntax {
+private[http] trait ErrorHandlerSupport extends EitherSyntax {
 
   def handleError[F[_]: Sync, R](either: EitherT[F, Fail[Error], R]): EitherT[F, Fail[Error], R] = {
     right(Slf4jLogger.create[F]).flatMapF { logger =>

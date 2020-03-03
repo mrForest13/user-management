@@ -3,7 +3,7 @@ package com.mforest.example.http.token
 import tsec.authentication.TSecBearerToken
 import tsec.common.SecureRandomId
 
-final class BarerToken(value: SecureRandomId) {
+private[http] final class BarerToken(value: SecureRandomId) {
 
   override def toString: String = s"Bearer $value"
 }

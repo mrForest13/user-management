@@ -8,7 +8,7 @@ import sttp.model.StatusCode
 import sttp.tapir.Endpoint
 import sttp.tapir.model.UsernamePassword
 
-trait AuthenticationApiDoc extends Doc {
+private[http] trait AuthenticationApiDoc extends Doc {
 
   override def endpoints: Seq[Endpoint[_, _, _, _]] = Seq(loginUserEndpoint, logoutUserEndpoint)
 

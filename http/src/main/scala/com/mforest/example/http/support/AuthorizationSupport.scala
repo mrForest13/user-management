@@ -10,7 +10,7 @@ import com.mforest.example.http.token.BarerToken
 import com.mforest.example.service.auth.AuthService
 import io.chrisdavenport.fuuid.FUUID
 
-trait AuthorizationSupport {
+private[http] trait AuthorizationSupport {
 
   def hasPermission[F[_]: Sync, R](token: String, permission: String)(
       logic: () => EitherT[F, Error, R]

@@ -1,5 +1,6 @@
 package com.mforest.example.http.api
 
+import cats.Functor.ops.toAllFunctorOps
 import cats.Id
 import cats.effect.{ContextShift, Sync}
 import com.mforest.example.http.Api
@@ -35,7 +36,8 @@ final class AuthenticationApi[F[_]: Sync: ContextShift](loginService: LoginServi
       .validateAndRenew(token)
       .map(_.authenticator)
       .semiflatMap(authService.discard)
-      .bimap(StatusResponse.fail, _ => StatusResponse.Ok(logoutMsg))
+      .leftMap(StatusResponse.fail)
+      .as(StatusResponse.Ok(logoutMsg))
   }
 }
 

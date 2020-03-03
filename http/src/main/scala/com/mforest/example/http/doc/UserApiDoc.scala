@@ -12,7 +12,7 @@ import io.chrisdavenport.fuuid.FUUID
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
 
-trait UserApiDoc extends Doc {
+private[http] trait UserApiDoc extends Doc {
 
   override def endpoints: Seq[Endpoint[_, _, _, _]] = {
     Seq(addPermissionEndpoint, revokePermissionEndpoint, findUsersEndpoint)
@@ -121,9 +121,9 @@ trait UserApiDoc extends Doc {
           ),
           statusMappingFromMatchType(
             StatusCode.NotFound,
-            jsonBody[Fail[Error.ConflictError]]
+            jsonBody[Fail[Error.NotFoundError]]
               .example(
-                StatusResponse.Fail(Error.ConflictError("The User or permission does not exist!"))
+                StatusResponse.Fail(Error.NotFoundError("The User or permission does not exist!"))
               )
           ),
           statusMappingFromMatchType(
