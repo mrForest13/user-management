@@ -16,8 +16,8 @@ object Dependencies {
     val doobie     = "0.8.8"
     val flyway     = "6.2.4"
     val log4Cats   = "1.0.1"
+    val catsTest   = "0.4.0"
     val scalaTest  = "3.1.0"
-    val quicklens  = "1.4.12"
     val scalaCache = "0.28.0"
     val pureConfig = "0.12.2"
   }
@@ -99,8 +99,9 @@ object Dependencies {
   )
 
   private val test: Seq[ModuleID] = Seq(
-    "org.scalatest"              %% "scalatest" % Versions.scalaTest % "test,it,e2e",
-    "com.softwaremill.quicklens" %% "quicklens" % Versions.quicklens % "test,it,e2e"
+    "org.scalatest"  %% "scalatest"                     % Versions.scalaTest % "test,it,e2e",
+    "org.scalamock"  %% "scalamock"                     % "4.4.0"            % "test,it,e2e",
+    "com.codecommit" %% "cats-effect-testing-scalatest" % Versions.catsTest  % "test,it,e2e"
   )
 
   val application: Seq[ModuleID] = test ++ logging

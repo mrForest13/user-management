@@ -1,30 +1,27 @@
 package com.mforest.example.db
 
 import cats.Functor.ops.toAllFunctorOps
-import cats.effect.{Blocker, ContextShift, IO}
+import cats.effect.{Blocker, IO}
 import cats.syntax.OptionSyntax
 import com.mforest.example.core.config.Config
 import com.mforest.example.core.config.db.PostgresConfig
 import com.mforest.example.db.migration.MigrationManager
 import doobie.scalatest.IOChecker
 import doobie.syntax.{AllSyntax, ToConnectionIOOps}
-import doobie.util.ExecutionContexts
 import doobie.util.transactor.Transactor
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
+import org.scalatest.{AsyncTestSuite, BeforeAndAfterAll, BeforeAndAfterEach}
 import pureconfig.generic.auto.exportReader
 import pureconfig.module.catseffect.loadConfigF
 
 trait DatabaseSpec
-    extends AnyWordSpec
-    with IOChecker
-    with ToConnectionIOOps
+    extends IOChecker
+    with AsyncIOSpec
     with BeforeAndAfterEach
     with BeforeAndAfterAll
-    with AllSyntax
-    with OptionSyntax {
-
-  implicit val ioContextShift: ContextShift[IO] = IO.contextShift(ExecutionContexts.synchronous)
+    with ToConnectionIOOps
+    with OptionSyntax
+    with AllSyntax {
+  this: AsyncTestSuite =>
 
   override def beforeEach(): Unit = clean()
 
@@ -33,7 +30,7 @@ trait DatabaseSpec
   override val transactor: Transactor[IO] = {
     (for {
       config     <- loadConfigF[IO, Config]
-      blocker    = Blocker.liftExecutionContext(ExecutionContexts.synchronous)
+      blocker    = Blocker.liftExecutionContext(executionContext)
       transactor = testTransactor(config.database.postgres, blocker)
       _          <- MigrationManager[IO](config.database).migrate()
     } yield transactor).unsafeRunSync()

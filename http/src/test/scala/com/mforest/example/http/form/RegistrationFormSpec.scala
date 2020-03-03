@@ -1,7 +1,10 @@
 package com.mforest.example.http.form
 
+import cats.effect.IO
 import cats.implicits.catsSyntaxValidatedId
 import com.mforest.example.core.validation.validate
+import org.http4s.EntityEncoder
+import org.http4s.circe.jsonEncoderOf
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -22,7 +25,7 @@ class RegistrationFormSpec extends AnyWordSpec with Matchers {
 
 object RegistrationFormSpec {
 
-  private val formMock = RegistrationForm(
+  val formMock: RegistrationForm = RegistrationForm(
     email = "john.smith@gmail.com",
     password = "examplea",
     firstName = "john",
@@ -31,4 +34,7 @@ object RegistrationFormSpec {
     country = "England",
     phone = "123456789"
   )
+
+  implicit val encoder: EntityEncoder[IO, RegistrationForm] =
+    jsonEncoderOf[IO, RegistrationForm]
 }
