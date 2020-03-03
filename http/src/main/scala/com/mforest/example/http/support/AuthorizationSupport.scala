@@ -8,14 +8,19 @@ import com.mforest.example.http.response.StatusResponse
 import com.mforest.example.http.response.StatusResponse.Fail
 import com.mforest.example.http.token.BarerToken
 import com.mforest.example.service.auth.AuthService
+import com.mforest.example.service.model.AuthInfo
 import io.chrisdavenport.fuuid.FUUID
 
-private[http] trait AuthorizationSupport {
+private[http] trait AuthorizationSupport[F[_]] {
 
-  def hasPermission[F[_]: Sync, R](token: String, permission: String)(
-      logic: () => EitherT[F, Error, R]
-  )(implicit authService: AuthService[F]): EitherT[F, Fail[Error], (BarerToken, StatusResponse.Ok[R])] = {
-    checkPermissions(token, permission, logic)
+  def authService: AuthService[F]
+
+  type Logic[R] = AuthInfo => EitherT[F, Error, R]
+
+  type AuthorizeResult[R] = EitherT[F, Fail[Error], (BarerToken, StatusResponse.Ok[R])]
+
+  def authorize[R](token: String, permission: String)(logic: Logic[R])(implicit S: Sync[F]): AuthorizeResult[R] = {
+    check(token, permission, logic)
       .leftMap(StatusResponse.fail)
       .map {
         case (token, result) =>
@@ -23,13 +28,13 @@ private[http] trait AuthorizationSupport {
       }
   }
 
-  private def checkPermissions[F[_]: Sync, R](token: String, permission: String, logic: () => EitherT[F, Error, R])(
-      implicit authService: AuthService[F]
-  ): EitherT[F, Error, (BarerToken, R)] = {
+  type CheckResult[R] = EitherT[F, Error, (BarerToken, R)]
+
+  private def check[R](token: String, permission: String, logic: Logic[R])(implicit S: Sync[F]): CheckResult[R] = {
     for {
       info   <- authService.authorize(token, permission)
       token  = BarerToken.apply[Id[FUUID]](info.authenticator)
-      result <- logic.apply()
+      result <- logic.apply(info)
     } yield token -> result
   }
 }

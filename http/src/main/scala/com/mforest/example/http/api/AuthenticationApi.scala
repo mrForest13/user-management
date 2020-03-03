@@ -7,14 +7,16 @@ import com.mforest.example.http.Api
 import com.mforest.example.http.doc.AuthenticationApiDoc
 import com.mforest.example.http.form.LoginForm
 import com.mforest.example.http.response.StatusResponse
+import com.mforest.example.http.support.AuthorizationSupport
 import com.mforest.example.http.token.BarerToken
 import com.mforest.example.service.auth.AuthService
 import com.mforest.example.service.login.LoginService
 import io.chrisdavenport.fuuid.FUUID
 import org.http4s.HttpRoutes
 
-final class AuthenticationApi[F[_]: Sync: ContextShift](loginService: LoginService[F], authService: AuthService[F])
+final class AuthenticationApi[F[_]: Sync: ContextShift](loginService: LoginService[F], val authService: AuthService[F])
     extends Api[F]
+    with AuthorizationSupport[F]
     with AuthenticationApiDoc {
 
   private val loginMsg: String  = "Login succeeded!"

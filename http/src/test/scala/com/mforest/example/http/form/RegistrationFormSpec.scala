@@ -8,7 +8,7 @@ import org.http4s.circe.jsonEncoderOf
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class RegistrationFormSpec extends AnyWordSpec with Matchers {
+final class RegistrationFormSpec extends AnyWordSpec with Matchers {
 
   "RegistrationForm" when {
 

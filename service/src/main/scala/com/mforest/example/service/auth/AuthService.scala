@@ -8,6 +8,7 @@ import com.mforest.example.core.error.Error
 import com.mforest.example.db.dao.PermissionDao
 import com.mforest.example.service.Service
 import com.mforest.example.service.dto.PermissionDto
+import com.mforest.example.service.model.AuthInfo
 import com.mforest.example.service.store.{BarerTokenStore, PermissionsStore}
 import doobie.util.transactor.Transactor
 import io.chrisdavenport.fuuid.FUUID
@@ -23,8 +24,6 @@ trait AuthService[F[_]] extends Service {
   def validateAndRenew(raw: String): EitherT[F, Error, AuthInfo]
   def create(identity: Id[FUUID]): F[TSecBearerToken[Id[FUUID]]]
   def discard(token: TSecBearerToken[Id[FUUID]]): F[TSecBearerToken[Id[FUUID]]]
-
-  case class AuthInfo(identity: NonEmptyChain[PermissionDto], authenticator: TSecBearerToken[Id[FUUID]])
 }
 
 class AuthServiceImpl[F[_]: Async](auth: BearerTokenAuthenticator[F, Id[FUUID], NonEmptyChain[PermissionDto]])

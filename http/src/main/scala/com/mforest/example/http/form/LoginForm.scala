@@ -15,9 +15,13 @@ final case class LoginForm(credentials: UsernamePassword) {
 
 object LoginForm {
 
+  def apply(username: String, password: Option[String]): LoginForm = {
+    new LoginForm(UsernamePassword(username, password))
+  }
+
   implicit val validator: Validator[LoginForm] = { form =>
     validate(form.credentials.password.forall(_.isEmpty), msg = "Password cannot be empty!")
-      .combine(validate(form.credentials.password.isEmpty, msg = "Password cannot be empty!"))
+      .combine(validate(form.credentials.username.isEmpty, msg = "Username cannot be empty!"))
       .as(form)
   }
 }

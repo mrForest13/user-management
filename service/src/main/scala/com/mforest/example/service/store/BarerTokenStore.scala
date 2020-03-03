@@ -6,10 +6,8 @@ import cats.data.OptionT
 import cats.effect.Async
 import cats.syntax.OptionSyntax
 import com.mforest.example.core.config.auth.TokenConfig
-import com.mforest.example.core.formatter.{FuuidFormatter, InstantFormatter}
+import com.mforest.example.service.formatter.TokenFormatter
 import io.chrisdavenport.fuuid.FUUID
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.circe.{Decoder, Encoder}
 import redis.clients.jedis.JedisPool
 import scalacache.redis.RedisCache
 import scalacache.serialization.circe.codec
@@ -41,7 +39,7 @@ class BarerTokenStore[F[_]: Async](cache: Cache[TSecBearerToken[Id[FUUID]]], con
   }
 }
 
-object BarerTokenStore extends FuuidFormatter with InstantFormatter {
+object BarerTokenStore extends TokenFormatter {
 
   def apply[F[_]: Async](
       client: JedisPool,
@@ -49,10 +47,4 @@ object BarerTokenStore extends FuuidFormatter with InstantFormatter {
   ): BackingStore[F, SecureRandomId, TSecBearerToken[Id[FUUID]]] = {
     new BarerTokenStore(RedisCache(client), config)
   }
-
-  implicit val encoder1: Encoder[SecureRandomId] = Encoder.encodeString.asInstanceOf[Encoder[SecureRandomId]]
-  implicit val decoder1: Decoder[SecureRandomId] = Decoder.decodeString.asInstanceOf[Decoder[SecureRandomId]]
-
-  implicit val encoder: Encoder[TSecBearerToken[Id[FUUID]]] = deriveEncoder
-  implicit val decoder: Decoder[TSecBearerToken[Id[FUUID]]] = deriveDecoder
 }

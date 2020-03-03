@@ -1,17 +1,28 @@
 package com.mforest.example.http.doc
 
+import java.time.Instant
+
+import cats.data.NonEmptyChain
+import cats.effect.IO
+import cats.syntax.OptionSyntax
 import com.mforest.example.core.error.Error
 import com.mforest.example.http.Doc
 import com.mforest.example.http.response.StatusResponse
 import com.mforest.example.http.token.BarerToken
+import com.mforest.example.service.dto.PermissionDto
+import com.mforest.example.service.model.AuthInfo
+import io.chrisdavenport.fuuid.FUUID
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
+import tsec.authentication.TSecBearerToken
+import tsec.common.SecureRandomId
 
 private[http] trait AuthorizationApiDoc extends Doc {
 
   override def endpoints: Seq[Endpoint[_, _, _, _]] = Seq(validatePermissionEndpoint)
 
-  protected val validatePermissionEndpoint: Endpoint[(Token, Token), Fail[Error], (BarerToken, Ok[String]), Nothing] = {
+  protected val validatePermissionEndpoint
+      : Endpoint[(Token, Token), Fail[Error], (BarerToken, Ok[AuthInfo]), Nothing] = {
     endpoint.get
       .tag("Authorization Api")
       .summary("Valid user permission")
@@ -20,12 +31,13 @@ private[http] trait AuthorizationApiDoc extends Doc {
       .out(header[BarerToken]("Authorization"))
       .out(
         oneOf(
-          statusMappingFromMatchType(
+          statusMappingClassMatcher(
             StatusCode.Ok,
-            jsonBody[Ok[String]]
+            jsonBody[Ok[AuthInfo]]
               .example(
-                StatusResponse.Ok("The user has the required permission!")
-              )
+                StatusResponse.Ok(AuthorizationApiDoc.authInfo)
+              ),
+            classOf[Ok[AuthInfo]]
           )
         )
       )
@@ -70,5 +82,37 @@ private[http] trait AuthorizationApiDoc extends Doc {
           )
         )
       )
+  }
+}
+
+object AuthorizationApiDoc extends OptionSyntax {
+
+  private val permissions: NonEmptyChain[PermissionDto] = NonEmptyChain(
+    PermissionDto(
+      id = randomUnsafeId,
+      name = "FIRST_EXAMPLE_PERMISSION"
+    ),
+    PermissionDto(
+      id = randomUnsafeId,
+      name = "SECOND_EXAMPLE_PERMISSION"
+    ),
+    PermissionDto(
+      id = randomUnsafeId,
+      name = "THIRD_EXAMPLE_PERMISSION"
+    )
+  )
+
+  private val authInfo: AuthInfo = AuthInfo(
+    identity = permissions,
+    authenticator = TSecBearerToken(
+      id = "Example".asInstanceOf[SecureRandomId],
+      identity = randomUnsafeId,
+      expiry = Instant.now,
+      lastTouched = Instant.now.some
+    )
+  )
+
+  private def randomUnsafeId: FUUID = {
+    FUUID.randomFUUID[IO].unsafeRunSync()
   }
 }
