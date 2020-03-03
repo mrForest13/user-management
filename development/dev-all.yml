@@ -25,7 +25,7 @@ services:
       - user-management
 
   user.management:
-    image: mforest/user-management
+    image: mforest/user-management:1.0.0-SNAPSHOT
     depends_on:
       - postgres
       - redis

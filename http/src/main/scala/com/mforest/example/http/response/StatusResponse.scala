@@ -2,7 +2,7 @@ package com.mforest.example.http.response
 
 import io.circe.{Decoder, Encoder}
 
-sealed abstract class StatusResponse[+T](val status: ResponseTypes.Type) {
+private[http] sealed abstract class StatusResponse[+T](val status: ResponseTypes.Type) {
   def data: T
 }
 

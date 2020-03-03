@@ -12,7 +12,7 @@ import io.chrisdavenport.fuuid.FUUID
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
 
-trait UserApiDoc extends Doc {
+private[http] trait UserApiDoc extends Doc {
 
   override def endpoints: Seq[Endpoint[_, _, _, _]] = {
     Seq(addPermissionEndpoint, revokePermissionEndpoint, findUsersEndpoint)

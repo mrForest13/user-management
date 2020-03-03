@@ -10,7 +10,7 @@ import sttp.tapir.codec.cats.TapirCodecCats
 import sttp.tapir.json.circe.TapirJsonCirce
 import sttp.tapir.{Codec, Endpoint, Schema, Tapir}
 
-trait Doc extends Tapir with TapirJsonCirce with TapirCodecCats with OptionSyntax {
+private[http] trait Doc extends Tapir with TapirJsonCirce with TapirCodecCats with OptionSyntax {
 
   def endpoints: Seq[Endpoint[_, _, _, _]]
 

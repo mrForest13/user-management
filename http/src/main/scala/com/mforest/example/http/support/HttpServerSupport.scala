@@ -8,7 +8,7 @@ import org.http4s.{EntityBody, HttpRoutes}
 import sttp.tapir.Endpoint
 import sttp.tapir.server.http4s.TapirHttp4sServer
 
-trait HttpServerSupport extends TapirHttp4sServer {
+private[http] trait HttpServerSupport extends TapirHttp4sServer {
   this: ErrorHandlerSupport with HttpOptionsSupport =>
 
   implicit class RichHttpEndpoint[F[_]: Sync, I, O](endpoint: Endpoint[I, Fail[Error], O, EntityBody[F]]) {

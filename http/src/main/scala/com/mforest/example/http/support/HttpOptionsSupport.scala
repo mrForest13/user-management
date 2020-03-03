@@ -8,7 +8,7 @@ import sttp.tapir.server.http4s.Http4sServerOptions
 import sttp.tapir.server.{DecodeFailureHandling, DefaultDecodeFailureHandler, ServerDefaults}
 import sttp.tapir.{EndpointOutput, Tapir}
 
-trait HttpOptionsSupport extends Tapir with TapirJsonCirce {
+private[http] trait HttpOptionsSupport extends Tapir with TapirJsonCirce {
 
   private val failureOutput: EndpointOutput[(StatusCode, StatusResponse.Fail[String])] = {
     statusCode.and(jsonBody[StatusResponse.Fail[String]])

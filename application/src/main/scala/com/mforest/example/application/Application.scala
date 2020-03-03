@@ -44,7 +44,7 @@ object Application extends IOApp {
       registrationService = RegistrationService[F, SCrypt](userDao, hashEngine, transactor)
       permissionService   = PermissionService[F](permissionDao, transactor)
       loginService        = LoginService[F, SCrypt](userDao, hashEngine, transactor)
-      userService         = UserService[F](userDao, permissionDao, transactor)
+      userService         = UserService[F](userDao, permissionDao, pool, transactor)
       authService         = AuthService[F](permissionDao, transactor, pool, config.auth.token)
       registrationApi     = RegistrationApi[F](registrationService)
       permissionApi       = PermissionApi[F](permissionService, authService)
@@ -53,7 +53,7 @@ object Application extends IOApp {
       userApi             = UserApi[F](userService, authService)
       apisWithDocs        = Seq(registrationApi, permissionApi, authenticationApi, authorizationApi, userApi)
       swaggerDocs         = SwaggerDocs(config.app, BuildInfo.version, apisWithDocs)
-      swaggerApi          = SwaggerApi[F](swaggerDocs.yaml)
+      swaggerApi          = SwaggerApi[F](swaggerDocs.yaml, config.swagger)
       server              <- Server[F](config, apisWithDocs.+:(swaggerApi)).resource
     } yield server
   }

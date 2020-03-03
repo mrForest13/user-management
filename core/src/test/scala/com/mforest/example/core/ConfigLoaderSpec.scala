@@ -45,6 +45,21 @@ final class ConfigLoaderSpec extends AnyWordSpec with Matchers with OptionSyntax
         config.http shouldBe HttpConfig(host = "0.0.0.0", port = 1)
       }
 
+      "respond with swagger config" in {
+        val config = ConfigLoader[IO].load
+          .use(IO.pure)
+          .unsafeRunSync()
+
+        config.swagger shouldBe Map(
+          "displayRequestDuration" -> Seq("true"),
+          "operationsSorter"       -> Seq("alpha"),
+          "docExpansion"           -> Seq("none"),
+          "tagsSorter"             -> Seq("alpha"),
+          "deepLinking"            -> Seq("true"),
+          "filter"                 -> Seq("")
+        )
+      }
+
       "respond with postgres config" in {
         val config = ConfigLoader[IO].load
           .use(IO.pure)

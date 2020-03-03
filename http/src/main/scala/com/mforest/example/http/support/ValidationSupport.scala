@@ -7,7 +7,7 @@ import com.mforest.example.core.error.Error
 import com.mforest.example.core.error.Error.ValidationError
 import com.mforest.example.core.validation.Validator
 
-trait ValidationSupport {
+private[http] trait ValidationSupport {
 
   private implicit val semigroup: Semigroup[ValidationError] = (x: ValidationError, y: ValidationError) => {
     ValidationError(x.reason concat System.lineSeparator() concat y.reason)

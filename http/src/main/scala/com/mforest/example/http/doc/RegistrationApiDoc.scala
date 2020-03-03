@@ -7,7 +7,7 @@ import com.mforest.example.http.response.StatusResponse
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
 
-trait RegistrationApiDoc extends Doc {
+private[http] trait RegistrationApiDoc extends Doc {
 
   override def endpoints: Seq[Endpoint[_, _, _, _]] = Seq(registerUserEndpoint)
 

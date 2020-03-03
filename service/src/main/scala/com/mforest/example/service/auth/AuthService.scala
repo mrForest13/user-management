@@ -5,7 +5,6 @@ import cats.data.{EitherT, NonEmptyChain, OptionT}
 import cats.effect.Async
 import com.mforest.example.core.config.auth.TokenConfig
 import com.mforest.example.core.error.Error
-import com.mforest.example.core.error.Error.ForbiddenError
 import com.mforest.example.db.dao.PermissionDao
 import com.mforest.example.service.Service
 import com.mforest.example.service.dto.PermissionDto
@@ -64,8 +63,8 @@ class AuthServiceImpl[F[_]: Async](auth: BearerTokenAuthenticator[F, Id[FUUID], 
   private def validate(raw: String): EitherT[F, Error, AuthInfo] = {
     auth
       .parseRaw(raw, Request())
+      .toRight(Error.forbidden(forbidden))
       .map(info)
-      .toRight(ForbiddenError(forbidden))
   }
 
   private def info(request: SecuredRequest[F, NonEmptyChain[PermissionDto], TSecBearerToken[Id[FUUID]]]): AuthInfo = {
@@ -83,7 +82,7 @@ object AuthService {
   ): AuthService[F] = {
 
     val tokenStore    = BarerTokenStore[F](client, config)
-    val identityStore = PermissionsStore[F](dao, transactor)
+    val identityStore = PermissionsStore[F](dao, client, transactor)
     val settings      = TSecTokenSettings(config.expiryDuration, config.maxIdle)
 
     new AuthServiceImpl(BearerTokenAuthenticator.apply(tokenStore, identityStore, settings))

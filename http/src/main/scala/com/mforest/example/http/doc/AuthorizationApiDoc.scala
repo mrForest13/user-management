@@ -7,7 +7,7 @@ import com.mforest.example.http.token.BarerToken
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
 
-trait AuthorizationApiDoc extends Doc {
+private[http] trait AuthorizationApiDoc extends Doc {
 
   override def endpoints: Seq[Endpoint[_, _, _, _]] = Seq(validatePermissionEndpoint)
 

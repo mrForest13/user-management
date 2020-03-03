@@ -1,3 +1,5 @@
+![Cats Friendly Badge](https://typelevel.org/cats/img/cats-badge-tiny.png) 
+
 # User Management
 
 An implementation of the authorization/authentication microservice using functional programming techniques. Based on scala, cats effect, doobie and http4s.
@@ -6,10 +8,11 @@ An implementation of the authorization/authentication microservice using functio
 
 I am going to work with libraries from functional programing world. However, i would rather use libraries based on cats effect.
 
-- [Cats Effect](https://typelevel.org/cats-effect/) - ast the app core
+- [Cats Effect](https://typelevel.org/cats-effect/) - as the app core
 - [Http4s](https://http4s.org/) - as the web server
 - [Tapir](https://tapir-scala.readthedocs.io) - for describing api http endpoints
 - [Doobie](https://tpolecat.github.io/doobie/) - as database query and access library
+- [Scala Cache](https://cb372.github.io/scalacache/) - cache based on redis for auth data
 - [Pure Config](https://pureconfig.github.io/) - for loading configuration
 - [Circe](https://circe.github.io/circe/) - for json encoding and decoding
 - [Fuuid](https://christopherdavenport.github.io/fuuid/) - functional uuid
