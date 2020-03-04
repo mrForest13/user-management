@@ -1,7 +1,7 @@
 package com.mforest.example.http.response
 
 import cats.effect.IO
-import cats.syntax.EitherSyntax
+import cats.implicits.catsSyntaxEitherId
 import io.circe.Decoder
 import io.circe.parser.decode
 import io.circe.syntax.EncoderOps
@@ -10,7 +10,7 @@ import org.http4s.circe.jsonOf
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-final class StatusResponseSpec extends AnyWordSpec with Matchers with EitherSyntax {
+final class StatusResponseSpec extends AnyWordSpec with Matchers {
 
   "StatusResponse" when {
 

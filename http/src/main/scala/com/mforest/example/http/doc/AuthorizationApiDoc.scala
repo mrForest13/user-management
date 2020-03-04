@@ -4,7 +4,7 @@ import java.time.Instant
 
 import cats.data.NonEmptyChain
 import cats.effect.IO
-import cats.syntax.OptionSyntax
+import cats.implicits.catsSyntaxOptionId
 import com.mforest.example.core.error.Error
 import com.mforest.example.http.Doc
 import com.mforest.example.http.response.StatusResponse
@@ -85,7 +85,7 @@ private[http] trait AuthorizationApiDoc extends Doc {
   }
 }
 
-object AuthorizationApiDoc extends OptionSyntax {
+object AuthorizationApiDoc {
 
   private val permissions: NonEmptyChain[PermissionDto] = NonEmptyChain(
     PermissionDto(

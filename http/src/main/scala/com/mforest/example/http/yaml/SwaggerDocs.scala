@@ -1,6 +1,6 @@
 package com.mforest.example.http.yaml
 
-import cats.syntax.OptionSyntax
+import cats.implicits.catsSyntaxOptionId
 import com.mforest.example.core.config.app.AppConfig
 import com.mforest.example.http.Doc
 import sttp.tapir.docs.openapi.TapirOpenAPIDocs
@@ -9,8 +9,7 @@ import sttp.tapir.openapi.{Contact, Info, License, OpenAPI}
 
 final class SwaggerDocs(config: AppConfig, version: String, docs: Seq[Doc])
     extends TapirOpenAPIDocs
-    with TapirOpenAPICirceYaml
-    with OptionSyntax {
+    with TapirOpenAPICirceYaml {
 
   private val contact = Contact(
     name = "Mateusz Ligęza".some,

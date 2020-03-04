@@ -2,7 +2,7 @@ package com.mforest.example.http.api
 
 import cats.effect.{ContextShift, Sync}
 import com.mforest.example.core.model.Pagination
-import com.mforest.example.core.permissions.Permissions
+import com.mforest.example.core.permission.Permissions
 import com.mforest.example.http.Api
 import com.mforest.example.http.doc.UserApiDoc
 import com.mforest.example.http.support.AuthorizationSupport

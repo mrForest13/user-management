@@ -3,14 +3,14 @@ package com.mforest.example.http.token
 import java.time.Instant
 
 import cats.implicits.toShow
-import cats.syntax.OptionSyntax
+import cats.implicits.catsSyntaxOptionId
 import io.chrisdavenport.fuuid.FUUID
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import tsec.authentication.TSecBearerToken
 import tsec.common.SecureRandomId
 
-final class BearerTokenSpec extends AnyWordSpec with Matchers with OptionSyntax {
+final class BearerTokenSpec extends AnyWordSpec with Matchers {
 
   "BarerToken" when {
 

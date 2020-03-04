@@ -2,12 +2,12 @@ package com.mforest.example.db
 
 import cats.Functor.ops.toAllFunctorOps
 import cats.effect.{Blocker, IO}
-import cats.syntax.OptionSyntax
 import com.mforest.example.core.config.Config
 import com.mforest.example.core.config.db.PostgresConfig
 import com.mforest.example.db.migration.MigrationManager
 import doobie.scalatest.IOChecker
-import doobie.syntax.{AllSyntax, ToConnectionIOOps}
+import doobie.syntax.ToConnectionIOOps
+import doobie.syntax.string.toSqlInterpolator
 import doobie.util.transactor.Transactor
 import org.scalatest.{AsyncTestSuite, BeforeAndAfterAll, BeforeAndAfterEach}
 import pureconfig.generic.auto.exportReader
@@ -18,9 +18,7 @@ trait DatabaseSpec
     with AsyncIOSpec
     with BeforeAndAfterEach
     with BeforeAndAfterAll
-    with ToConnectionIOOps
-    with OptionSyntax
-    with AllSyntax {
+    with ToConnectionIOOps {
   this: AsyncTestSuite =>
 
   override def beforeEach(): Unit = clean()

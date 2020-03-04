@@ -4,7 +4,7 @@ import cats.Functor.ops.toAllFunctorOps
 import cats.Id
 import cats.data.OptionT
 import cats.effect.Async
-import cats.syntax.OptionSyntax
+import cats.implicits.catsSyntaxOptionId
 import com.mforest.example.core.config.auth.TokenConfig
 import com.mforest.example.service.formatter.TokenFormatter
 import io.chrisdavenport.fuuid.FUUID
@@ -16,8 +16,7 @@ import tsec.authentication.{BackingStore, TSecBearerToken}
 import tsec.common.SecureRandomId
 
 class BarerTokenStore[F[_]: Async](cache: Cache[TSecBearerToken[Id[FUUID]]], config: TokenConfig)
-    extends BackingStore[F, SecureRandomId, TSecBearerToken[Id[FUUID]]]
-    with OptionSyntax {
+    extends BackingStore[F, SecureRandomId, TSecBearerToken[Id[FUUID]]] {
 
   private implicit val flags: Flags  = Flags.defaultFlags
   private implicit val mode: Mode[F] = CatsEffect.modes.async[F]

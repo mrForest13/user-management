@@ -1,14 +1,13 @@
 package com.mforest.example.core.model
 
 import cats.data.NonEmptyList
-import cats.implicits.catsSyntaxValidatedId
-import cats.syntax.OptionSyntax
+import cats.implicits.{catsSyntaxOptionId, catsSyntaxValidatedId, none}
 import com.mforest.example.core.error.Error.ValidationError
 import com.mforest.example.core.validation.validate
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-final class PaginationSpec extends AnyWordSpec with Matchers with OptionSyntax {
+final class PaginationSpec extends AnyWordSpec with Matchers {
 
   "Pagination" when {
 

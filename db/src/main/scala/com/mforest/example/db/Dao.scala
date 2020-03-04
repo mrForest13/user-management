@@ -2,11 +2,10 @@ package com.mforest.example.db
 
 import cats.data.{Chain, OptionT}
 import com.mforest.example.core.model.Pagination
-import com.mforest.example.db.custom.{CustomCompacts, CustomInstances}
+import com.mforest.example.db.custom.CustomCompacts
 import doobie.ConnectionIO
-import doobie.syntax.AllSyntax
 
-private[db] trait Dao[Id, Row] extends CustomInstances with CustomCompacts with AllSyntax {
+private[db] trait Dao[Id, Row] extends CustomCompacts {
 
   def tableName: String
 

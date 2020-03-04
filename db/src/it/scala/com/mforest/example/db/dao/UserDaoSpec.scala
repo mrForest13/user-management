@@ -1,6 +1,7 @@
 package com.mforest.example.db.dao
 
 import cats.data.Chain
+import cats.implicits.{none, catsSyntaxOptionId}
 import cats.effect.IO
 import com.mforest.example.core.model.Pagination
 import com.mforest.example.db.DatabaseSpec

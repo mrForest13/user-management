@@ -1,4 +1,4 @@
-package com.mforest.example.core.permissions
+package com.mforest.example.core.permission
 
 import cats.Show
 

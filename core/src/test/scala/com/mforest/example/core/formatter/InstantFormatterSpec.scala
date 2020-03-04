@@ -2,13 +2,13 @@ package com.mforest.example.core.formatter
 
 import java.time.Instant
 
-import cats.syntax.EitherSyntax
+import cats.implicits.catsSyntaxEitherId
 import io.circe.parser.decode
 import io.circe.syntax.EncoderOps
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-final class InstantFormatterSpec extends AnyWordSpec with Matchers with InstantFormatter with EitherSyntax {
+final class InstantFormatterSpec extends AnyWordSpec with Matchers with InstantFormatter {
 
   "InstantFormatter" when {
 
