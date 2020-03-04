@@ -5,6 +5,7 @@ import org.scalastyle.sbt.ScalastylePlugin.autoImport.{scalastyleFailOnError, sc
 import sbt.Def
 import sbt.Keys.{organization, scalaVersion, version, _}
 import sbtbuildinfo.BuildInfoPlugin.autoImport.{BuildInfoKey, buildInfoKeys, buildInfoPackage}
+import scoverage.ScoverageKeys.{coverageFailOnMinimum, coverageHighlighting, coverageMinimum}
 
 object Settings {
 
@@ -54,7 +55,13 @@ object Settings {
     publish in Docker := {}
   )
 
-  lazy val root: Seq[Def.Setting[_]] = commonSettings ++ noDockerSettings
+  private lazy val coverageSettings: Seq[Def.Setting[_]] = Seq(
+    coverageMinimum := 15,
+    coverageFailOnMinimum := true,
+    coverageHighlighting := true
+  )
+
+  lazy val root: Seq[Def.Setting[_]] = commonSettings ++ noDockerSettings ++ coverageSettings
 
   lazy val application: Seq[Def.Setting[_]] = commonSettings ++ buildInfoSettings ++ dockerSettings ++
     Dependencies.application.asSettings ++ Testing.testSettings ++ Testing.e2eSettings

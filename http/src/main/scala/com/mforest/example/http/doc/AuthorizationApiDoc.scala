@@ -8,7 +8,7 @@ import cats.syntax.OptionSyntax
 import com.mforest.example.core.error.Error
 import com.mforest.example.http.Doc
 import com.mforest.example.http.response.StatusResponse
-import com.mforest.example.http.token.BarerToken
+import com.mforest.example.http.token.BearerToken
 import com.mforest.example.service.dto.PermissionDto
 import com.mforest.example.service.model.AuthInfo
 import io.chrisdavenport.fuuid.FUUID
@@ -22,13 +22,13 @@ private[http] trait AuthorizationApiDoc extends Doc {
   override def endpoints: Seq[Endpoint[_, _, _, _]] = Seq(validatePermissionEndpoint)
 
   protected val validatePermissionEndpoint
-      : Endpoint[(Token, Token), Fail[Error], (BarerToken, Ok[AuthInfo]), Nothing] = {
+      : Endpoint[(Token, Token), Fail[Error], (BearerToken, Ok[AuthInfo]), Nothing] = {
     endpoint.get
       .tag("Authorization Api")
       .summary("Valid user permission")
       .in("permissions" / path[String]("permission") / "validate")
       .in(auth.bearer)
-      .out(header[BarerToken]("Authorization"))
+      .out(header[BearerToken]("Authorization"))
       .out(
         oneOf(
           statusMappingClassMatcher(
@@ -105,7 +105,7 @@ object AuthorizationApiDoc extends OptionSyntax {
   private val authInfo: AuthInfo = AuthInfo(
     identity = permissions,
     authenticator = TSecBearerToken(
-      id = "Example".asInstanceOf[SecureRandomId],
+      id = SecureRandomId.Strong.generate,
       identity = randomUnsafeId,
       expiry = Instant.now,
       lastTouched = Instant.now.some

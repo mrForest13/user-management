@@ -6,16 +6,16 @@ import com.mforest.example.core.error.Error
 import com.mforest.example.http.form.RegistrationFormSpec
 import com.mforest.example.http.form.RegistrationFormSpec.encoder
 import com.mforest.example.http.response.StatusResponse
-import com.mforest.example.http.{Api, ApiSpec}
+import com.mforest.example.http.{Api, HttpSpec}
 import com.mforest.example.service.registration.RegistrationService
+import org.http4s.{Headers, MediaType, Method, Request, Response, Status}
 import org.http4s.headers.`Content-Type`
 import org.http4s.implicits.{http4sKleisliResponseSyntaxOptionT, http4sLiteralsSyntax}
-import org.http4s._
 import org.scalamock.scalatest.AsyncMockFactory
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 
-final class RegistrationApiSpec extends AsyncWordSpec with ApiSpec with AsyncMockFactory with Matchers {
+final class RegistrationApiSpec extends AsyncWordSpec with HttpSpec with AsyncMockFactory with Matchers {
 
   private val service: RegistrationService[IO] = stub[RegistrationService[IO]]
 

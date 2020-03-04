@@ -9,7 +9,7 @@ import org.scalatest.AsyncTestSuite
 
 import scala.concurrent.ExecutionContext
 
-trait ApiSpec extends AssertingSyntax with EffectTestSupport {
+trait HttpSpec extends AssertingSyntax with EffectTestSupport {
   this: AsyncTestSuite =>
 
   override val executionContext: ExecutionContext = ExecutionContext.global

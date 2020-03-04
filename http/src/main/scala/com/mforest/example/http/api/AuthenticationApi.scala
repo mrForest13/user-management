@@ -8,7 +8,7 @@ import com.mforest.example.http.doc.AuthenticationApiDoc
 import com.mforest.example.http.form.LoginForm
 import com.mforest.example.http.response.StatusResponse
 import com.mforest.example.http.support.AuthorizationSupport
-import com.mforest.example.http.token.BarerToken
+import com.mforest.example.http.token.BearerToken
 import com.mforest.example.service.auth.AuthService
 import com.mforest.example.service.login.LoginService
 import io.chrisdavenport.fuuid.FUUID
@@ -29,7 +29,7 @@ final class AuthenticationApi[F[_]: Sync: ContextShift](loginService: LoginServi
       .map(_.toDto)
       .flatMap(loginService.login)
       .semiflatMap(authService.create)
-      .map(BarerToken.apply[Id[FUUID]])
+      .map(BearerToken.apply[Id[FUUID]])
       .bimap(StatusResponse.fail, _ -> StatusResponse.Ok(loginMsg))
   }
 

@@ -7,7 +7,7 @@ import com.mforest.example.core.permissions.Permissions
 import com.mforest.example.http.Doc
 import com.mforest.example.http.form.AddPermissionForm
 import com.mforest.example.http.response.StatusResponse
-import com.mforest.example.http.token.BarerToken
+import com.mforest.example.http.token.BearerToken
 import com.mforest.example.service.dto.PermissionDto
 import io.chrisdavenport.fuuid.FUUID
 import sttp.model.StatusCode
@@ -20,7 +20,7 @@ private[http] trait PermissionApiDoc extends Doc {
   }
 
   protected val addPermissionEndpoint
-      : Endpoint[(Token, AddPermissionForm), Fail[Error], (BarerToken, Ok[String]), Nothing] = {
+      : Endpoint[(Token, AddPermissionForm), Fail[Error], (BearerToken, Ok[String]), Nothing] = {
     endpoint.post
       .tag("Permission Api")
       .summary("Add new permission")
@@ -31,7 +31,7 @@ private[http] trait PermissionApiDoc extends Doc {
         jsonBody[AddPermissionForm]
           .example(PermissionApiDoc.form)
       )
-      .out(header[BarerToken]("Authorization"))
+      .out(header[BearerToken]("Authorization"))
       .out(
         oneOf(
           statusMappingFromMatchType(
@@ -87,14 +87,14 @@ private[http] trait PermissionApiDoc extends Doc {
   }
 
   protected val findUserPermissionsEndpoint
-      : Endpoint[(FUUID, Token), Fail[Error], (BarerToken, Ok[Chain[PermissionDto]]), Nothing] = {
+      : Endpoint[(FUUID, Token), Fail[Error], (BearerToken, Ok[Chain[PermissionDto]]), Nothing] = {
     endpoint.get
       .tag("Permission Api")
       .summary("Find user permissions")
       .description(s"Permission ${Permissions.USER_MANAGEMENT_GET_USER_PERMISSIONS}")
       .in("users" / path[FUUID]("userId") / "permissions")
       .in(auth.bearer)
-      .out(header[BarerToken]("Authorization"))
+      .out(header[BearerToken]("Authorization"))
       .out(
         oneOf(
           statusMappingClassMatcher(
@@ -146,7 +146,7 @@ private[http] trait PermissionApiDoc extends Doc {
   }
 
   protected val findPermissionsEndpoint
-      : Endpoint[PaginationParams, Fail[Error], (BarerToken, Ok[Chain[PermissionDto]]), Nothing] = {
+      : Endpoint[PaginationParams, Fail[Error], (BearerToken, Ok[Chain[PermissionDto]]), Nothing] = {
     endpoint.get
       .tag("Permission Api")
       .summary("Find permissions")
@@ -155,7 +155,7 @@ private[http] trait PermissionApiDoc extends Doc {
       .in(query[Option[Int]]("size").example(10.some))
       .in(query[Option[Int]]("page").example(0.some))
       .in(auth.bearer)
-      .out(header[BarerToken]("Authorization"))
+      .out(header[BearerToken]("Authorization"))
       .out(
         oneOf(
           statusMappingClassMatcher(

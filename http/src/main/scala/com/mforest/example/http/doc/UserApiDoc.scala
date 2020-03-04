@@ -6,7 +6,7 @@ import com.mforest.example.core.error.Error
 import com.mforest.example.core.permissions.Permissions
 import com.mforest.example.http.Doc
 import com.mforest.example.http.response.StatusResponse
-import com.mforest.example.http.token.BarerToken
+import com.mforest.example.http.token.BearerToken
 import com.mforest.example.service.dto.{PermissionDto, UserDto}
 import io.chrisdavenport.fuuid.FUUID
 import sttp.model.StatusCode
@@ -19,14 +19,14 @@ private[http] trait UserApiDoc extends Doc {
   }
 
   protected val addPermissionEndpoint
-      : Endpoint[(FUUID, FUUID, Token), Fail[Error], (BarerToken, Ok[String]), Nothing] = {
+      : Endpoint[(FUUID, FUUID, Token), Fail[Error], (BearerToken, Ok[String]), Nothing] = {
     endpoint.post
       .tag("User Api")
       .summary("Add permission for user")
       .description(s"Permission ${Permissions.USER_MANAGEMENT_ADD_PERMISSION_FOR_USERS}")
       .in("users" / path[FUUID]("userId") / "permissions" / path[FUUID]("permissionId"))
       .in(auth.bearer)
-      .out(header[BarerToken]("Authorization"))
+      .out(header[BearerToken]("Authorization"))
       .out(
         oneOf(
           statusMappingFromMatchType(
@@ -82,14 +82,14 @@ private[http] trait UserApiDoc extends Doc {
   }
 
   protected val revokePermissionEndpoint
-      : Endpoint[(FUUID, FUUID, Token), Fail[Error], (BarerToken, Ok[String]), Nothing] = {
+      : Endpoint[(FUUID, FUUID, Token), Fail[Error], (BearerToken, Ok[String]), Nothing] = {
     endpoint.delete
       .tag("User Api")
       .summary("Revoke permission for user")
       .description(s"Permission ${Permissions.USER_MANAGEMENT_REVOKE_PERMISSION_FOR_USERS}")
       .in("users" / path[FUUID]("userId") / "permissions" / path[FUUID]("permissionId"))
       .in(auth.bearer)
-      .out(header[BarerToken]("Authorization"))
+      .out(header[BearerToken]("Authorization"))
       .out(
         oneOf(
           statusMappingFromMatchType(
@@ -145,7 +145,7 @@ private[http] trait UserApiDoc extends Doc {
   }
 
   protected val findUsersEndpoint
-      : Endpoint[PaginationParams, Fail[Error], (BarerToken, Ok[Chain[UserDto]]), Nothing] = {
+      : Endpoint[PaginationParams, Fail[Error], (BearerToken, Ok[Chain[UserDto]]), Nothing] = {
     endpoint.get
       .tag("User Api")
       .summary("Find users")
@@ -154,7 +154,7 @@ private[http] trait UserApiDoc extends Doc {
       .in(query[Option[Int]]("size").example(10.some))
       .in(query[Option[Int]]("page").example(0.some))
       .in(auth.bearer)
-      .out(header[BarerToken]("Authorization"))
+      .out(header[BearerToken]("Authorization"))
       .out(
         oneOf(
           statusMappingClassMatcher(
