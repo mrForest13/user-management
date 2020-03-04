@@ -18,7 +18,7 @@ final case class AddPermissionForm(name: String) {
 
 object AddPermissionForm {
 
-  private val nameRegex: Regex = "[A-Z]+(_[A-Z])*".r
+  private val nameRegex: Regex = "[A-Z]+(_[A-Z]+)*".r
 
   implicit val validator: Validator[AddPermissionForm] = { form =>
     validate(!nameRegex.matches(form.name), msg = "Wrong permission form. It should look like XXX_XXX!")

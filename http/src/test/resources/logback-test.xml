@@ -13,4 +13,6 @@
         <appender-ref ref="STDOUT"/>
     </root>
 
+    <logger name="com.mforest.example.http.support.ErrorHandlerSupport" level="OFF"/>
+
 </configuration>
