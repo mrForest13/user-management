@@ -17,8 +17,6 @@ import scalacache.serialization.circe.codec
 import scalacache.{Cache, CatsEffect, Flags, Mode}
 import tsec.authentication.IdentityStore
 
-import scala.language.implicitConversions
-
 class PermissionsStore[F[_]: Async](dao: PermissionDao, cache: Cache[Chain[PermissionDto]], transactor: Transactor[F])
     extends IdentityStore[F, Id[FUUID], NonEmptyChain[PermissionDto]]
     with ToConnectionIOOps
@@ -32,15 +30,13 @@ class PermissionsStore[F[_]: Async](dao: PermissionDao, cache: Cache[Chain[Permi
   }
 
   private def getOrLoad(userId: Id[FUUID]): F[Chain[PermissionDto]] = {
-    cache.cachingForMemoizeF(userId)(none) {
+    cache.cachingForMemoizeF(userId.show)(none) {
       dao
         .findByUser(userId)
         .transact(transactor)
         .map(_.to[PermissionDto])
     }
   }
-
-  private implicit def toString(id: Id[FUUID]): String = id.toString()
 }
 
 object PermissionsStore {

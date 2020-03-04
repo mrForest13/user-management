@@ -2,6 +2,7 @@ package com.mforest.example.http.api
 
 import cats.data.EitherT
 import cats.effect.{ContextShift, Sync}
+import cats.implicits.catsStdShowForString
 import com.mforest.example.http.Api
 import com.mforest.example.http.doc.AuthorizationApiDoc
 import com.mforest.example.http.support.AuthorizationSupport

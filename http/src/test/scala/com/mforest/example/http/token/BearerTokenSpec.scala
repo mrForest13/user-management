@@ -2,6 +2,7 @@ package com.mforest.example.http.token
 
 import java.time.Instant
 
+import cats.implicits.toShow
 import cats.syntax.OptionSyntax
 import io.chrisdavenport.fuuid.FUUID
 import org.scalatest.matchers.should.Matchers
@@ -13,20 +14,20 @@ final class BearerTokenSpec extends AnyWordSpec with Matchers with OptionSyntax 
 
   "BarerToken" when {
 
-    "toString" must {
+    "show" must {
 
       "respond with added barer prefix for string token" in {
         val token      = "example"
         val barerToken = BearerToken(token)
 
-        barerToken.toString shouldBe s"Bearer $token"
+        barerToken.show shouldBe s"Bearer $token"
       }
 
       "respond with added barer prefix for random id token" in {
         val token      = SecureRandomId.Strong.generate
         val barerToken = new BearerToken(token)
 
-        barerToken.toString shouldBe s"Bearer $token"
+        barerToken.show shouldBe s"Bearer $token"
       }
 
       "respond with added barer prefix for tsec  token" in {
@@ -39,7 +40,7 @@ final class BearerTokenSpec extends AnyWordSpec with Matchers with OptionSyntax 
         )
         val barerToken = BearerToken(token)
 
-        barerToken.toString shouldBe s"Bearer ${token.id}"
+        barerToken.show shouldBe s"Bearer ${token.id}"
       }
     }
   }

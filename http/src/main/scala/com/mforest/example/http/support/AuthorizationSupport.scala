@@ -1,6 +1,6 @@
 package com.mforest.example.http.support
 
-import cats.Id
+import cats.{Id, Show}
 import cats.data.EitherT
 import cats.effect.Sync
 import com.mforest.example.core.error.Error
@@ -19,7 +19,7 @@ private[http] trait AuthorizationSupport[F[_]] {
 
   type AuthorizeResult[R] = EitherT[F, Fail[Error], (BearerToken, StatusResponse.Ok[R])]
 
-  def authorize[R](token: String, permission: String)(logic: Logic[R])(implicit S: Sync[F]): AuthorizeResult[R] = {
+  def authorize[P: Show, R](token: String, permission: P)(logic: Logic[R])(implicit S: Sync[F]): AuthorizeResult[R] = {
     check(token, permission, logic)
       .leftMap(StatusResponse.fail)
       .map {
@@ -30,7 +30,7 @@ private[http] trait AuthorizationSupport[F[_]] {
 
   type CheckResult[R] = EitherT[F, Error, (BearerToken, R)]
 
-  private def check[R](token: String, permission: String, logic: Logic[R])(implicit S: Sync[F]): CheckResult[R] = {
+  private def check[P: Show, R](token: String, permission: P, logic: Logic[R])(implicit S: Sync[F]): CheckResult[R] = {
     for {
       info   <- authService.authorize(token, permission)
       token  = BearerToken.apply[Id[FUUID]](info.authenticator)

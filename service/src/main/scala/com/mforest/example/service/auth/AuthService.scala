@@ -1,8 +1,8 @@
 package com.mforest.example.service.auth
 
-import cats.Id
 import cats.data.{EitherT, NonEmptyChain, OptionT}
 import cats.effect.Async
+import cats.{Id, Show}
 import com.mforest.example.core.config.auth.TokenConfig
 import com.mforest.example.core.error.Error
 import com.mforest.example.db.dao.PermissionDao
@@ -20,7 +20,7 @@ trait AuthService[F[_]] extends Service {
 
   val name: String = "Auth-Service"
 
-  def authorize(raw: String, permission: String): EitherT[F, Error, AuthInfo]
+  def authorize[P: Show](raw: String, permission: P): EitherT[F, Error, AuthInfo]
   def validateAndRenew(raw: String): EitherT[F, Error, AuthInfo]
   def create(identity: Id[FUUID]): F[TSecBearerToken[Id[FUUID]]]
   def discard(token: TSecBearerToken[Id[FUUID]]): F[TSecBearerToken[Id[FUUID]]]
@@ -46,11 +46,11 @@ class AuthServiceImpl[F[_]: Async](auth: BearerTokenAuthenticator[F, Id[FUUID], 
     auth.discard(token)
   }
 
-  override def authorize(raw: String, permission: String): EitherT[F, Error, AuthInfo] = {
+  override def authorize[P: Show](raw: String, permission: P): EitherT[F, Error, AuthInfo] = {
     validateAndRenew(raw).flatMap { info =>
       OptionT
-        .fromOption(info.identity.find(_.name == permission))
-        .toRight(Error.forbidden(forbidden))
+        .fromOption(info.identity.find(_.name == permission.show))
+        .toRight[Error](Error.ForbiddenError(forbidden))
         .as(info)
     }
   }
@@ -62,7 +62,7 @@ class AuthServiceImpl[F[_]: Async](auth: BearerTokenAuthenticator[F, Id[FUUID], 
   private def validate(raw: String): EitherT[F, Error, AuthInfo] = {
     auth
       .parseRaw(raw, Request())
-      .toRight(Error.forbidden(forbidden))
+      .toRight[Error](Error.ForbiddenError(forbidden))
       .map(info)
   }
 

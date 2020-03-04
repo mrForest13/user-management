@@ -63,7 +63,7 @@ class UserServiceImpl[F[_]: Async](
 
     action
       .transact(transactor)
-      .toRight(Error.notFound(notFound))
+      .toRight(Error.NotFoundError(notFound))
   }
 
   override def revokePermission(userId: Id[FUUID], permissionId: Id[FUUID]): EitherT[F, Error, String] = EitherT {

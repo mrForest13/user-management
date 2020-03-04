@@ -1,5 +1,6 @@
 package com.mforest.example.http
 
+import cats.implicits.toShow
 import cats.syntax.OptionSyntax
 import com.mforest.example.http.response.StatusResponse
 import com.mforest.example.http.token.BearerToken
@@ -27,5 +28,5 @@ private[http] trait Doc extends Tapir with TapirJsonCirce with TapirCodecCats wi
   implicit val fuuidPlainCodec: PlainCodec[FUUID] =
     Codec.uuidPlainCodec.map(FUUID.fromUUID)(FUUID.Unsafe.toUUID)
   implicit val codecForBarerToken: PlainCodec[BearerToken] =
-    Codec.stringPlainCodecUtf8.map(BearerToken.apply)(_.toString)
+    Codec.stringPlainCodecUtf8.map(BearerToken.apply)(_.show)
 }

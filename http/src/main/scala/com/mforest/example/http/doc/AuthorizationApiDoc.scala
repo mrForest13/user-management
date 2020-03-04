@@ -22,7 +22,7 @@ private[http] trait AuthorizationApiDoc extends Doc {
   override def endpoints: Seq[Endpoint[_, _, _, _]] = Seq(validatePermissionEndpoint)
 
   protected val validatePermissionEndpoint
-      : Endpoint[(Token, Token), Fail[Error], (BearerToken, Ok[AuthInfo]), Nothing] = {
+      : Endpoint[(String, Token), Fail[Error], (BearerToken, Ok[AuthInfo]), Nothing] = {
     endpoint.get
       .tag("Authorization Api")
       .summary("Valid user permission")
