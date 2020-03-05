@@ -52,7 +52,7 @@ object RegistrationForm {
       .combine(validate(form.country.isEmpty, msg = "Country cannot be empty!"))
       .combine(validate(!form.country.forall(_.isLetter), msg = "Country can only contain letters!"))
       .combine(validate(form.country.length > 50, msg = "Country cannot have more than 50 characters!"))
-      .combine(validate(form.phone.isEmpty, msg = "Phone cannot be empty!"))
+      .combine(validate(form.phone.isEmpty, msg = "Phone number cannot be empty!"))
       .combine(validate(!form.phone.forall(_.isDigit), msg = "Phone number can only contain numbers!"))
       .combine(validate(form.phone.length > 15, msg = "Phone number cannot be longer than 15 digits!"))
       .as(form)
