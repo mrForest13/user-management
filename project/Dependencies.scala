@@ -5,6 +5,7 @@ import sbt.{Def, _}
 object Dependencies {
 
   private object Versions {
+    val sup        = "0.7.0"
     val cats       = "2.1.0"
     val circe      = "0.13.0"
     val fuuid      = "0.3.0"
@@ -98,6 +99,11 @@ object Dependencies {
     "com.softwaremill.sttp.tapir" %% "tapir-openapi-circe-yaml" % Versions.tapir
   )
 
+  private val sup: Seq[ModuleID] = Seq(
+    "com.kubukoz" %% "sup-core"   % Versions.sup,
+    "com.kubukoz" %% "sup-doobie" % Versions.sup
+  )
+
   private val test: Seq[ModuleID] = Seq(
     "org.scalatest"              %% "scalatest" % Versions.scalaTest % "test,it,e2e",
     "com.softwaremill.quicklens" %% "quicklens" % Versions.quicklens % "test,it,e2e"
@@ -105,7 +111,7 @@ object Dependencies {
 
   val application: Seq[ModuleID] = test ++ logging
   val http: Seq[ModuleID]        = http4s ++ tapir ++ test ++ logging
-  val service: Seq[ModuleID]     = tsecV ++ cache ++ test ++ logging
+  val service: Seq[ModuleID]     = tsecV ++ cache ++ sup ++ test ++ logging
   val db: Seq[ModuleID]          = doobie ++ jedis ++ flyway ++ test ++ logging
   val core: Seq[ModuleID]        = config ++ fuuid ++ cats ++ circe ++ test ++ logging
 
