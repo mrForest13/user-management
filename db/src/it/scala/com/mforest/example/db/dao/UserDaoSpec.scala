@@ -1,8 +1,8 @@
 package com.mforest.example.db.dao
 
 import cats.data.Chain
-import cats.implicits.{none, catsSyntaxOptionId}
 import cats.effect.IO
+import cats.implicits.{catsSyntaxOptionId, none}
 import com.mforest.example.core.model.Pagination
 import com.mforest.example.db.DatabaseSpec
 import com.mforest.example.db.row.{PermissionRowMock, UserRowMock}

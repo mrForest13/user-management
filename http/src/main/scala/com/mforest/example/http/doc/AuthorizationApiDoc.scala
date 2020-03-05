@@ -10,7 +10,7 @@ import com.mforest.example.http.Doc
 import com.mforest.example.http.response.StatusResponse
 import com.mforest.example.http.token.BearerToken
 import com.mforest.example.service.dto.PermissionDto
-import com.mforest.example.service.model.AuthInfo
+import com.mforest.example.service.model.SessionInfo
 import io.chrisdavenport.fuuid.FUUID
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
@@ -22,7 +22,7 @@ private[http] trait AuthorizationApiDoc extends Doc {
   override def endpoints: Seq[Endpoint[_, _, _, _]] = Seq(validatePermissionEndpoint)
 
   protected val validatePermissionEndpoint
-      : Endpoint[(String, Token), Fail[Error], (BearerToken, Ok[AuthInfo]), Nothing] = {
+      : Endpoint[(String, Token), Fail[Error], (BearerToken, Ok[SessionInfo]), Nothing] = {
     endpoint.get
       .tag("Authorization Api")
       .summary("Valid user permission")
@@ -33,11 +33,11 @@ private[http] trait AuthorizationApiDoc extends Doc {
         oneOf(
           statusMappingClassMatcher(
             StatusCode.Ok,
-            jsonBody[Ok[AuthInfo]]
+            jsonBody[Ok[SessionInfo]]
               .example(
-                StatusResponse.Ok(AuthorizationApiDoc.authInfo)
+                StatusResponse.Ok(AuthorizationApiDoc.sessionInfo)
               ),
-            classOf[Ok[AuthInfo]]
+            classOf[Ok[SessionInfo]]
           )
         )
       )
@@ -102,7 +102,7 @@ object AuthorizationApiDoc {
     )
   )
 
-  private val authInfo: AuthInfo = AuthInfo(
+  private val sessionInfo: SessionInfo = SessionInfo(
     identity = permissions,
     authenticator = TSecBearerToken(
       id = SecureRandomId.Strong.generate,

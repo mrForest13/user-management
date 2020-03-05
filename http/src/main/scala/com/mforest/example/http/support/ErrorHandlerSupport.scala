@@ -5,8 +5,7 @@ import java.sql.SQLException
 import cats.data.EitherT
 import cats.data.EitherT.right
 import cats.effect.Sync
-import cats.implicits.{catsSyntaxApplicativeError, toFunctorOps}
-import cats.implicits.catsSyntaxEitherId
+import cats.implicits.{catsSyntaxApplicativeError, catsSyntaxEitherId, toFunctorOps}
 import com.mforest.example.core.error.Error
 import com.mforest.example.http.response.StatusResponse.Fail
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger

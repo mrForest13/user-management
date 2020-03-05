@@ -49,7 +49,7 @@ final class LoginFormSpec extends AnyWordSpec with Matchers {
   }
 }
 
-object LoginFormSpec extends OptionSyntax {
+object LoginFormSpec {
 
   val formMock: LoginForm = LoginForm("username", "password".some)
 }

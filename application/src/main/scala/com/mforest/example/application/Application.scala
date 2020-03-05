@@ -9,14 +9,7 @@ import com.mforest.example.db.cache.Cache
 import com.mforest.example.db.dao.{PermissionDao, UserDao}
 import com.mforest.example.db.migration.MigrationManager
 import com.mforest.example.http.Server
-import com.mforest.example.http.api.{
-  AuthenticationApi,
-  AuthorizationApi,
-  PermissionApi,
-  RegistrationApi,
-  SwaggerApi,
-  UserApi
-}
+import com.mforest.example.http.api.{AuthenticationApi, AuthorizationApi, PermissionApi, RegistrationApi, SwaggerApi, UserApi}
 import com.mforest.example.http.yaml.SwaggerDocs
 import com.mforest.example.service.auth.AuthService
 import com.mforest.example.service.hash.SCryptEngine

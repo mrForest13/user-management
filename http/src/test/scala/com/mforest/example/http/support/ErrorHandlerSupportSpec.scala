@@ -4,6 +4,7 @@ import java.sql.SQLException
 
 import cats.data.EitherT
 import cats.effect.IO
+import cats.implicits.catsSyntaxEitherId
 import com.mforest.example.core.error.Error.{InternalError, NotFoundError, UnavailableError}
 import com.mforest.example.http.HttpSpec
 import com.mforest.example.http.response.StatusResponse

@@ -15,7 +15,7 @@ import scalacache.{Cache, CatsEffect, Flags, Mode}
 import tsec.authentication.{BackingStore, TSecBearerToken}
 import tsec.common.SecureRandomId
 
-class BarerTokenStore[F[_]: Async](cache: Cache[TSecBearerToken[Id[FUUID]]], config: TokenConfig)
+class BearerTokenStore[F[_]: Async](cache: Cache[TSecBearerToken[Id[FUUID]]], config: TokenConfig)
     extends BackingStore[F, SecureRandomId, TSecBearerToken[Id[FUUID]]] {
 
   private implicit val flags: Flags  = Flags.defaultFlags
@@ -38,12 +38,12 @@ class BarerTokenStore[F[_]: Async](cache: Cache[TSecBearerToken[Id[FUUID]]], con
   }
 }
 
-object BarerTokenStore extends TokenFormatter {
+object BearerTokenStore extends TokenFormatter {
 
   def apply[F[_]: Async](
       client: JedisPool,
       config: TokenConfig
   ): BackingStore[F, SecureRandomId, TSecBearerToken[Id[FUUID]]] = {
-    new BarerTokenStore(RedisCache(client), config)
+    new BearerTokenStore(RedisCache(client), config)
   }
 }

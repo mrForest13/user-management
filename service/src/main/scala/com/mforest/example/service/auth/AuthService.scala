@@ -8,20 +8,20 @@ import com.mforest.example.core.error.Error
 import com.mforest.example.db.dao.PermissionDao
 import com.mforest.example.service.Service
 import com.mforest.example.service.dto.PermissionDto
-import com.mforest.example.service.model.AuthInfo
-import com.mforest.example.service.store.{BarerTokenStore, PermissionsStore}
+import com.mforest.example.service.model.SessionInfo
+import com.mforest.example.service.store.{BearerTokenStore, PermissionsStore}
 import doobie.util.transactor.Transactor
 import io.chrisdavenport.fuuid.FUUID
 import org.http4s.Request
 import redis.clients.jedis.JedisPool
-import tsec.authentication.{BearerTokenAuthenticator, SecuredRequest, TSecBearerToken, TSecTokenSettings}
+import tsec.authentication.{BearerTokenAuthenticator, TSecBearerToken, TSecTokenSettings}
 
 trait AuthService[F[_]] extends Service {
 
   val name: String = "Auth-Service"
 
-  def authorize[P: Show](raw: String, permission: P): EitherT[F, Error, AuthInfo]
-  def validateAndRenew(raw: String): EitherT[F, Error, AuthInfo]
+  def authorize[P: Show](raw: String, permission: P): EitherT[F, Error, SessionInfo]
+  def validateAndRenew(raw: String): EitherT[F, Error, SessionInfo]
   def create(identity: Id[FUUID]): F[TSecBearerToken[Id[FUUID]]]
   def discard(token: TSecBearerToken[Id[FUUID]]): F[TSecBearerToken[Id[FUUID]]]
 }
@@ -31,11 +31,11 @@ class AuthServiceImpl[F[_]: Async](auth: BearerTokenAuthenticator[F, Id[FUUID], 
 
   private val forbidden: String = "The server is refusing to respond to it! You don't have permission!"
 
-  override def validateAndRenew(raw: String): EitherT[F, Error, AuthInfo] = {
+  override def validateAndRenew(raw: String): EitherT[F, Error, SessionInfo] = {
     for {
       info      <- validate(raw)
       refreshed <- renew(info.authenticator)
-    } yield AuthInfo(info.identity, refreshed)
+    } yield SessionInfo(info.identity, refreshed)
   }
 
   override def create(identity: Id[FUUID]): F[TSecBearerToken[Id[FUUID]]] = {
@@ -46,7 +46,7 @@ class AuthServiceImpl[F[_]: Async](auth: BearerTokenAuthenticator[F, Id[FUUID], 
     auth.discard(token)
   }
 
-  override def authorize[P: Show](raw: String, permission: P): EitherT[F, Error, AuthInfo] = {
+  override def authorize[P: Show](raw: String, permission: P): EitherT[F, Error, SessionInfo] = {
     validateAndRenew(raw).flatMap { info =>
       OptionT
         .fromOption(info.identity.find(_.name == permission.show))
@@ -59,15 +59,11 @@ class AuthServiceImpl[F[_]: Async](auth: BearerTokenAuthenticator[F, Id[FUUID], 
     EitherT.right[Error](auth.renew(token))
   }
 
-  private def validate(raw: String): EitherT[F, Error, AuthInfo] = {
+  private def validate(raw: String): EitherT[F, Error, SessionInfo] = {
     auth
       .parseRaw(raw, Request())
       .toRight[Error](Error.ForbiddenError(forbidden))
-      .map(info)
-  }
-
-  private def info(request: SecuredRequest[F, NonEmptyChain[PermissionDto], TSecBearerToken[Id[FUUID]]]): AuthInfo = {
-    AuthInfo(request.identity, request.authenticator)
+      .map(SessionInfo.apply[F])
   }
 }
 
@@ -80,7 +76,7 @@ object AuthService {
       config: TokenConfig
   ): AuthService[F] = {
 
-    val tokenStore    = BarerTokenStore[F](client, config)
+    val tokenStore    = BearerTokenStore[F](client, config)
     val identityStore = PermissionsStore[F](dao, client, transactor)
     val settings      = TSecTokenSettings(config.expiryDuration, config.maxIdle)
 

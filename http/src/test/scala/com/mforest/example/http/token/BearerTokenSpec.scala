@@ -2,8 +2,7 @@ package com.mforest.example.http.token
 
 import java.time.Instant
 
-import cats.implicits.toShow
-import cats.implicits.catsSyntaxOptionId
+import cats.implicits.{catsSyntaxOptionId, toShow}
 import io.chrisdavenport.fuuid.FUUID
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

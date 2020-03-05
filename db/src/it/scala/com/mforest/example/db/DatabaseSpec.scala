@@ -10,7 +10,6 @@ import doobie.syntax.ToConnectionIOOps
 import doobie.syntax.string.toSqlInterpolator
 import doobie.util.transactor.Transactor
 import org.scalatest.{AsyncTestSuite, BeforeAndAfterAll, BeforeAndAfterEach}
-import pureconfig.generic.auto.exportReader
 import pureconfig.module.catseffect.loadConfigF
 
 trait DatabaseSpec
