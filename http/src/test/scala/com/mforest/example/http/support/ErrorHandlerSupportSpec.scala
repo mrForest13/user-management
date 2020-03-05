@@ -7,7 +7,6 @@ import cats.effect.IO
 import cats.implicits.catsSyntaxEitherId
 import com.mforest.example.core.error.Error.{InternalError, NotFoundError, UnavailableError}
 import com.mforest.example.http.HttpSpec
-import com.mforest.example.http.response.StatusResponse
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 
@@ -28,9 +27,9 @@ final class ErrorHandlerSupportSpec extends AsyncWordSpec with HttpSpec with Err
       "respond with not found error" in {
         val error = NotFoundError("Cannot found error!")
 
-        val result = handleError[IO, String](EitherT.leftT(StatusResponse.fail(error)))
+        val result = handleError[IO, String](EitherT.leftT(error))
 
-        result.value.asserting(_ shouldBe StatusResponse.fail(error).asLeft)
+        result.value.asserting(_ shouldBe error.asLeft)
       }
 
       "respond with unavailable error for sql exception" in {
@@ -40,7 +39,7 @@ final class ErrorHandlerSupportSpec extends AsyncWordSpec with HttpSpec with Err
 
         val error = UnavailableError("The server is currently unavailable!")
 
-        result.value.asserting(_ shouldBe StatusResponse.fail(error).asLeft)
+        result.value.asserting(_ shouldBe error.asLeft)
       }
 
       "respond with internal error for any exception" in {
@@ -50,7 +49,7 @@ final class ErrorHandlerSupportSpec extends AsyncWordSpec with HttpSpec with Err
 
         val error = InternalError("There was an internal server error!")
 
-        result.value.asserting(_ shouldBe StatusResponse.fail(error).asLeft)
+        result.value.asserting(_ shouldBe error.asLeft)
       }
     }
   }

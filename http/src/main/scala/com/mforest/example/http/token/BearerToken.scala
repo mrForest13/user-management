@@ -4,7 +4,7 @@ import cats.Show
 import tsec.authentication.TSecBearerToken
 import tsec.common.SecureRandomId
 
-private[http] final class BearerToken(val value: SecureRandomId)
+final class BearerToken(val value: SecureRandomId)
 
 object BearerToken {
 

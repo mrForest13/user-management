@@ -7,17 +7,16 @@ import cats.data.EitherT.right
 import cats.effect.Sync
 import cats.implicits.{catsSyntaxApplicativeError, catsSyntaxEitherId, toFunctorOps}
 import com.mforest.example.core.error.Error
-import com.mforest.example.http.response.StatusResponse.Fail
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
 
 private[http] trait ErrorHandlerSupport {
 
-  def handleError[F[_]: Sync, R](either: EitherT[F, Fail[Error], R]): EitherT[F, Fail[Error], R] = {
+  def handleError[F[_]: Sync, R](either: EitherT[F, Error, R]): EitherT[F, Error, R] = {
     right(Slf4jLogger.create[F]).flatMapF { logger =>
       either.value.handleErrorWith { th =>
         logger
           .error(th)(th.getMessage)
-          .as(Fail(handle(th)).asLeft[R])
+          .as(handle(th).asLeft[R])
       }
     }
   }

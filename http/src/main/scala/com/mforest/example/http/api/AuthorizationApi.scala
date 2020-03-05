@@ -16,7 +16,7 @@ final class AuthorizationApi[F[_]: Sync: ContextShift](val authService: AuthServ
 
   override def routes: HttpRoutes[F] = validatePermission
 
-  private val validatePermission: HttpRoutes[F] = validatePermissionEndpoint.toHandleRoutes {
+  private val validatePermission: HttpRoutes[F] = validatePermissionEndpoint.toAuthHttpRoutes {
     case (permission, token) =>
       authorize(token, permission) { authInfo =>
         EitherT.rightT(authInfo)

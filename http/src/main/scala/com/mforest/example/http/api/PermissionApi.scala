@@ -17,24 +17,27 @@ final class PermissionApi[F[_]: Sync: ContextShift](service: PermissionService[F
 
   override def routes: HttpRoutes[F] = addPermission <+> findUserPermissions <+> findPermissions
 
-  private val addPermission: HttpRoutes[F] = addPermissionEndpoint.toHandleRoutes {
+  private val addPermission: HttpRoutes[F] = addPermissionEndpoint.toAuthHttpRoutes {
     case (token, request) =>
       authorize(token, Permissions.USER_MANAGEMENT_ADD_PERMISSION) { _ =>
-        validate(request).map(_.toDto).flatMap(service.addPermission)
+        validate(request)
+          .map(_.toDto)
+          .flatMap(service.addPermission)
       }
   }
 
-  private val findUserPermissions: HttpRoutes[F] = findUserPermissionsEndpoint.toHandleRoutes {
+  private val findUserPermissions: HttpRoutes[F] = findUserPermissionsEndpoint.toAuthHttpRoutes {
     case (id, token) =>
       authorize(token, Permissions.USER_MANAGEMENT_GET_USER_PERMISSIONS) { _ =>
         service.getPermissions(id)
       }
   }
 
-  private val findPermissions: HttpRoutes[F] = findPermissionsEndpoint.toHandleRoutes {
+  private val findPermissions: HttpRoutes[F] = findPermissionsEndpoint.toAuthHttpRoutes {
     case (size, page, token) =>
       authorize(token, Permissions.USER_MANAGEMENT_GET_PERMISSIONS) { _ =>
-        validate(Pagination(size, page)).flatMap(service.getPermissions)
+        validate(Pagination(size, page))
+          .flatMap(service.getPermissions)
       }
   }
 }

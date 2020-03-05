@@ -33,38 +33,38 @@ final class AuthorizationApiSpec extends AsyncWordSpec with HttpSpec with AsyncM
     "call validate permission api" must {
 
       "respond with sessions info" in {
-        val id         = SecureRandomId.Strong.generate
+        val randomId   = SecureRandomId.Strong.generate
         val permission = "EXAMPLE_PERMISSION"
         val dto        = PermissionDto(randomUnsafeId, permission)
 
         val result = SessionInfo(
           identity = NonEmptyChain.one(dto),
           authenticator = TSecBearerToken(
-            id = id,
+            id = randomId,
             identity = randomUnsafeId,
             expiry = Instant.now,
             lastTouched = Instant.now.some
           )
         )
 
-        val response: IO[Response[IO]] = validatePermission(id, EitherT.rightT(result))
+        val response: IO[Response[IO]] = validatePermission(randomId, EitherT.rightT(result))
 
         checkOk[SessionInfo](response).asserting {
           case (status, headers, body) =>
             status shouldBe Status.Ok
             body shouldBe StatusResponse.Ok[SessionInfo](result)
             headers shouldBe Headers.of(
-              Header("Authorization", new BearerToken(id).show),
+              Header("Authorization", new BearerToken(randomId).show),
               `Content-Type`(MediaType.application.json)
             )
         }
       }
 
       "respond with not found error" in {
-        val id     = SecureRandomId.Strong.generate
-        val result = Error.NotFoundError("Something went wrong!")
+        val randomId = SecureRandomId.Strong.generate
+        val result   = Error.NotFoundError("Something went wrong!")
 
-        val response: IO[Response[IO]] = validatePermission(id, EitherT.leftT(result))
+        val response: IO[Response[IO]] = validatePermission(randomId, EitherT.leftT(result))
 
         checkFail[String](response).asserting {
           case (status, headers, body) =>
@@ -75,10 +75,10 @@ final class AuthorizationApiSpec extends AsyncWordSpec with HttpSpec with AsyncM
       }
 
       "respond with forbidden error" in {
-        val id     = SecureRandomId.Strong.generate
-        val result = Error.ForbiddenError("Something went wrong!")
+        val randomId = SecureRandomId.Strong.generate
+        val result   = Error.ForbiddenError("Something went wrong!")
 
-        val response: IO[Response[IO]] = validatePermission(id, EitherT.leftT(result))
+        val response: IO[Response[IO]] = validatePermission(randomId, EitherT.leftT(result))
 
         checkFail[String](response).asserting {
           case (status, headers, body) =>
@@ -89,10 +89,10 @@ final class AuthorizationApiSpec extends AsyncWordSpec with HttpSpec with AsyncM
       }
 
       "respond with bad request error" in {
-        val id     = SecureRandomId.Strong.generate
-        val result = Error.ValidationError("Something went wrong!")
+        val randomId = SecureRandomId.Strong.generate
+        val result   = Error.ValidationError("Something went wrong!")
 
-        val response: IO[Response[IO]] = validatePermission(id, EitherT.leftT(result))
+        val response: IO[Response[IO]] = validatePermission(randomId, EitherT.leftT(result))
 
         checkFail[String](response).asserting {
           case (status, headers, body) =>
@@ -103,10 +103,10 @@ final class AuthorizationApiSpec extends AsyncWordSpec with HttpSpec with AsyncM
       }
 
       "respond with unavailable request error" in {
-        val id     = SecureRandomId.Strong.generate
-        val result = Error.UnavailableError("Something went wrong!")
+        val randomId = SecureRandomId.Strong.generate
+        val result   = Error.UnavailableError("Something went wrong!")
 
-        val response: IO[Response[IO]] = validatePermission(id, EitherT.leftT(result))
+        val response: IO[Response[IO]] = validatePermission(randomId, EitherT.leftT(result))
 
         checkFail[String](response).asserting {
           case (status, headers, body) =>
@@ -117,10 +117,10 @@ final class AuthorizationApiSpec extends AsyncWordSpec with HttpSpec with AsyncM
       }
 
       "respond with internal error" in {
-        val id     = SecureRandomId.Strong.generate
-        val result = Error.InternalError("Something went wrong!")
+        val randomId = SecureRandomId.Strong.generate
+        val result   = Error.InternalError("Something went wrong!")
 
-        val response: IO[Response[IO]] = validatePermission(id, EitherT.leftT(result))
+        val response: IO[Response[IO]] = validatePermission(randomId, EitherT.leftT(result))
 
         checkFail[String](response).asserting {
           case (status, headers, body) =>
