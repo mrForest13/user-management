@@ -2,15 +2,14 @@ package com.mforest.example.http.token
 
 import java.time.Instant
 
-import cats.implicits.toShow
-import cats.syntax.OptionSyntax
+import cats.implicits.{catsSyntaxOptionId, toShow}
 import io.chrisdavenport.fuuid.FUUID
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import tsec.authentication.TSecBearerToken
 import tsec.common.SecureRandomId
 
-final class BearerTokenSpec extends AnyWordSpec with Matchers with OptionSyntax {
+final class BearerTokenSpec extends AnyWordSpec with Matchers {
 
   "BarerToken" when {
 
@@ -18,7 +17,7 @@ final class BearerTokenSpec extends AnyWordSpec with Matchers with OptionSyntax 
 
       "respond with added barer prefix for string token" in {
         val token      = "example"
-        val barerToken = BearerToken(token)
+        val barerToken = BearerToken.fromString(token)
 
         barerToken.show shouldBe s"Bearer $token"
       }

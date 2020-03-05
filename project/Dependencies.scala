@@ -19,9 +19,12 @@ object Dependencies {
     val log4Cats   = "1.0.1"
     val catsTest   = "0.4.0"
     val scalaTest  = "3.1.0"
+    val scalaMock  = "4.4.0"
     val scalaCache = "0.28.0"
     val pureConfig = "0.12.2"
   }
+
+  private val Test: String = "test,it,e2e"
 
   private val config: Seq[ModuleID] = Seq(
     "com.github.pureconfig" %% "pureconfig-core"        % Versions.pureConfig,
@@ -52,7 +55,7 @@ object Dependencies {
     "org.tpolecat" %% "doobie-core"      % Versions.doobie,
     "org.tpolecat" %% "doobie-hikari"    % Versions.doobie,
     "org.tpolecat" %% "doobie-postgres"  % Versions.doobie,
-    "org.tpolecat" %% "doobie-scalatest" % Versions.doobie % "test,it,e2e"
+    "org.tpolecat" %% "doobie-scalatest" % Versions.doobie % Test
   )
 
   private val jedis: Seq[ModuleID] = Seq(
@@ -105,9 +108,9 @@ object Dependencies {
   )
 
   private val test: Seq[ModuleID] = Seq(
-    "org.scalatest"  %% "scalatest"                     % Versions.scalaTest % "test,it,e2e",
-    "org.scalamock"  %% "scalamock"                     % "4.4.0"            % "test,it,e2e",
-    "com.codecommit" %% "cats-effect-testing-scalatest" % Versions.catsTest  % "test,it,e2e"
+    "org.scalatest"  %% "scalatest"                     % Versions.scalaTest % Test,
+    "org.scalamock"  %% "scalamock"                     % Versions.scalaMock % Test,
+    "com.codecommit" %% "cats-effect-testing-scalatest" % Versions.catsTest  % Test
   )
 
   val application: Seq[ModuleID] = test ++ logging

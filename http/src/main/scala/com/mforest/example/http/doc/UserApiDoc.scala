@@ -3,7 +3,7 @@ package com.mforest.example.http.doc
 import cats.data.Chain
 import cats.effect.IO
 import com.mforest.example.core.error.Error
-import com.mforest.example.core.permissions.Permissions
+import com.mforest.example.core.permission.Permissions
 import com.mforest.example.http.Doc
 import com.mforest.example.http.response.StatusResponse
 import com.mforest.example.http.token.BearerToken

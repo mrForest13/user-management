@@ -1,14 +1,13 @@
 package com.mforest.example.http.form
 
 import cats.data.NonEmptyList
-import cats.implicits.catsSyntaxValidatedId
-import cats.syntax.OptionSyntax
+import cats.implicits.{catsSyntaxOptionId, catsSyntaxValidatedId, none}
 import com.mforest.example.core.error.Error.ValidationError
 import com.mforest.example.core.validation.validate
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-final class LoginFormSpec extends AnyWordSpec with Matchers with OptionSyntax {
+final class LoginFormSpec extends AnyWordSpec with Matchers {
 
   "RegistrationForm" when {
 
@@ -50,7 +49,7 @@ final class LoginFormSpec extends AnyWordSpec with Matchers with OptionSyntax {
   }
 }
 
-object LoginFormSpec extends OptionSyntax {
+object LoginFormSpec {
 
   val formMock: LoginForm = LoginForm("username", "password".some)
 }

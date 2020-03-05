@@ -6,7 +6,6 @@ import cats.effect.{ContextShift, Sync}
 import com.mforest.example.http.Api
 import com.mforest.example.http.doc.AuthenticationApiDoc
 import com.mforest.example.http.form.LoginForm
-import com.mforest.example.http.response.StatusResponse
 import com.mforest.example.http.support.AuthorizationSupport
 import com.mforest.example.http.token.BearerToken
 import com.mforest.example.service.auth.AuthService
@@ -24,22 +23,21 @@ final class AuthenticationApi[F[_]: Sync: ContextShift](loginService: LoginServi
 
   override def routes: HttpRoutes[F] = loginUser <+> logoutUser
 
-  private val loginUser: HttpRoutes[F] = loginUserEndpoint.toHandleRoutes { credentials =>
+  private val loginUser: HttpRoutes[F] = loginUserEndpoint.toAuthHttpRoutes { credentials =>
     validate(LoginForm(credentials))
       .map(_.toDto)
       .flatMap(loginService.login)
       .semiflatMap(authService.create)
       .map(BearerToken.apply[Id[FUUID]])
-      .bimap(StatusResponse.fail, _ -> StatusResponse.Ok(loginMsg))
+      .map(_ -> loginMsg)
   }
 
-  private val logoutUser: HttpRoutes[F] = logoutUserEndpoint.toHandleRoutes { token =>
+  private val logoutUser: HttpRoutes[F] = logoutUserEndpoint.toHttpRoutes { token =>
     authService
       .validateAndRenew(token)
       .map(_.authenticator)
       .semiflatMap(authService.discard)
-      .leftMap(StatusResponse.fail)
-      .as(StatusResponse.Ok(logoutMsg))
+      .as(logoutMsg)
   }
 }
 

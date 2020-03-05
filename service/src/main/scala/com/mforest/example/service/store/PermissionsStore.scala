@@ -4,7 +4,7 @@ import cats.Functor.ops.toAllFunctorOps
 import cats.Id
 import cats.data.{Chain, NonEmptyChain, OptionT}
 import cats.effect.Async
-import cats.syntax.OptionSyntax
+import cats.implicits.none
 import com.mforest.example.db.dao.PermissionDao
 import com.mforest.example.service.converter.DtoConverter.ChainConverter
 import com.mforest.example.service.dto.PermissionDto
@@ -19,8 +19,7 @@ import tsec.authentication.IdentityStore
 
 class PermissionsStore[F[_]: Async](dao: PermissionDao, cache: Cache[Chain[PermissionDto]], transactor: Transactor[F])
     extends IdentityStore[F, Id[FUUID], NonEmptyChain[PermissionDto]]
-    with ToConnectionIOOps
-    with OptionSyntax {
+    with ToConnectionIOOps {
 
   private implicit val flags: Flags  = Flags.defaultFlags
   private implicit val mode: Mode[F] = CatsEffect.modes.async[F]
