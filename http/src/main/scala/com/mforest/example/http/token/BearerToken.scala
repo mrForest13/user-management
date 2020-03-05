@@ -4,13 +4,13 @@ import cats.Show
 import tsec.authentication.TSecBearerToken
 import tsec.common.SecureRandomId
 
-final class BearerToken(val value: SecureRandomId)
+final case class BearerToken(value: SecureRandomId)
 
 object BearerToken {
 
   def apply[I](value: TSecBearerToken[I]): BearerToken = new BearerToken(value.id)
 
-  def apply(value: String): BearerToken = new BearerToken(SecureRandomId.apply(value))
+  def fromString(value: String): BearerToken = new BearerToken(SecureRandomId.apply(value))
 
   implicit val show: Show[BearerToken] = (token: BearerToken) => s"Bearer ${token.value}"
 }

@@ -17,7 +17,7 @@ final class BearerTokenSpec extends AnyWordSpec with Matchers {
 
       "respond with added barer prefix for string token" in {
         val token      = "example"
-        val barerToken = BearerToken(token)
+        val barerToken = BearerToken.fromString(token)
 
         barerToken.show shouldBe s"Bearer $token"
       }
