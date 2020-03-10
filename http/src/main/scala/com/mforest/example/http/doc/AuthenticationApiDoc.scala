@@ -3,7 +3,7 @@ package com.mforest.example.http.doc
 import com.mforest.example.core.error.Error
 import com.mforest.example.http.Doc
 import com.mforest.example.http.response.StatusResponse
-import com.mforest.example.http.token.BarerToken
+import com.mforest.example.http.token.BearerToken
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
 import sttp.tapir.model.UsernamePassword
@@ -12,13 +12,13 @@ private[http] trait AuthenticationApiDoc extends Doc {
 
   override def endpoints: Seq[Endpoint[_, _, _, _]] = Seq(loginUserEndpoint, logoutUserEndpoint)
 
-  protected val loginUserEndpoint: Endpoint[UsernamePassword, Fail[Error], (BarerToken, Ok[String]), Nothing] = {
+  protected val loginUserEndpoint: Endpoint[UsernamePassword, Fail[Error], (BearerToken, Ok[String]), Nothing] = {
     endpoint.post
       .tag("Authentication Api")
       .summary("create token for user")
       .in("api" / "login")
       .in(auth.basic)
-      .out(header[BarerToken]("Authorization"))
+      .out(header[BearerToken]("Authorization"))
       .out(
         oneOf(
           statusMappingFromMatchType(

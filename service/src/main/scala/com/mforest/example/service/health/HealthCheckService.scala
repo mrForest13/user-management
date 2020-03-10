@@ -26,18 +26,18 @@ class HealthCheckServiceImpl[F[_]: Concurrent: Timer](transactor: Transactor[F])
 
   def check: EitherT[F, Error, NonEmptyList[CheckDto]] = EitherT.right {
     HealthReporter
-      .fromChecks(doobie)
+      .fromChecks(database)
       .check
       .map(_.value)
       .map(_.checks)
       .map(_.to[CheckDto])
   }
 
-  private def doobie: HealthCheck[F, TaggedCheck] = {
+  private def database: HealthCheck[F, TaggedCheck] = {
     connectionCheck(transactor)(none)
       .through(mods.recoverToSick)
       .through(mods.timeoutToSick(5.seconds))
-      .through(mods.tagWith("doobie"))
+      .through(mods.tagWith("database"))
   }
 }
 

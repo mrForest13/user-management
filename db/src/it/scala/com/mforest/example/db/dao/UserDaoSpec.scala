@@ -2,15 +2,16 @@ package com.mforest.example.db.dao
 
 import cats.data.Chain
 import cats.effect.IO
+import cats.implicits.{catsSyntaxOptionId, none}
 import com.mforest.example.core.model.Pagination
 import com.mforest.example.db.DatabaseSpec
 import com.mforest.example.db.row.{PermissionRowMock, UserRowMock}
 import io.chrisdavenport.fuuid.FUUID
 import org.postgresql.util.PSQLException
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.wordspec.AsyncWordSpec
 
-final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
+final class UserDaoSpec extends AsyncWordSpec with DatabaseSpec with Matchers {
 
   private val userDao: UserDao             = UserDao()
   private val permissionDao: PermissionDao = PermissionDao()
@@ -24,7 +25,9 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
 
         val action = userDao.insert(row)
 
-        action.transact(transactor).unsafeRunSync() shouldBe 1
+        action.transact(transactor).asserting {
+          _ shouldBe 1
+        }
       }
 
       "throw exception on unique email field" in {
@@ -36,9 +39,7 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
           _ <- userDao.insert(secondRow)
         } yield ()
 
-        intercept[PSQLException] {
-          action.transact(transactor).unsafeRunSync()
-        }
+        action.transact(transactor).assertThrows[PSQLException]
       }
     }
 
@@ -49,7 +50,9 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
 
         val action = userDao.delete(id)
 
-        action.transact(transactor).unsafeRunSync() shouldBe 0
+        action.transact(transactor).asserting {
+          _ shouldBe 0
+        }
       }
 
       "respond with one deleted row" in {
@@ -64,7 +67,9 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
           count <- userDao.delete(firstRow.id)
         } yield count
 
-        action.transact(transactor).unsafeRunSync() shouldBe 1
+        action.transact(transactor).asserting {
+          _ shouldBe 1
+        }
       }
     }
 
@@ -73,9 +78,11 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
       "respond with none" in {
         val id = FUUID.randomFUUID[IO].unsafeRunSync()
 
-        val action = permissionDao.find(id)
+        val action = permissionDao.find(id).value
 
-        action.transact(transactor).value.unsafeRunSync() shouldBe none
+        action.transact(transactor).asserting {
+          _ shouldBe none
+        }
       }
 
       "respond with one record" in {
@@ -90,7 +97,9 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
           record <- userDao.find(firstRow.id).value
         } yield record
 
-        action.transact(transactor).unsafeRunSync() shouldBe firstRow.some
+        action.transact(transactor).asserting {
+          _ shouldBe firstRow.some
+        }
       }
     }
 
@@ -99,9 +108,11 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
       "respond with none" in {
         val email = "FIRST_EXAMPLE_EMAIL"
 
-        val action = userDao.find(email)
+        val action = userDao.find(email).value
 
-        action.transact(transactor).value.unsafeRunSync() shouldBe none
+        action.transact(transactor).asserting {
+          _ shouldBe none
+        }
       }
 
       "respond with one record" in {
@@ -116,7 +127,9 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
           record <- userDao.find(firstEmail).value
         } yield record
 
-        action.transact(transactor).unsafeRunSync() shouldBe firstRow.some
+        action.transact(transactor).asserting {
+          _ shouldBe firstRow.some
+        }
       }
     }
 
@@ -127,7 +140,9 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
 
         val action = userDao.find(pagination)
 
-        action.transact(transactor).unsafeRunSync() shouldBe Chain.empty
+        action.transact(transactor).asserting {
+          _ shouldBe Chain.empty
+        }
       }
 
       "respond with one record" in {
@@ -143,7 +158,9 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
           record <- userDao.find(pagination)
         } yield record
 
-        action.transact(transactor).unsafeRunSync() shouldBe Chain(firstRow)
+        action.transact(transactor).asserting {
+          _ shouldBe Chain(firstRow)
+        }
       }
 
       "respond with all records" in {
@@ -159,7 +176,9 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
           record <- userDao.find(pagination)
         } yield record
 
-        action.transact(transactor).unsafeRunSync() shouldBe Chain(firstRow, secondRow)
+        action.transact(transactor).asserting {
+          _ shouldBe Chain(firstRow, secondRow)
+        }
       }
     }
 
@@ -171,9 +190,7 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
 
         val action = userDao.add(userId, permissionID)
 
-        intercept[PSQLException] {
-          action.transact(transactor).unsafeRunSync()
-        }
+        action.transact(transactor).assertThrows[PSQLException]
       }
 
       "respond with one inserted row" in {
@@ -186,7 +203,9 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
           count <- userDao.add(userRow.id, permissionRow.id)
         } yield count
 
-        action.transact(transactor).unsafeRunSync() shouldBe 1
+        action.transact(transactor).asserting {
+          _ shouldBe 1
+        }
       }
 
       "do nothing on conflict" in {
@@ -200,7 +219,9 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
           count <- userDao.add(userRow.id, permissionRow.id)
         } yield count
 
-        action.transact(transactor).unsafeRunSync() shouldBe 0
+        action.transact(transactor).asserting {
+          _ shouldBe 0
+        }
       }
     }
 
@@ -212,7 +233,9 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
 
         val action = userDao.delete(userId, permissionID)
 
-        action.transact(transactor).unsafeRunSync() shouldBe 0
+        action.transact(transactor).asserting {
+          _ shouldBe 0
+        }
       }
 
       "respond with one deleted row" in {
@@ -226,7 +249,9 @@ final class UserDaoSpec extends AnyWordSpec with Matchers with DatabaseSpec {
           count <- userDao.delete(userRow.id, permissionRow.id)
         } yield count
 
-        action.transact(transactor).unsafeRunSync() shouldBe 1
+        action.transact(transactor).asserting {
+          _ shouldBe 1
+        }
       }
     }
   }

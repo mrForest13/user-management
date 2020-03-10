@@ -1,12 +1,12 @@
 package com.mforest.example.db
 
 import com.mforest.example.core.model.Pagination
-import com.mforest.example.db.custom.{CustomCompacts, CustomInstances}
-import doobie.syntax.AllSyntax
+import com.mforest.example.db.custom.CustomInstances
+import doobie.syntax.ToSqlInterpolator
 import doobie.util.query.Query0
 import doobie.util.update.Update0
 
-private[db] trait Query[Id, Row] extends CustomInstances with CustomCompacts with AllSyntax {
+private[db] trait Query[Id, Row] extends CustomInstances with ToSqlInterpolator {
 
   def tableName: String
 

@@ -1,31 +1,43 @@
 package com.mforest.example.http.doc
 
+import java.time.Instant
+
+import cats.data.NonEmptyChain
+import cats.effect.IO
+import cats.implicits.catsSyntaxOptionId
 import com.mforest.example.core.error.Error
 import com.mforest.example.http.Doc
 import com.mforest.example.http.response.StatusResponse
-import com.mforest.example.http.token.BarerToken
+import com.mforest.example.http.token.BearerToken
+import com.mforest.example.service.dto.PermissionDto
+import com.mforest.example.service.model.SessionInfo
+import io.chrisdavenport.fuuid.FUUID
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
+import tsec.authentication.TSecBearerToken
+import tsec.common.SecureRandomId
 
 private[http] trait AuthorizationApiDoc extends Doc {
 
   override def endpoints: Seq[Endpoint[_, _, _, _]] = Seq(validatePermissionEndpoint)
 
-  protected val validatePermissionEndpoint: Endpoint[(Token, Token), Fail[Error], (BarerToken, Ok[String]), Nothing] = {
+  protected val validatePermissionEndpoint
+      : Endpoint[(String, Token), Fail[Error], (BearerToken, Ok[SessionInfo]), Nothing] = {
     endpoint.get
       .tag("Authorization Api")
       .summary("Valid user permission")
       .in("permissions" / path[String]("permission") / "validate")
       .in(auth.bearer)
-      .out(header[BarerToken]("Authorization"))
+      .out(header[BearerToken]("Authorization"))
       .out(
         oneOf(
-          statusMappingFromMatchType(
+          statusMappingClassMatcher(
             StatusCode.Ok,
-            jsonBody[Ok[String]]
+            jsonBody[Ok[SessionInfo]]
               .example(
-                StatusResponse.Ok("The user has the required permission!")
-              )
+                StatusResponse.Ok(AuthorizationApiDoc.sessionInfo)
+              ),
+            classOf[Ok[SessionInfo]]
           )
         )
       )
@@ -70,5 +82,37 @@ private[http] trait AuthorizationApiDoc extends Doc {
           )
         )
       )
+  }
+}
+
+object AuthorizationApiDoc {
+
+  private val permissions: NonEmptyChain[PermissionDto] = NonEmptyChain(
+    PermissionDto(
+      id = randomUnsafeId,
+      name = "FIRST_EXAMPLE_PERMISSION"
+    ),
+    PermissionDto(
+      id = randomUnsafeId,
+      name = "SECOND_EXAMPLE_PERMISSION"
+    ),
+    PermissionDto(
+      id = randomUnsafeId,
+      name = "THIRD_EXAMPLE_PERMISSION"
+    )
+  )
+
+  private val sessionInfo: SessionInfo = SessionInfo(
+    identity = permissions,
+    authenticator = TSecBearerToken(
+      id = SecureRandomId.Strong.generate,
+      identity = randomUnsafeId,
+      expiry = Instant.now,
+      lastTouched = Instant.now.some
+    )
+  )
+
+  private def randomUnsafeId: FUUID = {
+    FUUID.randomFUUID[IO].unsafeRunSync()
   }
 }

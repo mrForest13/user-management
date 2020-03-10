@@ -1,17 +1,14 @@
 package com.mforest.example.http.yaml
 
+import cats.implicits.catsSyntaxOptionId
 import com.mforest.example.core.config.app.AppConfig
 import com.mforest.example.http.Doc
-import com.mforest.example.http.doc.{AuthenticationApiDoc, PermissionApiDoc, RegistrationApiDoc}
 import sttp.tapir.docs.openapi.TapirOpenAPIDocs
 import sttp.tapir.openapi.circe.yaml.TapirOpenAPICirceYaml
 import sttp.tapir.openapi.{Contact, Info, License, OpenAPI}
 
 final class SwaggerDocs(config: AppConfig, version: String, docs: Seq[Doc])
-    extends AuthenticationApiDoc
-    with PermissionApiDoc
-    with RegistrationApiDoc
-    with TapirOpenAPIDocs
+    extends TapirOpenAPIDocs
     with TapirOpenAPICirceYaml {
 
   private val contact = Contact(

@@ -4,12 +4,10 @@ import cats.Functor.ops.toAllFunctorOps
 import cats.Id
 import cats.data.OptionT
 import cats.effect.Async
-import cats.syntax.OptionSyntax
+import cats.implicits.catsSyntaxOptionId
 import com.mforest.example.core.config.auth.TokenConfig
-import com.mforest.example.core.formatter.{FuuidFormatter, InstantFormatter}
+import com.mforest.example.service.formatter.TokenFormatter
 import io.chrisdavenport.fuuid.FUUID
-import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
-import io.circe.{Decoder, Encoder}
 import redis.clients.jedis.JedisPool
 import scalacache.redis.RedisCache
 import scalacache.serialization.circe.codec
@@ -17,9 +15,8 @@ import scalacache.{Cache, CatsEffect, Flags, Mode}
 import tsec.authentication.{BackingStore, TSecBearerToken}
 import tsec.common.SecureRandomId
 
-class BarerTokenStore[F[_]: Async](cache: Cache[TSecBearerToken[Id[FUUID]]], config: TokenConfig)
-    extends BackingStore[F, SecureRandomId, TSecBearerToken[Id[FUUID]]]
-    with OptionSyntax {
+class BearerTokenStore[F[_]: Async](cache: Cache[TSecBearerToken[Id[FUUID]]], config: TokenConfig)
+    extends BackingStore[F, SecureRandomId, TSecBearerToken[Id[FUUID]]] {
 
   private implicit val flags: Flags  = Flags.defaultFlags
   private implicit val mode: Mode[F] = CatsEffect.modes.async[F]
@@ -41,18 +38,12 @@ class BarerTokenStore[F[_]: Async](cache: Cache[TSecBearerToken[Id[FUUID]]], con
   }
 }
 
-object BarerTokenStore extends FuuidFormatter with InstantFormatter {
+object BearerTokenStore extends TokenFormatter {
 
   def apply[F[_]: Async](
       client: JedisPool,
       config: TokenConfig
   ): BackingStore[F, SecureRandomId, TSecBearerToken[Id[FUUID]]] = {
-    new BarerTokenStore(RedisCache(client), config)
+    new BearerTokenStore(RedisCache(client), config)
   }
-
-  implicit val encoder1: Encoder[SecureRandomId] = Encoder.encodeString.asInstanceOf[Encoder[SecureRandomId]]
-  implicit val decoder1: Decoder[SecureRandomId] = Decoder.decodeString.asInstanceOf[Decoder[SecureRandomId]]
-
-  implicit val encoder: Encoder[TSecBearerToken[Id[FUUID]]] = deriveEncoder
-  implicit val decoder: Decoder[TSecBearerToken[Id[FUUID]]] = deriveDecoder
 }

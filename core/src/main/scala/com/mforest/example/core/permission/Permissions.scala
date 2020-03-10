@@ -1,6 +1,6 @@
-package com.mforest.example.core.permissions
+package com.mforest.example.core.permission
 
-import scala.language.implicitConversions
+import cats.Show
 
 object Permissions extends Enumeration {
 
@@ -13,5 +13,5 @@ object Permissions extends Enumeration {
   val USER_MANAGEMENT_ADD_PERMISSION: Permission              = Value
   val USER_MANAGEMENT_GET_USERS: Permission                   = Value
 
-  implicit def toString(permission: Permission): String = permission.toString
+  implicit val show: Show[Permission] = Show.fromToString
 }

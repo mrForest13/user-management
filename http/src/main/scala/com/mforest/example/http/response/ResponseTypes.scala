@@ -2,7 +2,7 @@ package com.mforest.example.http.response
 
 import io.circe.{Decoder, Encoder}
 
-private[http] object ResponseTypes extends Enumeration {
+private[response] object ResponseTypes extends Enumeration {
 
   type Type = Value
 

@@ -1,7 +1,7 @@
 package com.mforest.example.core
 
 import cats.effect.IO
-import cats.syntax.OptionSyntax
+import cats.implicits.catsSyntaxOptionId
 import com.mforest.example.core.config.app.AppConfig
 import com.mforest.example.core.config.auth.TokenConfig
 import com.mforest.example.core.config.db.{MigrationConfig, PostgresConfig, RedisConfig}
@@ -11,7 +11,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 import scala.concurrent.duration.DurationInt
 
-final class ConfigLoaderSpec extends AnyWordSpec with Matchers with OptionSyntax {
+final class ConfigLoaderSpec extends AnyWordSpec with Matchers {
 
   "ConfigLoader" when {
 

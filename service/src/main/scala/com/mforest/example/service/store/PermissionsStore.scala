@@ -4,7 +4,7 @@ import cats.Functor.ops.toAllFunctorOps
 import cats.Id
 import cats.data.{Chain, NonEmptyChain, OptionT}
 import cats.effect.Async
-import cats.syntax.OptionSyntax
+import cats.implicits.none
 import com.mforest.example.db.dao.PermissionDao
 import com.mforest.example.service.converter.DtoConverter.ChainConverter
 import com.mforest.example.service.dto.PermissionDto
@@ -17,12 +17,9 @@ import scalacache.serialization.circe.codec
 import scalacache.{Cache, CatsEffect, Flags, Mode}
 import tsec.authentication.IdentityStore
 
-import scala.language.implicitConversions
-
 class PermissionsStore[F[_]: Async](dao: PermissionDao, cache: Cache[Chain[PermissionDto]], transactor: Transactor[F])
     extends IdentityStore[F, Id[FUUID], NonEmptyChain[PermissionDto]]
-    with ToConnectionIOOps
-    with OptionSyntax {
+    with ToConnectionIOOps {
 
   private implicit val flags: Flags  = Flags.defaultFlags
   private implicit val mode: Mode[F] = CatsEffect.modes.async[F]
@@ -32,15 +29,13 @@ class PermissionsStore[F[_]: Async](dao: PermissionDao, cache: Cache[Chain[Permi
   }
 
   private def getOrLoad(userId: Id[FUUID]): F[Chain[PermissionDto]] = {
-    cache.cachingForMemoizeF(userId)(none) {
+    cache.cachingForMemoizeF(userId.show)(none) {
       dao
         .findByUser(userId)
         .transact(transactor)
         .map(_.to[PermissionDto])
     }
   }
-
-  private implicit def toString(id: Id[FUUID]): String = id.toString()
 }
 
 object PermissionsStore {

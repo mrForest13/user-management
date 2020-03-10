@@ -3,7 +3,7 @@ package com.mforest.example.service.user
 import cats.Id
 import cats.data.OptionT.liftF
 import cats.data.{Chain, EitherT}
-import cats.effect.Async
+import cats.effect.{Async, IO}
 import com.mforest.example.core.error.Error
 import com.mforest.example.core.error.Error.NotFoundError
 import com.mforest.example.core.model.Pagination
@@ -37,12 +37,12 @@ class UserServiceImpl[F[_]: Async](
     transactor: Transactor[F]
 ) extends UserService[F] {
 
-  private implicit val flags: Flags  = Flags.defaultFlags
-  private implicit val mode: Mode[F] = CatsEffect.modes.async[F]
-
   private val created  = "The permission has been added!"
   private val deleted  = "The permission has been revoked!"
   private val notFound = "The User or permission does not exist!"
+
+  private implicit val flags: Flags   = Flags.defaultFlags
+  private implicit val mode: Mode[IO] = CatsEffect.modes.async[IO]
 
   override def getUsers(pagination: Pagination): EitherT[F, Error, Chain[UserDto]] = EitherT {
     userDao
@@ -58,19 +58,19 @@ class UserServiceImpl[F[_]: Async](
       _    <- userDao.find(userId)
       _    <- liftF(userDao.add(userId, permissionId))
       rows <- liftF(permissionDao.findByUser(userId))
-      _    <- liftF(updateCache(userId)(rows).pure[ConnectionIO])
+      _    <- liftF(updateCache(userId)(rows))
     } yield created
 
     action
       .transact(transactor)
-      .toRight(Error.notFound(notFound))
+      .toRight(Error.NotFoundError(notFound))
   }
 
   override def revokePermission(userId: Id[FUUID], permissionId: Id[FUUID]): EitherT[F, Error, String] = EitherT {
     val action = for {
       count <- userDao.delete(userId, permissionId)
       rows  <- permissionDao.findByUser(userId)
-      _     <- updateCache(userId)(rows).pure[ConnectionIO]
+      _     <- updateCache(userId)(rows)
     } yield count
 
     action.transact(transactor).map {
@@ -79,8 +79,8 @@ class UserServiceImpl[F[_]: Async](
     }
   }
 
-  private def updateCache(userId: Id[FUUID])(permissions: Chain[PermissionRow]): F[Any] = {
-    cache.put(userId)(permissions.to[PermissionDto])
+  private def updateCache(userId: Id[FUUID])(permissions: Chain[PermissionRow]): ConnectionIO[Unit] = {
+    cache.put(userId)(permissions.to[PermissionDto]).as(()).to[ConnectionIO]
   }
 }
 

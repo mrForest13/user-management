@@ -2,8 +2,8 @@ package com.mforest.example.application
 
 import cats.Functor.ops.toAllFunctorOps
 import cats.effect.{Blocker, ConcurrentEffect, ContextShift, ExitCode, IO, IOApp, Resource, Timer}
-import com.mforest.example.application.info.BuildInfo
 import com.mforest.example.core.ConfigLoader
+import com.mforest.example.application.info.BuildInfo
 import com.mforest.example.db.Database
 import com.mforest.example.db.cache.Cache
 import com.mforest.example.db.dao.{PermissionDao, UserDao}
