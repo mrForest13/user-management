@@ -23,8 +23,8 @@ private[http] trait HttpServerSupport extends TapirHttp4sServer {
       endpoint.toRoutes(
         logic.andThen(
           handleError(_)
-            .leftMap(StatusResponse.Fail(_))
-            .map(StatusResponse.Ok(_))
+            .leftMap(StatusResponse.fail)
+            .map(StatusResponse.ok)
         )
       )
     }

@@ -102,7 +102,7 @@ final class AuthorizationApiSpec extends AsyncWordSpec with HttpSpec with AsyncM
         }
       }
 
-      "respond with unavailable request error" in {
+      "respond with unavailable error" in {
         val randomId = SecureRandomId.Strong.generate
         val result   = Error.UnavailableError("Something went wrong!")
 

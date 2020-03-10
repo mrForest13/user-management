@@ -4,7 +4,7 @@ import cats.implicits.toShow
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class PermissionsSpec extends AnyWordSpec with Matchers {
+final class PermissionsSpec extends AnyWordSpec with Matchers {
 
   "Permissions" when {
 
