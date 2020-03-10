@@ -12,7 +12,7 @@ final class SwaggerDocsSpec extends AnyWordSpec with Matchers {
 
       "respond with valid base yaml string" in {
         val version = "1.0.0"
-        val config = AppConfig(name = "example", description = "example", banner = "example")
+        val config  = AppConfig(name = "example", description = "example", banner = "example")
 
         val docs = SwaggerDocs(config = config, version = version, docs = Seq.empty)
 

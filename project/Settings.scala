@@ -56,7 +56,7 @@ object Settings {
   )
 
   private lazy val coverageSettings: Seq[Def.Setting[_]] = Seq(
-    coverageMinimum := 25,
+    coverageMinimum := 35,
     coverageFailOnMinimum := true,
     coverageHighlighting := true
   )
