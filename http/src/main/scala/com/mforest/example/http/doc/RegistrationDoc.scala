@@ -8,7 +8,7 @@ import com.mforest.example.http.response.StatusResponse
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
 
-private[http] trait RegistrationApiDoc extends Doc {
+private[http] trait RegistrationDoc extends Doc {
 
   override def endpoints: NonEmptyList[Endpoint[_, _, _, _]] = NonEmptyList.of(registerUserEndpoint)
 
@@ -19,7 +19,7 @@ private[http] trait RegistrationApiDoc extends Doc {
       .in("users")
       .in(
         jsonBody[RegistrationForm]
-          .example(RegistrationApiDoc.form)
+          .example(RegistrationDoc.form)
       )
       .out(
         oneOf(
@@ -67,7 +67,7 @@ private[http] trait RegistrationApiDoc extends Doc {
   }
 }
 
-object RegistrationApiDoc {
+object RegistrationDoc {
 
   private val form = RegistrationForm(
     email = "john.smith@gmail.com",

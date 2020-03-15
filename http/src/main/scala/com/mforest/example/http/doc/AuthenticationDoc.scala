@@ -9,7 +9,7 @@ import sttp.model.StatusCode
 import sttp.tapir.Endpoint
 import sttp.tapir.model.UsernamePassword
 
-private[http] trait AuthenticationApiDoc extends Doc {
+private[http] trait AuthenticationDoc extends Doc {
 
   override def endpoints: NonEmptyList[Endpoint[_, _, _, _]] = NonEmptyList.of(loginUserEndpoint, logoutUserEndpoint)
 

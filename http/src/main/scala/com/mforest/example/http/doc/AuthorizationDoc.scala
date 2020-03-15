@@ -17,7 +17,7 @@ import sttp.tapir.Endpoint
 import tsec.authentication.TSecBearerToken
 import tsec.common.SecureRandomId
 
-private[http] trait AuthorizationApiDoc extends Doc {
+private[http] trait AuthorizationDoc extends Doc {
 
   override def endpoints: NonEmptyList[Endpoint[_, _, _, _]] = NonEmptyList.of(validatePermissionEndpoint)
 
@@ -35,7 +35,7 @@ private[http] trait AuthorizationApiDoc extends Doc {
             StatusCode.Ok,
             jsonBody[Ok[SessionInfo]]
               .example(
-                StatusResponse.Ok(AuthorizationApiDoc.sessionInfo)
+                StatusResponse.Ok(AuthorizationDoc.sessionInfo)
               ),
             classOf[Ok[SessionInfo]]
           )
@@ -85,7 +85,7 @@ private[http] trait AuthorizationApiDoc extends Doc {
   }
 }
 
-object AuthorizationApiDoc {
+object AuthorizationDoc {
 
   private val permissions: NonEmptyChain[PermissionDto] = NonEmptyChain(
     PermissionDto(

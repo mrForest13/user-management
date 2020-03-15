@@ -4,7 +4,7 @@ import cats.data.EitherT
 import cats.effect.{ContextShift, Sync}
 import cats.implicits.catsStdShowForString
 import com.mforest.example.http.Api
-import com.mforest.example.http.doc.AuthorizationApiDoc
+import com.mforest.example.http.doc.AuthorizationDoc
 import com.mforest.example.http.support.AuthorizationSupport
 import com.mforest.example.service.auth.AuthService
 import org.http4s.HttpRoutes
@@ -12,7 +12,7 @@ import org.http4s.HttpRoutes
 final class AuthorizationApi[F[_]: Sync: ContextShift](val authService: AuthService[F])
     extends Api[F]
     with AuthorizationSupport[F]
-    with AuthorizationApiDoc {
+    with AuthorizationDoc {
 
   override def routes: HttpRoutes[F] = validatePermission
 

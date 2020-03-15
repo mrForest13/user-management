@@ -4,7 +4,7 @@ import cats.effect.{ContextShift, Sync}
 import com.mforest.example.core.model.Pagination
 import com.mforest.example.core.permission.Permissions
 import com.mforest.example.http.Api
-import com.mforest.example.http.doc.UserApiDoc
+import com.mforest.example.http.doc.UserDoc
 import com.mforest.example.http.support.AuthorizationSupport
 import com.mforest.example.service.auth.AuthService
 import com.mforest.example.service.user.UserService
@@ -13,7 +13,7 @@ import org.http4s.HttpRoutes
 final class UserApi[F[_]: Sync: ContextShift](userService: UserService[F], val authService: AuthService[F])
     extends Api[F]
     with AuthorizationSupport[F]
-    with UserApiDoc {
+    with UserDoc {
 
   override def routes: HttpRoutes[F] = addPermission <+> revokePermission <+> findUsers
 

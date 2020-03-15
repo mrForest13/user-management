@@ -4,7 +4,7 @@ import cats.Functor.ops.toAllFunctorOps
 import cats.Id
 import cats.effect.{ContextShift, Sync}
 import com.mforest.example.http.Api
-import com.mforest.example.http.doc.AuthenticationApiDoc
+import com.mforest.example.http.doc.AuthenticationDoc
 import com.mforest.example.http.form.LoginForm
 import com.mforest.example.http.support.AuthorizationSupport
 import com.mforest.example.http.token.BearerToken
@@ -16,7 +16,7 @@ import org.http4s.HttpRoutes
 final class AuthenticationApi[F[_]: Sync: ContextShift](loginService: LoginService[F], val authService: AuthService[F])
     extends Api[F]
     with AuthorizationSupport[F]
-    with AuthenticationApiDoc {
+    with AuthenticationDoc {
 
   private val loginMsg: String  = "Login succeeded!"
   private val logoutMsg: String = "Logout succeeded!"

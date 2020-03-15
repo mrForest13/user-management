@@ -8,7 +8,7 @@ import com.mforest.example.service.dto.HealthCheckDto
 import sttp.model.StatusCode
 import sttp.tapir.Endpoint
 
-private[http] trait HealthCheckApiDoc extends Doc {
+private[http] trait HealthCheckDoc extends Doc {
 
   override def endpoints: NonEmptyList[Endpoint[_, _, _, _]] = NonEmptyList.of(healthCheckEndpoint)
 
@@ -23,7 +23,7 @@ private[http] trait HealthCheckApiDoc extends Doc {
             StatusCode.Ok,
             jsonBody[Ok[NonEmptyList[HealthCheckDto]]]
               .example(
-                StatusResponse.Ok(HealthCheckApiDoc.checks)
+                StatusResponse.Ok(HealthCheckDoc.checks)
               )
           )
         )
@@ -49,7 +49,7 @@ private[http] trait HealthCheckApiDoc extends Doc {
   }
 }
 
-object HealthCheckApiDoc {
+object HealthCheckDoc {
 
   private val checks = NonEmptyList.of(
     HealthCheckDto(service = "database", healthy = true),
