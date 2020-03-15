@@ -18,7 +18,8 @@ final class ConfigLoaderSpec extends AnyWordSpec with Matchers {
     "call load" must {
 
       "respond with application config" in {
-        val config = ConfigLoader[IO].config()
+        val config = ConfigLoader[IO]
+          .config()
           .use(IO.pure)
           .unsafeRunSync()
 
@@ -30,7 +31,8 @@ final class ConfigLoaderSpec extends AnyWordSpec with Matchers {
       }
 
       "respond with token config" in {
-        val config = ConfigLoader[IO].config()
+        val config = ConfigLoader[IO]
+          .config()
           .use(IO.pure)
           .unsafeRunSync()
 
@@ -38,7 +40,8 @@ final class ConfigLoaderSpec extends AnyWordSpec with Matchers {
       }
 
       "respond with http config" in {
-        val config = ConfigLoader[IO].config()
+        val config = ConfigLoader[IO]
+          .config()
           .use(IO.pure)
           .unsafeRunSync()
 
@@ -46,7 +49,8 @@ final class ConfigLoaderSpec extends AnyWordSpec with Matchers {
       }
 
       "respond with swagger config" in {
-        val config = ConfigLoader[IO].config()
+        val config = ConfigLoader[IO]
+          .config()
           .use(IO.pure)
           .unsafeRunSync()
 
@@ -61,7 +65,8 @@ final class ConfigLoaderSpec extends AnyWordSpec with Matchers {
       }
 
       "respond with postgres config" in {
-        val config = ConfigLoader[IO].config()
+        val config = ConfigLoader[IO]
+          .config()
           .use(IO.pure)
           .unsafeRunSync()
 
@@ -80,7 +85,8 @@ final class ConfigLoaderSpec extends AnyWordSpec with Matchers {
       }
 
       "respond with redis config" in {
-        val config = ConfigLoader[IO].config()
+        val config = ConfigLoader[IO]
+          .config()
           .use(IO.pure)
           .unsafeRunSync()
 
@@ -92,7 +98,8 @@ final class ConfigLoaderSpec extends AnyWordSpec with Matchers {
       }
 
       "respond with migration config" in {
-        val config = ConfigLoader[IO].config()
+        val config = ConfigLoader[IO]
+          .config()
           .use(IO.pure)
           .unsafeRunSync()
 
