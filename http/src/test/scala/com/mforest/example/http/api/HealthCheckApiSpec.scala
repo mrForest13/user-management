@@ -24,7 +24,7 @@ final class HealthCheckApiSpec extends AsyncWordSpec with HttpSpec with AsyncMoc
 
     "call health check api" must {
 
-      "respond with success message" in {
+      "respond with check info" in {
         val result = NonEmptyList.of(
           HealthCheckDto(service = "database", healthy = true),
           HealthCheckDto(service = "cache", healthy = true)
