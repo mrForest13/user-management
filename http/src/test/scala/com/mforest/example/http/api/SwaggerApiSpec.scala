@@ -1,6 +1,7 @@
 package com.mforest.example.http.api
 
 import cats.effect.IO
+import com.mforest.example.core.config.swagger.SwaggerConfig
 import com.mforest.example.http.{Api, HttpSpec}
 import org.http4s.headers.{`Content-Length`, `Content-Type`}
 import org.http4s.implicits.{http4sKleisliResponseSyntaxOptionT, http4sLiteralsSyntax}
@@ -8,11 +9,12 @@ import org.http4s.{Charset, Headers, MediaType, Method, Request, Status}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 
-class SwaggerApiSpec extends AsyncWordSpec with HttpSpec with Matchers {
+final class SwaggerApiSpec extends AsyncWordSpec with HttpSpec with Matchers {
 
-  private val yaml = "Example yaml"
+  private val yaml   = "Example yaml"
+  private val config = SwaggerConfig("docs", "docs.yaml", Map.empty)
 
-  private val api: Api[IO] = SwaggerApi(yaml, Map.empty)
+  private val api: Api[IO] = SwaggerApi(yaml, config)
 
   "SwaggerApi" when {
 

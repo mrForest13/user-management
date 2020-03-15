@@ -5,7 +5,9 @@ import cats.implicits.catsSyntaxOptionId
 import com.mforest.example.core.config.app.AppConfig
 import com.mforest.example.core.config.auth.TokenConfig
 import com.mforest.example.core.config.db.{MigrationConfig, PostgresConfig, RedisConfig}
+import com.mforest.example.core.config.health.{CheckConfig, HealthCheckConfig}
 import com.mforest.example.core.config.http.HttpConfig
+import com.mforest.example.core.config.swagger.SwaggerConfig
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -54,13 +56,17 @@ final class ConfigLoaderSpec extends AnyWordSpec with Matchers {
           .use(IO.pure)
           .unsafeRunSync()
 
-        config.swagger shouldBe Map(
-          "displayRequestDuration" -> Seq("true"),
-          "operationsSorter"       -> Seq("alpha"),
-          "docExpansion"           -> Seq("none"),
-          "tagsSorter"             -> Seq("alpha"),
-          "deepLinking"            -> Seq("true"),
-          "filter"                 -> Seq("")
+        config.swagger shouldBe SwaggerConfig(
+          contextPath = "docs",
+          yamlName = "docs.yaml",
+          redirectQuery = Map(
+            "displayRequestDuration" -> Seq("true"),
+            "operationsSorter"       -> Seq("alpha"),
+            "docExpansion"           -> Seq("none"),
+            "tagsSorter"             -> Seq("alpha"),
+            "deepLinking"            -> Seq("true"),
+            "filter"                 -> Seq("")
+          )
         )
       }
 
@@ -94,6 +100,18 @@ final class ConfigLoaderSpec extends AnyWordSpec with Matchers {
           host = "localhost",
           port = 1,
           password = "user-management"
+        )
+      }
+
+      "respond with health check config" in {
+        val config = ConfigLoader[IO]
+          .config()
+          .use(IO.pure)
+          .unsafeRunSync()
+
+        config.healthCheck shouldBe HealthCheckConfig(
+          database = CheckConfig("postgres", 5.seconds),
+          cache = CheckConfig("redis", 5.seconds)
         )
       }
 

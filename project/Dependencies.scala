@@ -103,8 +103,9 @@ object Dependencies {
   )
 
   private val sup: Seq[ModuleID] = Seq(
-    "com.kubukoz" %% "sup-core"   % Versions.sup,
-    "com.kubukoz" %% "sup-doobie" % Versions.sup
+    "com.kubukoz" %% "sup-core"       % Versions.sup,
+    "com.kubukoz" %% "sup-doobie"     % Versions.sup,
+    "com.kubukoz" %% "sup-scalacache" % Versions.sup
   )
 
   private val test: Seq[ModuleID] = Seq(

@@ -20,7 +20,7 @@ object Application extends IOApp {
       transactor <- Database[F](database.postgres).transactor()
       _          = MigrationManager[F](database).migrate(transactor)
       dao        = DaoInitializer()
-      service    = ServiceInitializer(config.auth, dao, pool, transactor)
+      service    = ServiceInitializer(config, dao, pool, transactor)
       api        = ApiInitializer(config, service)
       server     <- Server[F](config, api.apis).resource
     } yield server
