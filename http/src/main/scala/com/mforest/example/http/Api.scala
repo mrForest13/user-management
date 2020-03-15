@@ -5,7 +5,7 @@ import com.mforest.example.http.support.{ErrorHandlerSupport, HttpOptionsSupport
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 
-private[http] trait Api[F[_]]
+trait Api[F[_]]
     extends Http4sDsl[F]
     with ToSemigroupKOps
     with ValidationSupport

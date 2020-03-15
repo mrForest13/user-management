@@ -1,5 +1,6 @@
 package com.mforest.example.http.doc
 
+import cats.data.NonEmptyList
 import com.mforest.example.core.error.Error
 import com.mforest.example.http.Doc
 import com.mforest.example.http.response.StatusResponse
@@ -10,7 +11,7 @@ import sttp.tapir.model.UsernamePassword
 
 private[http] trait AuthenticationApiDoc extends Doc {
 
-  override def endpoints: Seq[Endpoint[_, _, _, _]] = Seq(loginUserEndpoint, logoutUserEndpoint)
+  override def endpoints: NonEmptyList[Endpoint[_, _, _, _]] = NonEmptyList.of(loginUserEndpoint, logoutUserEndpoint)
 
   protected val loginUserEndpoint: Endpoint[UsernamePassword, Fail[Error], (BearerToken, Ok[String]), Nothing] = {
     endpoint.post

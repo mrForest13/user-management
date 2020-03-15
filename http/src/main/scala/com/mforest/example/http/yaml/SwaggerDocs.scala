@@ -1,6 +1,6 @@
 package com.mforest.example.http.yaml
 
-import cats.implicits.catsSyntaxOptionId
+import cats.implicits._
 import com.mforest.example.core.config.app.AppConfig
 import com.mforest.example.http.Doc
 import sttp.tapir.docs.openapi.TapirOpenAPIDocs
@@ -30,7 +30,7 @@ final class SwaggerDocs(config: AppConfig, version: String, docs: Seq[Doc])
     license = license.some
   )
 
-  private val openApi: OpenAPI = docs.flatMap(_.endpoints).toOpenAPI(info)
+  private val openApi: OpenAPI = docs.flatMap(_.endpoints.toList).toOpenAPI(info)
 
   val yaml: String = openApi.toYaml
 }

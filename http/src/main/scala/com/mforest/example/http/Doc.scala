@@ -1,5 +1,6 @@
 package com.mforest.example.http
 
+import cats.data.NonEmptyList
 import cats.implicits.toShow
 import cats.syntax.OptionSyntax
 import com.mforest.example.http.response.StatusResponse
@@ -12,9 +13,9 @@ import sttp.tapir.json.circe.TapirJsonCirce
 import sttp.tapir.{Codec, Endpoint, Schema, Tapir}
 import tsec.common.SecureRandomId
 
-private[http] trait Doc extends Tapir with TapirJsonCirce with TapirCodecCats with OptionSyntax {
+trait Doc extends Tapir with TapirJsonCirce with TapirCodecCats with OptionSyntax {
 
-  def endpoints: Seq[Endpoint[_, _, _, _]]
+  def endpoints: NonEmptyList[Endpoint[_, _, _, _]]
 
   type Ok[T]   = StatusResponse.Ok[T]
   type Fail[T] = StatusResponse.Fail[T]

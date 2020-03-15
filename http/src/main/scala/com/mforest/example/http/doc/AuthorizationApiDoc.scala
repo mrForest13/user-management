@@ -2,7 +2,7 @@ package com.mforest.example.http.doc
 
 import java.time.Instant
 
-import cats.data.NonEmptyChain
+import cats.data.{NonEmptyChain, NonEmptyList}
 import cats.effect.IO
 import cats.implicits.catsSyntaxOptionId
 import com.mforest.example.core.error.Error
@@ -19,7 +19,7 @@ import tsec.common.SecureRandomId
 
 private[http] trait AuthorizationApiDoc extends Doc {
 
-  override def endpoints: Seq[Endpoint[_, _, _, _]] = Seq(validatePermissionEndpoint)
+  override def endpoints: NonEmptyList[Endpoint[_, _, _, _]] = NonEmptyList.of(validatePermissionEndpoint)
 
   protected val validatePermissionEndpoint
       : Endpoint[(String, Token), Fail[Error], (BearerToken, Ok[SessionInfo]), Nothing] = {

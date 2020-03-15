@@ -1,6 +1,6 @@
 package com.mforest.example.http.doc
 
-import cats.data.Chain
+import cats.data.{Chain, NonEmptyList}
 import cats.effect.IO
 import com.mforest.example.core.error.Error
 import com.mforest.example.core.permission.Permissions
@@ -15,8 +15,8 @@ import sttp.tapir.Endpoint
 
 private[http] trait PermissionApiDoc extends Doc {
 
-  override def endpoints: Seq[Endpoint[_, _, _, _]] = {
-    Seq(addPermissionEndpoint, findUserPermissionsEndpoint, findPermissionsEndpoint)
+  override def endpoints: NonEmptyList[Endpoint[_, _, _, _]] = {
+    NonEmptyList.of(addPermissionEndpoint, findUserPermissionsEndpoint, findPermissionsEndpoint)
   }
 
   protected val addPermissionEndpoint

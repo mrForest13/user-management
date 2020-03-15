@@ -1,5 +1,6 @@
 package com.mforest.example.http.doc
 
+import cats.data.NonEmptyList
 import com.mforest.example.core.error.Error
 import com.mforest.example.http.Doc
 import com.mforest.example.http.form.RegistrationForm
@@ -9,7 +10,7 @@ import sttp.tapir.Endpoint
 
 private[http] trait RegistrationApiDoc extends Doc {
 
-  override def endpoints: Seq[Endpoint[_, _, _, _]] = Seq(registerUserEndpoint)
+  override def endpoints: NonEmptyList[Endpoint[_, _, _, _]] = NonEmptyList.of(registerUserEndpoint)
 
   protected val registerUserEndpoint: Endpoint[RegistrationForm, Fail[Error], Ok[String], Nothing] = {
     endpoint.post
