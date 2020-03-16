@@ -1,9 +1,12 @@
 package com.mforest.example.http.form
 
 import cats.data.NonEmptyList
+import cats.effect.IO
 import cats.implicits.catsSyntaxValidatedId
 import com.mforest.example.core.error.Error.ValidationError
 import com.mforest.example.core.validation.validate
+import org.http4s.EntityEncoder
+import org.http4s.circe.jsonEncoderOf
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -55,4 +58,7 @@ final class AddPermissionFormSpec extends AnyWordSpec with Matchers {
 object AddPermissionFormSpec {
 
   val formMock: AddPermissionForm = AddPermissionForm("EXAMPLE_PERMISSION")
+
+  implicit val encoder: EntityEncoder[IO, AddPermissionForm] =
+    jsonEncoderOf[IO, AddPermissionForm]
 }

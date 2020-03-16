@@ -1,4 +1,4 @@
-import sbt._
+import sbt.{Configuration, config, IntegrationTest, Test, Runtime}
 
 object Config {
 

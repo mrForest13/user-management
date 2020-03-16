@@ -1,7 +1,6 @@
-package com.mforest.example.service
+package com.mforest.example.service.hash
 
 import cats.effect.IO
-import com.mforest.example.service.hash.{HashEngine, SCryptEngine}
 import io.chrisdavenport.fuuid.FUUID
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

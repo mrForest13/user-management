@@ -23,6 +23,7 @@ final class Server[F[_]: ContextShift: ConcurrentEffect: Timer](config: Config, 
       .bindHttp(config.http.port, config.http.host)
       .withBanner(config.app.stripBanner)
       .withHttpApp(routes.orNotFound)
+      .withNio2(isNio2 = true)
       .resource
   }
 

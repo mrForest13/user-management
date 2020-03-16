@@ -21,9 +21,9 @@ trait DatabaseSpec
     with ToConnectionIOOps {
   this: AsyncTestSuite =>
 
-  override def beforeEach(): Unit = clean()
+  override def beforeEach(): Unit = truncateAll()
 
-  override def afterAll(): Unit = clean()
+  override def afterAll(): Unit = dropAll()
 
   override val transactor: Transactor[IO] = {
     (for {
@@ -44,7 +44,20 @@ trait DatabaseSpec
     )
   }
 
-  def clean(): Unit = {
+  private def dropAll(): Unit = {
+    val action = for {
+      _ <- sql"DROP TABLE USERS_PERMISSIONS".update.run
+      _ <- sql"DROP TABLE PERMISSIONS".update.run
+      _ <- sql"DROP TABLE USERS".update.run
+      _ <- sql"DROP TABLE MIGRATION_HISTORY".update.run
+    } yield ()
+
+    action
+      .transact(transactor)
+      .unsafeRunSync()
+  }
+
+  def truncateAll(): Unit = {
     sql"""TRUNCATE TABLE USERS, PERMISSIONS, USERS_PERMISSIONS""".update.run
       .transact(transactor)
       .as(())
