@@ -17,3 +17,57 @@ I am going to work with libraries from functional programing world. However, i w
 - [Circe](https://circe.github.io/circe/) - for json encoding and decoding
 - [Fuuid](https://christopherdavenport.github.io/fuuid/) - functional uuid
 - [log4Cats](https://christopherdavenport.github.io/log4cats/) - functional logging
+
+## How to start?
+
+The easiest way to launch the application is to use one of the scripts prepared:
+
+- `start-dev-env.sh` to run all required resources such as PostgresSQL or Redis as docker containers
+- `start-dev-env.sh --withApp` to launch all required resources along with the application as docker containers
+
+## Project Structure
+
+The project is divided into five separate sub-projects.
+
+### Core
+
+It contains configuration case classes and some base models.
+
+### Db
+
+It contains dao (based on doobie), migrations (flyway) and db models.
+
+### Service
+
+It contains service definitions.
+
+### Api
+
+It contains api and swagger docs definitions.
+
+### Application
+
+It contains main class and all objects initialization.
+
+## Api Documentation
+
+You can find everything you need here (http://localhost:9000/docs) after starting the application.
+
+## Continuous Integration
+
+We are using git flow. Here are steps:
+
+- `sbt clean compile`
+- `sbt scalafmtCheckAll`
+- `sbt scalastyle`
+- `sbt coverage test`
+- `sbt coverage it:test`
+- `sbt coverage e2e:test`
+- `sbt coverageAggregate`
+
+## Testing
+
+The tests are divided into three types. All in separate packages:
+- unit -> package `src/test`
+- integration -> package  `src/it`
+- end to end -> package  `src/e2e`

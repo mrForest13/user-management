@@ -9,7 +9,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 final class LoginFormSpec extends AnyWordSpec with Matchers {
 
-  "RegistrationForm" when {
+  "LoginForm" when {
 
     "call validate" must {
 

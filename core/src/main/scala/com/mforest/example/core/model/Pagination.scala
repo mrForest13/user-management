@@ -1,6 +1,7 @@
 package com.mforest.example.core.model
 
 import cats.Functor.ops.toAllFunctorOps
+import cats.Show
 import cats.implicits.catsKernelStdAlgebraForUnit
 import com.mforest.example.core.validation.{Validator, validate}
 
@@ -22,4 +23,6 @@ object Pagination {
       .combine(validate(pagination.page < 0, msg = "Page cannot be less than 0!"))
       .as(pagination)
   }
+
+  implicit val show: Show[Pagination] = Show.fromToString
 }

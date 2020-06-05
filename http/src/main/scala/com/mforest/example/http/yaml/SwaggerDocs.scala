@@ -37,5 +37,7 @@ final class SwaggerDocs(config: AppConfig, version: String, docs: Seq[Doc])
 
 object SwaggerDocs {
 
-  def apply(config: AppConfig, version: String, docs: Seq[Doc]): SwaggerDocs = new SwaggerDocs(config, version, docs)
+  def apply(config: AppConfig, version: String, docs: Seq[Doc]): SwaggerDocs = {
+    new SwaggerDocs(config, version, docs)
+  }
 }

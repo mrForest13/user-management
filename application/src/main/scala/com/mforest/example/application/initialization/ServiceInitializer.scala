@@ -13,7 +13,7 @@ import doobie.util.transactor.Transactor
 import redis.clients.jedis.JedisPool
 import tsec.passwordhashers.jca.SCrypt
 
-class ServiceInitializer[F[_]: ContextShift: ConcurrentEffect: Timer](
+final class ServiceInitializer[F[_]: ContextShift: ConcurrentEffect: Timer](
     config: Config,
     dao: DaoInitializer,
     pool: JedisPool,

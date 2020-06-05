@@ -4,7 +4,7 @@ import org.scalafmt.sbt.ScalafmtPlugin.autoImport.scalafmtOnCompile
 import org.scalastyle.sbt.ScalastylePlugin.autoImport.{scalastyleFailOnError, scalastyleFailOnWarning}
 import sbt.Def
 import sbt.Keys.{organization, scalaVersion, version, _}
-import sbtbuildinfo.BuildInfoPlugin.autoImport.{BuildInfoKey, buildInfoKeys, buildInfoPackage}
+import sbtbuildinfo.BuildInfoPlugin.autoImport.{BuildInfoKey, buildInfoKeys, buildInfoPackage, buildInfoObject}
 import scoverage.ScoverageKeys.{coverageFailOnMinimum, coverageHighlighting, coverageMinimum}
 
 object Settings {
@@ -34,6 +34,7 @@ object Settings {
 
   private lazy val buildInfoSettings: Seq[Def.Setting[_]] = Seq(
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoObject := "AppInfo",
     buildInfoPackage := "com.mforest.example.application.info"
   )
 
