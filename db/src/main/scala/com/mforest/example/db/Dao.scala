@@ -2,13 +2,10 @@ package com.mforest.example.db
 
 import cats.data.{Chain, OptionT}
 import com.mforest.example.core.model.Pagination
-import com.mforest.example.db.custom.{CustomCompacts, CustomInstances}
+import com.mforest.example.db.custom.CustomCompacts
 import doobie.ConnectionIO
-import doobie.syntax.AllSyntax
-import doobie.util.query.Query0
-import doobie.util.update.Update0
 
-trait Dao[Id, Row] extends CustomInstances with CustomCompacts with AllSyntax {
+private[db] trait Dao[Id, Row] extends CustomCompacts {
 
   def tableName: String
 
@@ -28,13 +25,5 @@ trait Dao[Id, Row] extends CustomInstances with CustomCompacts with AllSyntax {
     query.select(pagination).to[Chain]
   }
 
-  protected def query: BaseQuery
-
-  protected trait BaseQuery {
-
-    def insert(row: Row): Update0
-    def delete(id: Id): Update0
-    def select(id: Id): Query0[Row]
-    def select(pagination: Pagination): Query0[Row]
-  }
+  protected def query: Query[Id, Row]
 }

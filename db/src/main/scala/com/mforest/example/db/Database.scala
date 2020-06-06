@@ -1,48 +1,54 @@
 package com.mforest.example.db
 
-import cats.Functor.ops.toAllFunctorOps
-import cats.effect.{Async, Blocker, ContextShift, Resource, Sync}
-import com.mforest.example.core.config.db.DatabaseConfig
-import doobie.hikari.HikariTransactor
-import org.flywaydb.core.Flyway
+import java.util.Properties
 
+import cats.Eval
+import cats.effect.{Async, Blocker, ContextShift, Resource}
+import com.mforest.example.core.config.db.PostgresConfig
+import com.zaxxer.hikari.HikariConfig
+import doobie.hikari.HikariTransactor
+import doobie.util.ExecutionContexts.fixedThreadPool
+
+import scala.collection.convert.AsJavaExtensions
 import scala.concurrent.ExecutionContext
 
-case class Database[F[_]: Async: ContextShift](config: DatabaseConfig) {
+final class Database[F[_]: Async: ContextShift](config: PostgresConfig) extends AsJavaExtensions {
 
-  def transactor(connectEC: ExecutionContext, blocker: Blocker): Resource[F, HikariTransactor[F]] = {
+  private val dbConfig: Eval[HikariConfig] = Eval.later {
+    val hikari     = new HikariConfig()
+    val properties = new Properties()
+
+    properties.putAll(config.properties.asJava)
+
+    hikari.setUsername(config.user)
+    hikari.setPassword(config.password)
+    hikari.setJdbcUrl(config.postgresUrl)
+    hikari.setDriverClassName(config.driver)
+    hikari.setDataSourceProperties(properties)
+    hikari.setPoolName(config.maxConnectionsPoolName)
+    hikari.setMaximumPoolSize(config.maxConnectionsPoolSize)
+
+    hikari
+  }
+
+  def transactor(): Resource[F, HikariTransactor[F]] = {
     for {
-      transactor <- initTransactor(connectEC, blocker)
-      flyway     <- flyway(transactor)
-      _          <- migrate(flyway)
+      connectEC  <- fixedThreadPool[F](config.connectPoolSize)
+      blocker    <- Blocker[F]
+      transactor <- transactor(connectEC, blocker)
     } yield transactor
   }
 
-  private def initTransactor(connectEC: ExecutionContext, blocker: Blocker): Resource[F, HikariTransactor[F]] = {
-    HikariTransactor.newHikariTransactor[F](
-      driverClassName = config.driver,
-      url = config.postgresUrl,
-      user = config.user,
-      pass = config.password,
+  def transactor(connectEC: ExecutionContext, blocker: Blocker): Resource[F, HikariTransactor[F]] = {
+    HikariTransactor.fromHikariConfig[F](
+      hikariConfig = dbConfig.value,
       connectEC = connectEC,
       blocker = blocker
     )
-  }
-
-  private def flyway(transactor: HikariTransactor[F]): Resource[F, Flyway] = Resource.pure {
-    Flyway
-      .configure()
-      .dataSource(transactor.kernel)
-      .table(config.migrationTable)
-      .load()
-  }
-
-  private def migrate(flyway: Flyway)(implicit F: Sync[F]): Resource[F, Unit] = Resource.liftF {
-    if (config.migrate) F.delay(flyway.migrate()).as(()) else F.pure(())
   }
 }
 
 object Database {
 
-  def apply[F[_]: Async: ContextShift](config: DatabaseConfig): Database[F] = new Database(config)
+  def apply[F[_]: Async: ContextShift](config: PostgresConfig): Database[F] = new Database(config)
 }

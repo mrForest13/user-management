@@ -1,0 +1,25 @@
+version: '3.1'
+
+networks:
+  user-management:
+
+services:
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: user-management
+      POSTGRES_USER: user-management
+      POSTGRES_PASSWORD: user-management
+    ports:
+      - "5432:5432"
+    networks:
+      - user-management
+
+  redis:
+    image: redis
+    command: redis-server --requirepass user-management
+    ports:
+      - '6379:6379'
+    networks:
+      - user-management

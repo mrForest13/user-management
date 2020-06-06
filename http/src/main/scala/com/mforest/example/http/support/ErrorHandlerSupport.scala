@@ -5,19 +5,18 @@ import java.sql.SQLException
 import cats.data.EitherT
 import cats.data.EitherT.right
 import cats.effect.Sync
-import cats.implicits._
+import cats.implicits.{catsSyntaxApplicativeError, catsSyntaxEitherId, toFunctorOps}
 import com.mforest.example.core.error.Error
 import io.chrisdavenport.log4cats.slf4j.Slf4jLogger
-import com.mforest.example.http.response.StatusResponse.Fail
 
-trait ErrorHandlerSupport {
+private[http] trait ErrorHandlerSupport {
 
-  def handleError[F[_]: Sync, R](either: EitherT[F, Fail[Error], R]): EitherT[F, Fail[Error], R] = {
+  def handleError[F[_]: Sync, R](either: EitherT[F, Error, R]): EitherT[F, Error, R] = {
     right(Slf4jLogger.create[F]).flatMapF { logger =>
       either.value.handleErrorWith { th =>
         logger
           .error(th)(th.getMessage)
-          .map(_ => Fail(handle(th)).asLeft[R])
+          .as(handle(th).asLeft[R])
       }
     }
   }

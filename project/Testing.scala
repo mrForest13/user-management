@@ -1,6 +1,6 @@
 import Config.EndToEndTest
 import sbt.Keys._
-import sbt.{Def, _}
+import sbt._
 
 object Testing {
 

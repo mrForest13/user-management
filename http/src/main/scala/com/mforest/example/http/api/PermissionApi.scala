@@ -2,37 +2,42 @@ package com.mforest.example.http.api
 
 import cats.effect.{ContextShift, Sync}
 import com.mforest.example.core.model.Pagination
-import com.mforest.example.core.permissions.Permissions
+import com.mforest.example.core.permission.Permissions
 import com.mforest.example.http.Api
-import com.mforest.example.http.doc.PermissionApiDoc
+import com.mforest.example.http.doc.PermissionDoc
+import com.mforest.example.http.support.AuthorizationSupport
 import com.mforest.example.service.auth.AuthService
 import com.mforest.example.service.permission.PermissionService
 import org.http4s.HttpRoutes
 
-class PermissionApi[F[_]: Sync: ContextShift](service: PermissionService[F])(implicit authService: AuthService[F])
+final class PermissionApi[F[_]: Sync: ContextShift](service: PermissionService[F], val authService: AuthService[F])
     extends Api[F]
-    with PermissionApiDoc {
+    with AuthorizationSupport[F]
+    with PermissionDoc {
 
-  override def routes: HttpRoutes[F] = addPermission <+> deletePermission <+> findPermissions
+  override def routes: HttpRoutes[F] = addPermission <+> findUserPermissions <+> findPermissions
 
-  private val addPermission: HttpRoutes[F] = addPermissionEndpoint.toHandleRoutes {
+  private val addPermission: HttpRoutes[F] = addPermissionEndpoint.toAuthHttpRoutes {
     case (token, request) =>
-      hasPermission(token, Permissions.USER_MANAGEMENT_ADD_PERMISSION) { () =>
-        validate(request).map(_.toDto).flatMap(service.addPermission)
+      authorize(token, Permissions.USER_MANAGEMENT_ADD_PERMISSION) { _ =>
+        validate(request)
+          .map(_.toDto)
+          .flatMap(service.addPermission)
       }
   }
 
-  private val deletePermission: HttpRoutes[F] = deletePermissionEndpoint.toHandleRoutes {
+  private val findUserPermissions: HttpRoutes[F] = findUserPermissionsEndpoint.toAuthHttpRoutes {
     case (id, token) =>
-      hasPermission(token, Permissions.USER_MANAGEMENT_DELETE_PERMISSION) { () =>
-        service.deletePermission(id)
+      authorize(token, Permissions.USER_MANAGEMENT_GET_USER_PERMISSIONS) { _ =>
+        service.getPermissions(id)
       }
   }
 
-  private val findPermissions: HttpRoutes[F] = findPermissionsEndpoint.toHandleRoutes {
+  private val findPermissions: HttpRoutes[F] = findPermissionsEndpoint.toAuthHttpRoutes {
     case (size, page, token) =>
-      hasPermission(token, Permissions.USER_MANAGEMENT_GET_PERMISSIONS) { () =>
-        validate(Pagination(size, page)).flatMap(service.getPermissions)
+      authorize(token, Permissions.USER_MANAGEMENT_GET_PERMISSIONS) { _ =>
+        validate(Pagination(size, page))
+          .flatMap(service.getPermissions)
       }
   }
 }
@@ -43,7 +48,6 @@ object PermissionApi {
       permissionService: PermissionService[F],
       authService: AuthService[F]
   ): PermissionApi[F] = {
-    implicit val authServiceImplicit: AuthService[F] = authService
-    new PermissionApi[F](permissionService)
+    new PermissionApi[F](permissionService, authService)
   }
 }
