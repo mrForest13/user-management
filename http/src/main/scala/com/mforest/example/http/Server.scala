@@ -20,10 +20,11 @@ final class Server[F[_]: ContextShift: ConcurrentEffect: Timer](config: Config, 
 
   def resource: Resource[F, BlazeServer[F]] = {
     BlazeServerBuilder[F]
+      .withResponseHeaderTimeout(config.http.serverTimeout)
+      .withConnectorPoolSize(config.http.serverPoolSize)
       .bindHttp(config.http.port, config.http.host)
       .withBanner(config.app.stripBanner)
       .withHttpApp(routes.orNotFound)
-      .withNio2(isNio2 = true)
       .resource
   }
 

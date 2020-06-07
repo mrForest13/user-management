@@ -47,7 +47,12 @@ final class ConfigLoaderSpec extends AnyWordSpec with Matchers {
           .use(IO.pure)
           .unsafeRunSync()
 
-        config.http shouldBe HttpConfig(host = "0.0.0.0", port = 1)
+        config.http shouldBe HttpConfig(
+          host = "0.0.0.0",
+          port = 1,
+          serverPoolSize = 1,
+          serverTimeout = 120.seconds
+        )
       }
 
       "respond with swagger config" in {

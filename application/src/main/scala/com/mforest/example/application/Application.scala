@@ -1,7 +1,8 @@
 package com.mforest.example.application
 
 import cats.Functor.ops.toAllFunctorOps
-import cats.effect.{ConcurrentEffect, ContextShift, ExitCode, IO, IOApp, Resource, Timer}
+import cats.effect.{ConcurrentEffect, ContextShift, ExitCode, IO, IOApp, Resource, SyncIO, Timer}
+import com.mforest.example.application.executors.IOExecutors
 import com.mforest.example.application.initialization.{ApiInitializer, DaoInitializer, ServiceInitializer}
 import com.mforest.example.core.ConfigLoader
 import com.mforest.example.db.Database
@@ -10,7 +11,12 @@ import com.mforest.example.db.migration.MigrationManager
 import com.mforest.example.http.Server
 import org.http4s.server.{Server => BlazeServer}
 
-object Application extends IOApp {
+import scala.concurrent.ExecutionContext
+
+object Application extends IOApp.WithContext {
+
+  override protected val executionContextResource: Resource[SyncIO, ExecutionContext] =
+    IOExecutors.initializeNonBlocking
 
   private def initialize[F[_]: ContextShift: ConcurrentEffect: Timer]: Resource[F, BlazeServer[F]] = {
     for {
