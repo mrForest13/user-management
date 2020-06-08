@@ -10,7 +10,7 @@ object BearerToken {
 
   def apply[I](value: TSecBearerToken[I]): BearerToken = new BearerToken(value.id)
 
-  def fromString(value: String): BearerToken = new BearerToken(SecureRandomId.apply(value))
+  def fromString(value: String): BearerToken = new BearerToken(SecureRandomId(value))
 
   implicit val show: Show[BearerToken] = (token: BearerToken) => s"Bearer ${token.value}"
 }
