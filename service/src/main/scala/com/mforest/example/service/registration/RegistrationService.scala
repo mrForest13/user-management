@@ -4,7 +4,6 @@ import cats.data.EitherT
 import cats.data.EitherT.right
 import cats.effect.Async
 import com.mforest.example.core.error.Error
-import com.mforest.example.core.error.Error.ConflictError
 import com.mforest.example.db.dao.UserDao
 import com.mforest.example.db.row.UserRow
 import com.mforest.example.service.Service
@@ -42,7 +41,7 @@ class RegistrationServiceImpl[F[_]: Async, A](userDao: UserDao, hashEngine: Hash
     userDao
       .find(row.email)
       .map(user => conflict(user.email))
-      .map[Error](ConflictError)
+      .map[Error](Error.ConflictError)
       .toLeft(row)
       .semiflatMap(userDao.insert)
       .transact(transactor)

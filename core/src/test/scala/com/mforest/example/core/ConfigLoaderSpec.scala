@@ -104,7 +104,7 @@ final class ConfigLoaderSpec extends AnyWordSpec with Matchers {
         config.database.redis shouldBe RedisConfig(
           host = "localhost",
           port = 1,
-          password = "user-management"
+          password = "user-management".some
         )
       }
 

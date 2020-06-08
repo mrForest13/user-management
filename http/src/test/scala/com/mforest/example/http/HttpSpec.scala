@@ -1,7 +1,7 @@
 package com.mforest.example.http
 
 import cats.effect.testing.scalatest.{AssertingSyntax, EffectTestSupport}
-import cats.effect.{ContextShift, IO, Timer}
+import cats.effect.{ContextShift, IO}
 import com.mforest.example.http.response.StatusResponse
 import com.mforest.example.http.response.StatusResponseSpec.{encoderFail, encoderOk}
 import io.chrisdavenport.fuuid.FUUID
@@ -17,7 +17,6 @@ trait HttpSpec extends AssertingSyntax with EffectTestSupport {
   override val executionContext: ExecutionContext = ExecutionContext.global
 
   implicit val ioContextShift: ContextShift[IO] = IO.contextShift(executionContext)
-  implicit val ioTimer: Timer[IO]               = IO.timer(executionContext)
 
   def checkOk[R: Decoder](response: IO[Response[IO]]): IO[(Status, Headers, StatusResponse.Ok[R])] = {
     response.flatMap { result =>

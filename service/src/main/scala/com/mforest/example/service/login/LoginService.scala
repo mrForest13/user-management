@@ -1,7 +1,6 @@
 package com.mforest.example.service.login
 
 import cats.data.EitherT
-import cats.data.EitherT.{fromEither, right}
 import cats.effect.Async
 import com.mforest.example.core.error.Error
 import com.mforest.example.core.error.Error.UnauthorizedError
@@ -28,9 +27,12 @@ class LoginServiceImpl[F[_]: Async, A](userDao: UserDao, hashEngine: HashEngine[
 
   override def login(credentials: Credentials): EitherT[F, Error, FUUID] = {
     for {
-      user   <- findUser(credentials.email)
-      status <- right(checkPassword(credentials.password, user.salt, user.hash))
-      _      <- fromEither(validateStatus(status))
+      user     <- findUser(credentials.email)
+      salt     = user.salt
+      hash     = user.hash
+      password = credentials.password
+      status   <- EitherT.right(checkPassword(password, salt, hash))
+      _        <- EitherT.fromEither(validateStatus(status))
     } yield user.id
   }
 

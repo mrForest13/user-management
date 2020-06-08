@@ -38,20 +38,18 @@ class PermissionServiceImpl[F[_]: Async](dao: PermissionDao, transactor: Transac
       .as(created(permission.name))
   }
 
-  override def getPermissions(userId: Id[FUUID]): EitherT[F, Error, Chain[PermissionDto]] = EitherT {
+  override def getPermissions(userId: Id[FUUID]): EitherT[F, Error, Chain[PermissionDto]] = EitherT.right {
     dao
       .findByUser(userId)
       .transact(transactor)
       .map(_.to[PermissionDto])
-      .map(_.asRight[Error])
   }
 
-  override def getPermissions(pagination: Pagination): EitherT[F, Error, Chain[PermissionDto]] = EitherT {
+  override def getPermissions(pagination: Pagination): EitherT[F, Error, Chain[PermissionDto]] = EitherT.right {
     dao
       .find(pagination)
       .transact(transactor)
       .map(_.to[PermissionDto])
-      .map(_.asRight[Error])
   }
 
   private def insertPermission(row: PermissionRow): EitherT[F, Error, Int] = {

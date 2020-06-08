@@ -56,7 +56,7 @@ class AuthServiceImpl[F[_]: Async](auth: BearerTokenAuthenticator[F, Id[FUUID], 
   }
 
   private def renew(token: TSecBearerToken[Id[FUUID]]): EitherT[F, Error, TSecBearerToken[Id[FUUID]]] = {
-    EitherT.right[Error](auth.renew(token))
+    EitherT.right(auth.renew(token))
   }
 
   private def validate(raw: String): EitherT[F, Error, SessionInfo] = {

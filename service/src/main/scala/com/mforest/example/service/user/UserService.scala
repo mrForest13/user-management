@@ -44,12 +44,11 @@ class UserServiceImpl[F[_]: Async](
   private implicit val flags: Flags   = Flags.defaultFlags
   private implicit val mode: Mode[IO] = CatsEffect.modes.async[IO]
 
-  override def getUsers(pagination: Pagination): EitherT[F, Error, Chain[UserDto]] = EitherT {
+  override def getUsers(pagination: Pagination): EitherT[F, Error, Chain[UserDto]] = EitherT.right {
     userDao
       .find(pagination)
       .transact(transactor)
       .map(_.to[UserDto])
-      .map(_.asRight[Error])
   }
 
   override def addPermission(userId: Id[FUUID], permissionId: Id[FUUID]): EitherT[F, Error, String] = {

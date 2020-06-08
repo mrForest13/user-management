@@ -27,7 +27,7 @@ final class Cache[F[_]: Sync](config: RedisConfig) {
           config.host,
           config.port,
           Protocol.DEFAULT_TIMEOUT,
-          config.password
+          config.password.orNull
         )
       }
   }
