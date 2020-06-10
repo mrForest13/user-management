@@ -33,8 +33,11 @@ object IOExecutors {
       }
   }
 
-  private def shutdown(ex: ExecutionContextExecutorService): SyncIO[Unit] = SyncIO.apply {
-    ex.shutdown()
+  private def shutdown(ex: ExecutionContextExecutorService): SyncIO[Unit] = SyncIO.suspend {
+    Slf4jLogger
+      .create[SyncIO]
+      .flatMap(_.info(s"Closing non blocking pool with size: $poolSize"))
+      .as(ex.shutdown())
   }
 
   private def threadFactory: ThreadFactory = new ThreadFactory {

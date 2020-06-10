@@ -26,9 +26,9 @@ jobs:
         java-version: 1.8
     - name: Build
       run: sbt clean compile
-    - name: Code Format
+    - name: Check code Format
       run: sbt scalafmtCheckAll
-    - name: Code Style
+    - name: Check code Style
       run: sbt scalastyle
     - name: Unite tests
       run: sbt coverage test
@@ -36,6 +36,6 @@ jobs:
       run: sbt coverage it:test
     - name: End to end tests
       run: sbt coverage e2e:test
-    - name: Code coverage
+    - name: Check code coverage
       run: sbt coverageAggregate
 

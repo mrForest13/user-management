@@ -12,7 +12,7 @@ import org.scalatest.{AsyncTestSuite, BeforeAndAfterAll, BeforeAndAfterEach}
 import pureconfig.generic.auto.exportReader
 import pureconfig.module.catseffect.loadConfigF
 
-trait DatabaseSpec
+trait ServiceSpec
     extends AsyncIOSpec
     with BeforeAndAfterEach
     with BeforeAndAfterAll

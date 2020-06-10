@@ -12,7 +12,7 @@ object Testing {
   lazy val itSettings: Seq[Def.Setting[_]] =
     inConfig(IntegrationTest)(Defaults.testSettings) ++ Seq(
       fork in IntegrationTest := false,
-      parallelExecution in IntegrationTest := false,
+      parallelExecution in IntegrationTest := true,
       scalaSource in IntegrationTest := baseDirectory.value / "src" / "it" / "scala",
       resourceDirectory in IntegrationTest := baseDirectory.value / "src" / "it" / "resources"
     )
@@ -20,7 +20,7 @@ object Testing {
   lazy val e2eSettings: Seq[Def.Setting[_]] =
     inConfig(EndToEndTest)(Defaults.testSettings) ++ Seq(
       fork in EndToEndTest := false,
-      parallelExecution in EndToEndTest := false,
+      parallelExecution in EndToEndTest := true,
       scalaSource in EndToEndTest := baseDirectory.value / "src" / "e2e" / "scala",
       resourceDirectory in EndToEndTest := baseDirectory.value / "src" / "e2e" / "resources"
     )

@@ -2,9 +2,9 @@ import Dependencies.ModuleSettings
 import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.{Docker, dockerExposedPorts, dockerUsername}
 import org.scalafmt.sbt.ScalafmtPlugin.autoImport.scalafmtOnCompile
 import org.scalastyle.sbt.ScalastylePlugin.autoImport.{scalastyleFailOnError, scalastyleFailOnWarning}
-import sbt.Def
+import sbt.{Def, Tags, Global}
 import sbt.Keys.{organization, scalaVersion, version, _}
-import sbtbuildinfo.BuildInfoPlugin.autoImport.{BuildInfoKey, buildInfoKeys, buildInfoPackage, buildInfoObject}
+import sbtbuildinfo.BuildInfoPlugin.autoImport.{BuildInfoKey, buildInfoKeys, buildInfoObject, buildInfoPackage}
 import scoverage.ScoverageKeys.{coverageFailOnMinimum, coverageHighlighting, coverageMinimum}
 
 object Settings {
@@ -62,7 +62,11 @@ object Settings {
     coverageHighlighting := true
   )
 
-  lazy val root: Seq[Def.Setting[_]] = commonSettings ++ noDockerSettings ++ coverageSettings
+  lazy val restrictions: Seq[Def.Setting[_]] = Seq(
+    concurrentRestrictions in Global += Tags.limit(Tags.Test, 1)
+  )
+
+  lazy val root: Seq[Def.Setting[_]] = commonSettings ++ restrictions ++ noDockerSettings ++ coverageSettings
 
   lazy val application: Seq[Def.Setting[_]] = commonSettings ++ buildInfoSettings ++ dockerSettings ++
     Dependencies.application.asSettings ++ Testing.testSettings ++ Testing.e2eSettings

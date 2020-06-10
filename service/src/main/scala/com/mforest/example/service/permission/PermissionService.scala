@@ -5,7 +5,6 @@ import cats.data.EitherT.right
 import cats.data.{Chain, EitherT}
 import cats.effect.Async
 import com.mforest.example.core.error.Error
-import com.mforest.example.core.error.Error.ConflictError
 import com.mforest.example.core.model.Pagination
 import com.mforest.example.db.dao.PermissionDao
 import com.mforest.example.db.row.PermissionRow
@@ -56,7 +55,7 @@ class PermissionServiceImpl[F[_]: Async](dao: PermissionDao, transactor: Transac
     dao
       .find(row.name)
       .map(permission => conflict(permission.name))
-      .map[Error](ConflictError)
+      .map[Error](Error.ConflictError)
       .toLeft(row)
       .semiflatMap(dao.insert)
       .transact(transactor)
