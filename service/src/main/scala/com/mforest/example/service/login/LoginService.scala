@@ -23,7 +23,7 @@ trait LoginService[F[_]] extends Service {
 class LoginServiceImpl[F[_]: Async, A](userDao: UserDao, hashEngine: HashEngine[F, A], transactor: Transactor[F])
     extends LoginService[F] {
 
-  private val unauthorized: String = s"Wrong email or password"
+  private val unauthorized: String = "Wrong email or password!"
 
   override def login(credentials: Credentials): EitherT[F, Error, FUUID] = {
     for {

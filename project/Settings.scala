@@ -62,6 +62,7 @@ object Settings {
     coverageHighlighting := true
   )
 
+  //https://github.com/sbt/sbt/issues/2425
   lazy val restrictions: Seq[Def.Setting[_]] = Seq(
     concurrentRestrictions in Global += Tags.limit(Tags.Test, 1)
   )
