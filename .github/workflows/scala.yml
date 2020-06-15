@@ -17,6 +17,9 @@ jobs:
           POSTGRES_DB: user-management
           POSTGRES_USER: user-management
           POSTGRES_PASSWORD: user-management
+      redis:
+        image: redis
+        ports: ["6379:6379"]
 
     steps:
     - uses: actions/checkout@v2
