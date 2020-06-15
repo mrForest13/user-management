@@ -1,6 +1,5 @@
 package com.mforest.example.db.migration
 
-import cats.Functor.ops.toAllFunctorOps
 import cats.effect.Sync
 import com.mforest.example.core.config.db.DatabaseConfig
 import doobie.hikari.HikariTransactor
@@ -13,11 +12,11 @@ final class MigrationManager[F[_]: Sync](config: DatabaseConfig) {
   private val table: String    = config.migration.migrationTable
   private val password: String = config.postgres.password
 
-  def migrate(transactor: HikariTransactor[F]): F[Unit] = migrate {
+  def migrate(transactor: HikariTransactor[F]): Unit = migrate {
     flyway(transactor)
   }
 
-  def migrate(): F[Unit] = migrate {
+  def migrate(): Unit = migrate {
     flyway()
   }
 
@@ -37,8 +36,12 @@ final class MigrationManager[F[_]: Sync](config: DatabaseConfig) {
       .load()
   }
 
-  private def migrate(flyway: Flyway): F[Unit] = {
-    if (config.migration.migrate) Sync[F].pure(flyway.migrate()).as(()) else Sync[F].pure(())
+  private def migrate(flyway: Flyway): Unit = {
+    if (config.migration.migrate) {
+      flyway.migrate(); ()
+    } else {
+      ()
+    }
   }
 }
 

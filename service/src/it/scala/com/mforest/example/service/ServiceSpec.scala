@@ -3,7 +3,7 @@ package com.mforest.example.service
 import cats.Functor.ops.toAllFunctorOps
 import cats.effect.{Blocker, IO}
 import com.mforest.example.core.config.Config
-import com.mforest.example.core.config.db.PostgresConfig
+import com.mforest.example.core.config.db.{PostgresConfig, RedisConfig}
 import com.mforest.example.db.migration.MigrationManager
 import doobie.syntax.ToConnectionIOOps
 import doobie.syntax.string.toSqlInterpolator
@@ -11,6 +11,7 @@ import doobie.util.transactor.Transactor
 import org.scalatest.{AsyncTestSuite, BeforeAndAfterAll, BeforeAndAfterEach}
 import pureconfig.generic.auto.exportReader
 import pureconfig.module.catseffect.loadConfigF
+import redis.clients.jedis.{JedisPool, JedisPoolConfig, Protocol}
 
 trait ServiceSpec
     extends AsyncIOSpec
@@ -23,13 +24,14 @@ trait ServiceSpec
 
   override def afterAll(): Unit = dropAll()
 
-  val transactor: Transactor[IO] = {
+  val (transactor, client): (Transactor[IO], JedisPool) = {
     (for {
       config     <- loadConfigF[IO, Config]
       blocker    = Blocker.liftExecutionContext(executionContext)
       transactor = testTransactor(config.database.postgres, blocker)
-      _          <- MigrationManager[IO](config.database).migrate()
-    } yield transactor).unsafeRunSync()
+      cache      = testCache(config.database.redis)
+      _          = MigrationManager[IO](config.database).migrate()
+    } yield (transactor, cache)).unsafeRunSync()
   }
 
   private def testTransactor(config: PostgresConfig, blocker: Blocker): Transactor[IO] = {
@@ -39,6 +41,16 @@ trait ServiceSpec
       user = config.user,
       pass = config.password,
       blocker = blocker
+    )
+  }
+
+  private def testCache(config: RedisConfig): JedisPool = {
+    new JedisPool(
+      new JedisPoolConfig,
+      config.host,
+      config.port,
+      Protocol.DEFAULT_TIMEOUT,
+      config.password.orNull
     )
   }
 

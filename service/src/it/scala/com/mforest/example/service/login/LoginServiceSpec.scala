@@ -43,8 +43,8 @@ final class LoginServiceSpec extends AsyncWordSpec with ServiceSpec with AsyncMo
 
       "respond with unauthorized error on wrong password" in {
         val id          = FUUID.fuuid("8ea16e29-3978-4113-8a06-eca8228f78ff")
-        val email       = "wrong@gmail.com"
-        val password    = "example"
+        val email       = "john.smith@gmail.com"
+        val password    = "example1"
         val credentials = Credentials(email, password)
 
         val message = "Wrong email or password!"

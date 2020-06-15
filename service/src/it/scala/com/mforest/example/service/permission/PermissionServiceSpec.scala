@@ -1,4 +1,4 @@
-package com.mforest.example.service.registration
+package com.mforest.example.service.permission
 
 import cats.effect.IO
 import cats.implicits.catsSyntaxEitherId
@@ -6,7 +6,6 @@ import com.mforest.example.core.error.Error.ConflictError
 import com.mforest.example.db.dao.PermissionDao
 import com.mforest.example.service.ServiceSpec
 import com.mforest.example.service.model.PermissionMock
-import com.mforest.example.service.permission.PermissionService
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 

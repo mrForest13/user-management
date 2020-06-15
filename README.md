@@ -18,6 +18,8 @@ I am going to work with libraries from functional programing world. However, i w
 - [Fuuid](https://christopherdavenport.github.io/fuuid/) - functional uuid
 - [log4Cats](https://christopherdavenport.github.io/log4cats/) - functional logging
 
+## How does it work?
+
 ## How to start?
 
 The easiest way to launch the application is to use one of the scripts prepared:

@@ -44,7 +44,7 @@ object PermissionsStore {
       dao: PermissionDao,
       client: JedisPool,
       transactor: Transactor[F]
-  ): IdentityStore[F, Id[FUUID], NonEmptyChain[PermissionDto]] = {
+  ): PermissionsStore[F] = {
     new PermissionsStore(dao, RedisCache(client), transactor)
   }
 }

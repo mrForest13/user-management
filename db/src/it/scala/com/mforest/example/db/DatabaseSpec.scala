@@ -30,7 +30,7 @@ trait DatabaseSpec
       config     <- loadConfigF[IO, Config]
       blocker    = Blocker.liftExecutionContext(executionContext)
       transactor = testTransactor(config.database.postgres, blocker)
-      _          <- MigrationManager[IO](config.database).migrate()
+      _          = MigrationManager[IO](config.database).migrate()
     } yield transactor).unsafeRunSync()
   }
 

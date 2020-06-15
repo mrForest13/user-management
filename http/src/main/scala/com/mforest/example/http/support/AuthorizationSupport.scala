@@ -1,13 +1,12 @@
 package com.mforest.example.http.support
 
+import cats.Show
 import cats.data.EitherT
 import cats.effect.Sync
-import cats.{Id, Show}
 import com.mforest.example.core.error.Error
 import com.mforest.example.http.token.BearerToken
 import com.mforest.example.service.auth.AuthService
 import com.mforest.example.service.model.SessionInfo
-import io.chrisdavenport.fuuid.FUUID
 
 private[http] trait AuthorizationSupport[F[_]] {
 
@@ -20,8 +19,8 @@ private[http] trait AuthorizationSupport[F[_]] {
   def authorize[P: Show, R](token: String, permission: P)(logic: Logic[R])(implicit S: Sync[F]): AuthorizeResult[R] = {
     for {
       info   <- authService.authorize(token, permission)
-      token  = BearerToken.apply[Id[FUUID]](info.authenticator)
-      result <- logic.apply(info)
+      token  = BearerToken(info.authenticator)
+      result <- logic(info)
     } yield token -> result
   }
 }
